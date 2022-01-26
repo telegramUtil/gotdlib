@@ -1879,6 +1879,9 @@ func UnmarshalTextEntityType(data json.RawMessage) (TextEntityType, error) {
 	case TypeTextEntityTypeStrikethrough:
 		return UnmarshalTextEntityTypeStrikethrough(data)
 
+	case TypeTextEntityTypeSpoiler:
+		return UnmarshalTextEntityTypeSpoiler(data)
+
 	case TypeTextEntityTypeCode:
 		return UnmarshalTextEntityTypeCode(data)
 
@@ -7985,6 +7988,14 @@ func UnmarshalTextEntityTypeStrikethrough(data json.RawMessage) (*TextEntityType
 	return &resp, err
 }
 
+func UnmarshalTextEntityTypeSpoiler(data json.RawMessage) (*TextEntityTypeSpoiler, error) {
+	var resp TextEntityTypeSpoiler
+
+	err := json.Unmarshal(data, &resp)
+
+	return &resp, err
+}
+
 func UnmarshalTextEntityTypeCode(data json.RawMessage) (*TextEntityTypeCode, error) {
 	var resp TextEntityTypeCode
 
@@ -13498,6 +13509,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
 	case TypeTextEntityTypeStrikethrough:
 		return UnmarshalTextEntityTypeStrikethrough(data)
+
+	case TypeTextEntityTypeSpoiler:
+		return UnmarshalTextEntityTypeSpoiler(data)
 
 	case TypeTextEntityTypeCode:
 		return UnmarshalTextEntityTypeCode(data)

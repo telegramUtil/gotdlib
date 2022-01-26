@@ -736,6 +736,7 @@ const (
 	TypeTextEntityTypeItalic                            = "textEntityTypeItalic"
 	TypeTextEntityTypeUnderline                         = "textEntityTypeUnderline"
 	TypeTextEntityTypeStrikethrough                     = "textEntityTypeStrikethrough"
+	TypeTextEntityTypeSpoiler                           = "textEntityTypeSpoiler"
 	TypeTextEntityTypeCode                              = "textEntityTypeCode"
 	TypeTextEntityTypePre                               = "textEntityTypePre"
 	TypeTextEntityTypePreCode                           = "textEntityTypePreCode"
@@ -2093,7 +2094,7 @@ type FormattedText struct {
 	meta
 	// The text
 	Text string `json:"text"`
-	// Entities contained in the text. Entities can be nested, but must not mutually intersect with each other. Pre, Code and PreCode entities can't contain other entities. Bold, Italic, Underline and Strikethrough entities can contain and to be contained in all other entities. All other entities can't contain each other
+	// Entities contained in the text. Entities can be nested, but must not mutually intersect with each other. Pre, Code and PreCode entities can't contain other entities. Bold, Italic, Underline, Strikethrough, and Spoiler entities can contain and to be contained in all other entities. All other entities can't contain each other
 	Entities []*TextEntity `json:"entities"`
 }
 
@@ -2583,6 +2584,8 @@ type File struct {
 	meta
 	// Unique file identifier
 	Id int32 `json:"id"`
+	// File data center
+	DcId int32 `json:"dc_id"`
 	// File size, in bytes; 0 if unknown
 	Size int32 `json:"size"`
 	// Approximate file size in bytes in case the exact file size is unknown. Can be used to show download/upload progress
@@ -4215,6 +4218,8 @@ type User struct {
 	meta
 	// User identifier
 	Id int64 `json:"id"`
+	// User access hash
+	AccessHash JsonInt64 `json:"access_hash"`
 	// First name of the user
 	FirstName string `json:"first_name"`
 	// Last name of the user
@@ -4268,6 +4273,7 @@ func (*User) GetType() string {
 func (user *User) UnmarshalJSON(data []byte) error {
 	var tmp struct {
 		Id                int64           `json:"id"`
+		AccessHash        JsonInt64       `json:"access_hash"`
 		FirstName         string          `json:"first_name"`
 		LastName          string          `json:"last_name"`
 		Username          string          `json:"username"`
@@ -4292,6 +4298,7 @@ func (user *User) UnmarshalJSON(data []byte) error {
 	}
 
 	user.Id = tmp.Id
+	user.AccessHash = tmp.AccessHash
 	user.FirstName = tmp.FirstName
 	user.LastName = tmp.LastName
 	user.Username = tmp.Username
@@ -4445,8 +4452,14 @@ type ChatPermissions struct {
 	CanSendMediaMessages bool `json:"can_send_media_messages"`
 	// True, if the user can send polls. Implies can_send_messages permissions
 	CanSendPolls bool `json:"can_send_polls"`
-	// True, if the user can send animations, games, stickers, and dice and use inline bots. Implies can_send_messages permissions
-	CanSendOtherMessages bool `json:"can_send_other_messages"`
+	// True, if the user can send stickers. Implies can_send_messages permissions
+	CanSendStickers bool `json:"can_send_stickers"`
+	// True, if the user can send animations. Implies can_send_messages permissions
+	CanSendAnimations bool `json:"can_send_animations"`
+	// True, if the user can send games. Implies can_send_messages permissions
+	CanSendGames bool `json:"can_send_games"`
+	// True, if the user can use inline bots. Implies can_send_messages permissions
+	CanUseInlineBots bool `json:"can_use_inline_bots"`
 	// True, if the user may add a web page preview to their messages. Implies can_send_messages permissions
 	CanAddWebPagePreviews bool `json:"can_add_web_page_previews"`
 	// True, if the user can change the chat title, photo, and other settings
@@ -5461,6 +5474,8 @@ type BasicGroup struct {
 	meta
 	// Group identifier
 	Id int64 `json:"id"`
+	// Group access hash
+	AccessHash JsonInt64 `json:"access_hash"`
 	// Number of members in the group
 	MemberCount int32 `json:"member_count"`
 	// Status of the current user in the group
@@ -5490,6 +5505,7 @@ func (*BasicGroup) GetType() string {
 func (basicGroup *BasicGroup) UnmarshalJSON(data []byte) error {
 	var tmp struct {
 		Id                     int64           `json:"id"`
+		AccessHash             JsonInt64       `json:"access_hash"`
 		MemberCount            int32           `json:"member_count"`
 		Status                 json.RawMessage `json:"status"`
 		IsActive               bool            `json:"is_active"`
@@ -5502,6 +5518,7 @@ func (basicGroup *BasicGroup) UnmarshalJSON(data []byte) error {
 	}
 
 	basicGroup.Id = tmp.Id
+	basicGroup.AccessHash = tmp.AccessHash
 	basicGroup.MemberCount = tmp.MemberCount
 	basicGroup.IsActive = tmp.IsActive
 	basicGroup.UpgradedToSupergroupId = tmp.UpgradedToSupergroupId
@@ -5550,6 +5567,8 @@ type Supergroup struct {
 	meta
 	// Supergroup or channel identifier
 	Id int64 `json:"id"`
+	// Supergroup or channel access hash
+	AccessHash JsonInt64 `json:"access_hash"`
 	// Username of the supergroup or channel; empty for private supergroups or channels
 	Username string `json:"username"`
 	// Point in time (Unix timestamp) when the current user joined, or the point in time when the supergroup or channel was created, in case the user is not a member
@@ -5599,6 +5618,7 @@ func (*Supergroup) GetType() string {
 func (supergroup *Supergroup) UnmarshalJSON(data []byte) error {
 	var tmp struct {
 		Id                int64           `json:"id"`
+		AccessHash        JsonInt64       `json:"access_hash"`
 		Username          string          `json:"username"`
 		Date              int32           `json:"date"`
 		Status            json.RawMessage `json:"status"`
@@ -5621,6 +5641,7 @@ func (supergroup *Supergroup) UnmarshalJSON(data []byte) error {
 	}
 
 	supergroup.Id = tmp.Id
+	supergroup.AccessHash = tmp.AccessHash
 	supergroup.Username = tmp.Username
 	supergroup.Date = tmp.Date
 	supergroup.MemberCount = tmp.MemberCount
@@ -6616,8 +6637,10 @@ type SponsoredMessage struct {
 	meta
 	// Message identifier; unique for the chat to which the sponsored message belongs among both ordinary and sponsored messages
 	MessageId int64 `json:"message_id"`
-	// Chat identifier
+	// Sponsor chat identifier; 0 if the sponsor chat is accessible through an invite link
 	SponsorChatId int64 `json:"sponsor_chat_id"`
+	// Information about the sponsor chat; may be null unless sponsor_chat_id == 0
+	SponsorChatInfo *ChatInviteLinkInfo `json:"sponsor_chat_info"`
 	// An internal link to be opened when the sponsored message is clicked; may be null. If null, the sponsor chat needs to be opened instead
 	Link InternalLinkType `json:"link"`
 	// Content of the message. Currently, can be only of the type messageText
@@ -6642,10 +6665,11 @@ func (*SponsoredMessage) GetType() string {
 
 func (sponsoredMessage *SponsoredMessage) UnmarshalJSON(data []byte) error {
 	var tmp struct {
-		MessageId     int64           `json:"message_id"`
-		SponsorChatId int64           `json:"sponsor_chat_id"`
-		Link          json.RawMessage `json:"link"`
-		Content       json.RawMessage `json:"content"`
+		MessageId       int64               `json:"message_id"`
+		SponsorChatId   int64               `json:"sponsor_chat_id"`
+		SponsorChatInfo *ChatInviteLinkInfo `json:"sponsor_chat_info"`
+		Link            json.RawMessage     `json:"link"`
+		Content         json.RawMessage     `json:"content"`
 	}
 
 	err := json.Unmarshal(data, &tmp)
@@ -6655,6 +6679,7 @@ func (sponsoredMessage *SponsoredMessage) UnmarshalJSON(data []byte) error {
 
 	sponsoredMessage.MessageId = tmp.MessageId
 	sponsoredMessage.SponsorChatId = tmp.SponsorChatId
+	sponsoredMessage.SponsorChatInfo = tmp.SponsorChatInfo
 
 	fieldLink, _ := UnmarshalInternalLinkType(tmp.Link)
 	sponsoredMessage.Link = fieldLink
@@ -15401,6 +15426,31 @@ func (*TextEntityTypeStrikethrough) TextEntityTypeType() string {
 	return TypeTextEntityTypeStrikethrough
 }
 
+// A spoiler text. Not supported in secret chats
+type TextEntityTypeSpoiler struct {
+	meta
+}
+
+func (entity *TextEntityTypeSpoiler) MarshalJSON() ([]byte, error) {
+	entity.meta.Type = entity.GetType()
+
+	type stub TextEntityTypeSpoiler
+
+	return json.Marshal((*stub)(entity))
+}
+
+func (*TextEntityTypeSpoiler) GetClass() string {
+	return ClassTextEntityType
+}
+
+func (*TextEntityTypeSpoiler) GetType() string {
+	return TypeTextEntityTypeSpoiler
+}
+
+func (*TextEntityTypeSpoiler) TextEntityTypeType() string {
+	return TypeTextEntityTypeSpoiler
+}
+
 // Text that must be formatted as if inside a code HTML tag
 type TextEntityTypeCode struct {
 	meta
@@ -15666,6 +15716,8 @@ type MessageSendOptions struct {
 	DisableNotification bool `json:"disable_notification"`
 	// Pass true if the message is sent from the background
 	FromBackground bool `json:"from_background"`
+	// Pass true if the content of the message must be protected from forwarding and saving; for bots only
+	ProtectContent bool `json:"protect_content"`
 	// Message scheduling state; pass null to send message immediately. Messages sent to a secret chat, live location messages and self-destructing messages can't be scheduled
 	SchedulingState MessageSchedulingState `json:"scheduling_state"`
 }
@@ -15690,6 +15742,7 @@ func (messageSendOptions *MessageSendOptions) UnmarshalJSON(data []byte) error {
 	var tmp struct {
 		DisableNotification bool            `json:"disable_notification"`
 		FromBackground      bool            `json:"from_background"`
+		ProtectContent      bool            `json:"protect_content"`
 		SchedulingState     json.RawMessage `json:"scheduling_state"`
 	}
 
@@ -15700,6 +15753,7 @@ func (messageSendOptions *MessageSendOptions) UnmarshalJSON(data []byte) error {
 
 	messageSendOptions.DisableNotification = tmp.DisableNotification
 	messageSendOptions.FromBackground = tmp.FromBackground
+	messageSendOptions.ProtectContent = tmp.ProtectContent
 
 	fieldSchedulingState, _ := UnmarshalMessageSchedulingState(tmp.SchedulingState)
 	messageSendOptions.SchedulingState = fieldSchedulingState
@@ -15737,7 +15791,7 @@ func (*MessageCopyOptions) GetType() string {
 // A text message
 type InputMessageText struct {
 	meta
-	// Formatted text to be sent; 1-GetOption("message_text_length_max") characters. Only Bold, Italic, Underline, Strikethrough, Code, Pre, PreCode, TextUrl and MentionName entities are allowed to be specified manually
+	// Formatted text to be sent; 1-GetOption("message_text_length_max") characters. Only Bold, Italic, Underline, Strikethrough, Spoiler, Code, Pre, PreCode, TextUrl and MentionName entities are allowed to be specified manually
 	Text *FormattedText `json:"text"`
 	// True, if rich web page previews for URLs in the message text must be disabled
 	DisableWebPagePreview bool `json:"disable_web_page_preview"`
@@ -22862,7 +22916,7 @@ func (*CheckChatUsernameResultUsernameOccupied) CheckChatUsernameResultType() st
 	return TypeCheckChatUsernameResultUsernameOccupied
 }
 
-// The user has too much chats with username, one of them must be made private first
+// The user has too many chats with username, one of them must be made private first
 type CheckChatUsernameResultPublicChatsTooMuch struct {
 	meta
 }

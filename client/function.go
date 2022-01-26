@@ -3456,7 +3456,7 @@ type ParseTextEntitiesRequest struct {
 	ParseMode TextParseMode `json:"parse_mode"`
 }
 
-// Parses Bold, Italic, Underline, Strikethrough, Code, Pre, PreCode, TextUrl and MentionName entities contained in the text. Can be called synchronously
+// Parses Bold, Italic, Underline, Strikethrough, Spoiler, Code, Pre, PreCode, TextUrl and MentionName entities contained in the text. Can be called synchronously
 func (client *Client) ParseTextEntities(req *ParseTextEntitiesRequest) (*FormattedText, error) {
 	result, err := client.jsonClient.Execute(Request{
 		meta: meta{
@@ -3479,7 +3479,7 @@ func (client *Client) ParseTextEntities(req *ParseTextEntitiesRequest) (*Formatt
 }
 
 type ParseMarkdownRequest struct {
-	// The text to parse. For example, "__italic__ ~~strikethrough~~ **bold** `code` ```pre``` __[italic__ text_url](telegram.org) __italic**bold italic__bold**"
+	// The text to parse. For example, "__italic__ ~~strikethrough~~ ||spoiler|| **bold** `code` ```pre``` __[italic__ text_url](telegram.org) __italic**bold italic__bold**"
 	Text *FormattedText `json:"text"`
 }
 
