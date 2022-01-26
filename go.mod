@@ -1,3 +1,3 @@
-module github.com/zelenin/go-tdlib
+module github.com/c0re100/gotdlib
 
-go 1.12
+go 1.16

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/zelenin/go-tdlib/tlparser"
+	"github.com/c0re100/gotdlib/tlparser"
 )
 
 func GenerateFunctions(schema *tlparser.Schema, packageName string) []byte {

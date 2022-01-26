@@ -3,7 +3,7 @@ package puller
 import (
 	"math"
 
-	"github.com/zelenin/go-tdlib/client"
+	"github.com/c0re100/gotdlib/client"
 )
 
 func Chats(tdlibClient *client.Client) (chan *client.Chat, chan error) {

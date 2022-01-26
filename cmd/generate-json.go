@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
-	"github.com/zelenin/go-tdlib/tlparser"
+	"github.com/c0re100/gotdlib/tlparser"
 	"log"
 	"net/http"
 	"os"
