@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"flag"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 
@@ -33,14 +32,13 @@ func main() {
 
 	flag.Parse()
 
-	resp, err := http.Get("https://raw.githubusercontent.com/tdlib/td/" + config.version + "/td/generate/scheme/td_api.tl")
+	tl, err := os.Open("./data/td_api.tl")
 	if err != nil {
-		log.Fatalf("http.Get error: %s", err)
+		log.Fatalf(err.Error())
 		return
 	}
-	defer resp.Body.Close()
 
-	schema, err := tlparser.Parse(resp.Body)
+	schema, err := tlparser.Parse(bufio.NewReader(tl))
 	if err != nil {
 		log.Fatalf("schema parse error: %s", err)
 		return
