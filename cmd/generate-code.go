@@ -24,8 +24,8 @@ func main() {
 	var config config
 
 	flag.StringVar(&config.version, "version", "", "TDLib version")
-	flag.StringVar(&config.outputDirPath, "outputDir", "./tdlib", "output directory")
-	flag.StringVar(&config.packageName, "package", "tdlib", "package name")
+	flag.StringVar(&config.outputDirPath, "outputDir", "./client", "output directory")
+	flag.StringVar(&config.packageName, "package", "client", "package name")
 	flag.StringVar(&config.functionFileName, "functionFile", "function.go", "functions filename")
 	flag.StringVar(&config.typeFileName, "typeFile", "type.go", "types filename")
 	flag.StringVar(&config.unmarshalerFileName, "unmarshalerFile", "unmarshaler.go", "unmarshalers filename")
