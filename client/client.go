@@ -37,24 +37,20 @@ func WithProxy(req *AddProxyRequest) Option {
 	}
 }
 
-func SetLogVerbosityLevel(level int32) Option {
-	return func(client *Client) {
-		client.SetLogVerbosityLevel(&SetLogVerbosityLevelRequest{
-			NewVerbosityLevel: level,
-		})
-	}
+func SetLogLevel(level int32) {
+	_, _ = SetLogVerbosityLevel(&SetLogVerbosityLevelRequest{
+		NewVerbosityLevel: level,
+	})
 }
 
-func SetFilePath(path string) Option {
-	return func(client *Client) {
-		client.SetLogStream(&SetLogStreamRequest{
-			LogStream: &LogStreamFile{
-				Path:           path,
-				MaxFileSize:    10485760,
-				RedirectStderr: true,
-			},
-		})
-	}
+func SetFilePath(path string) {
+	_, _ = SetLogStream(&SetLogStreamRequest{
+		LogStream: &LogStreamFile{
+			Path:           path,
+			MaxFileSize:    10485760,
+			RedirectStderr: true,
+		},
+	})
 }
 
 func NewClient(authorizationStateHandler AuthorizationStateHandler, options ...Option) (*Client, error) {
