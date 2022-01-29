@@ -96,9 +96,11 @@ func (client *Client) receiver() {
 
 		needGc := false
 		for _, listener := range client.listenerStore.Listeners() {
-			if listener.IsActive() {
+			if listener.IsActive() && listener.Updates != nil && typ.GetType() == listener.Filter.GetType() { // All updates go to Updates channel if type == filter
 				listener.Updates <- typ
-			} else {
+			} else if listener.IsActive() && listener.RawUpdates != nil { // All updates go to RawUpdates channel if filter is empty
+				listener.RawUpdates <- typ
+			} else if !listener.IsActive() { // GC inactive listener
 				needGc = true
 			}
 		}
@@ -136,8 +138,19 @@ func (client *Client) Send(req Request) (*Response, error) {
 
 func (client *Client) GetListener() *Listener {
 	listener := &Listener{
-		isActive: true,
-		Updates:  make(chan Type, 1000),
+		isActive:   true,
+		RawUpdates: make(chan Type, 1000),
+	}
+	client.listenerStore.Add(listener)
+
+	return listener
+}
+
+func (client *Client) AddEventReceiver(msgType Type, channelCapacity int) *Listener {
+	listener := &Listener{
+		isActive:   true,
+		Updates:    make(chan Type, channelCapacity),
+		Filter:     msgType,
 	}
 	client.listenerStore.Add(listener)
 

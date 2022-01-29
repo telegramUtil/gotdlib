@@ -45,9 +45,11 @@ func (store *listenerStore) gc() {
 }
 
 type Listener struct {
-	mu       sync.Mutex
-	isActive bool
-	Updates  chan Type
+	mu         sync.Mutex
+	isActive   bool
+	Updates    chan Type
+	RawUpdates chan Type
+	Filter     Type
 }
 
 func (listener *Listener) Close() {
@@ -55,7 +57,12 @@ func (listener *Listener) Close() {
 	defer listener.mu.Unlock()
 
 	listener.isActive = false
-	close(listener.Updates)
+	if listener.Updates != nil {
+		close(listener.Updates)
+	}
+	if listener.RawUpdates != nil {
+		close(listener.RawUpdates)
+	}
 }
 
 func (listener *Listener) IsActive() bool {
