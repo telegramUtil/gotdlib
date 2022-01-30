@@ -3,7 +3,10 @@ package client
 import (
 	"errors"
 	"fmt"
+	"syscall"
 	"time"
+
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 var ErrNotSupportedAuthorizationState = errors.New("not supported state")
@@ -150,10 +153,13 @@ func CliInteractor(clientAuthorizer *clientAuthorizer) {
 
 			case TypeAuthorizationStateWaitPassword:
 				fmt.Println("Enter password: ")
-				var password string
-				fmt.Scanln(&password)
+				bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
 
-				clientAuthorizer.Password <- password
+				clientAuthorizer.Password <- string(bytePassword)
 
 			case TypeAuthorizationStateReady:
 				return
