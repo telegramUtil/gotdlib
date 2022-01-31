@@ -165,8 +165,7 @@ func (client *Client) Send(req Request) (*Response, error) {
 					response.Data = bytes.Replace(response.Data, []byte(strconv.FormatInt(m.Id, 10)), []byte(strconv.FormatInt(m2.Message.Id, 10)), 1)
 					return response, nil
 				case <-time.After(1 * time.Second):
-					client.successMsgStore.Delete(m.Id)
-					close(successCatcher)
+					return response, nil
 				}
 			}
 		}
