@@ -107,6 +107,18 @@ func main() {
 					continue
 				}
 				log.Printf("Message sent, ID: %d", m.Id)
+			case "/repeat":
+				m, err := client.SendMessage(&tdlib.SendMessageRequest{
+					ChatId:           chatId,
+					ReplyToMessageId: msgId,
+					InputMessageContent: &tdlib.InputMessageText{
+						Text: &tdlib.FormattedText{Text: tdlib.CommandArgument(msgText)},
+					},
+				})
+				if err != nil {
+					continue
+				}
+				log.Printf("Message sent, ID: %d", m.Id)
 			}
 		}
 	}
