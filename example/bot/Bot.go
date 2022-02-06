@@ -52,7 +52,7 @@ func main() {
 	signal.Notify(ch, os.Interrupt, syscall.SIGSEGV)
 	go func() {
 		<-ch
-		client.Destroy()
+		client.Close()
 	}()
 
 	me, err := client.GetMe()
