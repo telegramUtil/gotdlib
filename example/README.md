@@ -13,5 +13,10 @@ So we need to filter update events, like UpdateNewMessage, UpdateMessageSendSucc
 ### Media
 Send photo or album to chat.
 
+### Pending updates
+When starting a bot, we may have some updates that are missed to process when a listener IS NOT ready.
+
+So we need to keep specific update types in memory until a listener is set, then we can process those updates again.
+
 ### Raw Update
 Get update without event filter.
