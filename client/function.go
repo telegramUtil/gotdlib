@@ -2057,7 +2057,7 @@ type SearchMessagesRequest struct {
 	OffsetMessageId int64 `json:"offset_message_id"`
 	// The maximum number of messages to be returned; up to 100. For optimal performance, the number of returned messages is chosen by TDLib and can be smaller than the specified limit
 	Limit int32 `json:"limit"`
-	// Additional filter for messages to search; pass null to search for all messages. Filters searchMessagesFilterMention, searchMessagesFilterUnreadMention, searchMessagesFilterFailedToSend and searchMessagesFilterPinned are unsupported in this function
+	// Additional filter for messages to search; pass null to search for all messages. Filters searchMessagesFilterMention, searchMessagesFilterUnreadMention, searchMessagesFilterUnreadReaction, searchMessagesFilterFailedToSend, and searchMessagesFilterPinned are unsupported in this function
 	Filter SearchMessagesFilter `json:"filter"`
 	// If not 0, the minimum date of the messages to return
 	MinDate int32 `json:"min_date"`
@@ -2099,7 +2099,7 @@ type SearchSecretMessagesRequest struct {
 	ChatId int64 `json:"chat_id"`
 	// Query to search for. If empty, searchChatMessages must be used instead
 	Query string `json:"query"`
-	// Offset of the first entry to return as received from the previous request; use empty string to get first chunk of results
+	// Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results
 	Offset string `json:"offset"`
 	// The maximum number of messages to be returned; up to 100. For optimal performance, the number of returned messages is chosen by TDLib and can be smaller than the specified limit
 	Limit int32 `json:"limit"`
@@ -2270,7 +2270,7 @@ func (client *Client) GetChatMessageByDate(req *GetChatMessageByDateRequest) (*M
 type GetChatSparseMessagePositionsRequest struct {
 	// Identifier of the chat in which to return information about message positions
 	ChatId int64 `json:"chat_id"`
-	// Filter for message content. Filters searchMessagesFilterEmpty, searchMessagesFilterMention and searchMessagesFilterUnreadMention are unsupported in this function
+	// Filter for message content. Filters searchMessagesFilterEmpty, searchMessagesFilterMention, searchMessagesFilterUnreadMention, and searchMessagesFilterUnreadReaction are unsupported in this function
 	Filter SearchMessagesFilter `json:"filter"`
 	// The message identifier from which to return information about message positions
 	FromMessageId int64 `json:"from_message_id"`
@@ -2305,7 +2305,7 @@ func (client *Client) GetChatSparseMessagePositions(req *GetChatSparseMessagePos
 type GetChatMessageCalendarRequest struct {
 	// Identifier of the chat in which to return information about messages
 	ChatId int64 `json:"chat_id"`
-	// Filter for message content. Filters searchMessagesFilterEmpty, searchMessagesFilterMention and searchMessagesFilterUnreadMention are unsupported in this function
+	// Filter for message content. Filters searchMessagesFilterEmpty, searchMessagesFilterMention, searchMessagesFilterUnreadMention, and searchMessagesFilterUnreadReaction are unsupported in this function
 	Filter SearchMessagesFilter `json:"filter"`
 	// The message identifier from which to return information about messages; use 0 to get results from the last message
 	FromMessageId int64 `json:"from_message_id"`
@@ -2397,7 +2397,7 @@ type GetMessagePublicForwardsRequest struct {
 	ChatId int64 `json:"chat_id"`
 	// Message identifier
 	MessageId int64 `json:"message_id"`
-	// Offset of the first entry to return as received from the previous request; use empty string to get first chunk of results
+	// Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results
 	Offset string `json:"offset"`
 	// The maximum number of messages to be returned; must be positive and can't be greater than 100. For optimal performance, the number of returned messages is chosen by TDLib and can be smaller than the specified limit
 	Limit int32 `json:"limit"`
@@ -2605,6 +2605,38 @@ func (client *Client) GetMessageLinkInfo(req *GetMessageLinkInfoRequest) (*Messa
 	}
 
 	return UnmarshalMessageLinkInfo(result.Data)
+}
+
+type TranslateTextRequest struct {
+	// Text to translate
+	Text string `json:"text"`
+	// A two-letter ISO 639-1 language code of the language from which the message is translated. If empty, the language will be detected automatically
+	FromLanguageCode string `json:"from_language_code"`
+	// A two-letter ISO 639-1 language code of the language to which the message is translated
+	ToLanguageCode string `json:"to_language_code"`
+}
+
+// Translates a text to the given language. Returns a 404 error if the translation can't be performed
+func (client *Client) TranslateText(req *TranslateTextRequest) (*Text, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "translateText",
+		},
+		Data: map[string]interface{}{
+			"text":               req.Text,
+			"from_language_code": req.FromLanguageCode,
+			"to_language_code":   req.ToLanguageCode,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalText(result.Data)
 }
 
 type GetChatAvailableMessageSendersRequest struct {
@@ -3421,6 +3453,108 @@ func (client *Client) EditMessageSchedulingState(req *EditMessageSchedulingState
 	}
 
 	return UnmarshalOk(result.Data)
+}
+
+type GetMessageAvailableReactionsRequest struct {
+	// Identifier of the chat to which the message belongs
+	ChatId int64 `json:"chat_id"`
+	// Identifier of the message
+	MessageId int64 `json:"message_id"`
+}
+
+// Returns reactions, which can be added to a message. The list can change after updateReactions, updateChatAvailableReactions for the chat, or updateMessageInteractionInfo for the message
+func (client *Client) GetMessageAvailableReactions(req *GetMessageAvailableReactionsRequest) (*AvailableReactions, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "getMessageAvailableReactions",
+		},
+		Data: map[string]interface{}{
+			"chat_id":    req.ChatId,
+			"message_id": req.MessageId,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalAvailableReactions(result.Data)
+}
+
+type SetMessageReactionRequest struct {
+	// Identifier of the chat to which the message belongs
+	ChatId int64 `json:"chat_id"`
+	// Identifier of the message
+	MessageId int64 `json:"message_id"`
+	// Text representation of the new chosen reaction. Can be an empty string or the currently chosen reaction to remove the reaction
+	Reaction string `json:"reaction"`
+	// True, if the reaction is added with a big animation
+	IsBig bool `json:"is_big"`
+}
+
+// Changes chosen reaction for a message
+func (client *Client) SetMessageReaction(req *SetMessageReactionRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "setMessageReaction",
+		},
+		Data: map[string]interface{}{
+			"chat_id":    req.ChatId,
+			"message_id": req.MessageId,
+			"reaction":   req.Reaction,
+			"is_big":     req.IsBig,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
+type GetMessageAddedReactionsRequest struct {
+	// Identifier of the chat to which the message belongs
+	ChatId int64 `json:"chat_id"`
+	// Identifier of the message
+	MessageId int64 `json:"message_id"`
+	// If non-empty, only added reactions with the specified text representation will be returned
+	Reaction string `json:"reaction"`
+	// Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results
+	Offset string `json:"offset"`
+	// The maximum number of reactions to be returned; must be positive and can't be greater than 100
+	Limit int32 `json:"limit"`
+}
+
+// Returns reactions added for a message, along with their sender
+func (client *Client) GetMessageAddedReactions(req *GetMessageAddedReactionsRequest) (*AddedReactions, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "getMessageAddedReactions",
+		},
+		Data: map[string]interface{}{
+			"chat_id":    req.ChatId,
+			"message_id": req.MessageId,
+			"reaction":   req.Reaction,
+			"offset":     req.Offset,
+			"limit":      req.Limit,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalAddedReactions(result.Data)
 }
 
 type GetTextEntitiesRequest struct {
@@ -4742,6 +4876,32 @@ func (client *Client) ReadAllChatMentions(req *ReadAllChatMentionsRequest) (*Ok,
 	return UnmarshalOk(result.Data)
 }
 
+type ReadAllChatReactionsRequest struct {
+	// Chat identifier
+	ChatId int64 `json:"chat_id"`
+}
+
+// Marks all reactions in a chat as read
+func (client *Client) ReadAllChatReactions(req *ReadAllChatReactionsRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "readAllChatReactions",
+		},
+		Data: map[string]interface{}{
+			"chat_id": req.ChatId,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
 type CreatePrivateChatRequest struct {
 	// User identifier
 	UserId int64 `json:"user_id"`
@@ -5506,6 +5666,35 @@ func (client *Client) ToggleChatDefaultDisableNotification(req *ToggleChatDefaul
 	return UnmarshalOk(result.Data)
 }
 
+type SetChatAvailableReactionsRequest struct {
+	// Identifier of the chat
+	ChatId int64 `json:"chat_id"`
+	// New list of reactions, available in the chat. All reactions must be active and order of the reactions must be the same as in updateReactions
+	AvailableReactions []string `json:"available_reactions"`
+}
+
+// Changes reactions, available in a chat. Available for basic groups, supergroups, and channels. Requires can_change_info administrator right
+func (client *Client) SetChatAvailableReactions(req *SetChatAvailableReactionsRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "setChatAvailableReactions",
+		},
+		Data: map[string]interface{}{
+			"chat_id":             req.ChatId,
+			"available_reactions": req.AvailableReactions,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
 type SetChatClientDataRequest struct {
 	// Chat identifier
 	ChatId int64 `json:"chat_id"`
@@ -6215,7 +6404,7 @@ type ToggleChatIsPinnedRequest struct {
 	IsPinned bool `json:"is_pinned"`
 }
 
-// Changes the pinned state of a chat. There can be up to GetOption("pinned_chat_count_max")/GetOption("pinned_archived_chat_count_max") pinned non-secret chats and the same number of secret chats in the main/arhive chat list
+// Changes the pinned state of a chat. There can be up to GetOption("pinned_chat_count_max")/GetOption("pinned_archived_chat_count_max") pinned non-secret chats and the same number of secret chats in the main/archive chat list
 func (client *Client) ToggleChatIsPinned(req *ToggleChatIsPinnedRequest) (*Ok, error) {
 	result, err := client.Send(Request{
 		meta: meta{
@@ -7115,7 +7304,7 @@ type ProcessChatJoinRequestRequest struct {
 	ChatId int64 `json:"chat_id"`
 	// Identifier of the user that sent the request
 	UserId int64 `json:"user_id"`
-	// True, if the request is approved. Otherwise the request is declived
+	// True, if the request is approved. Otherwise the request is declined
 	Approve bool `json:"approve"`
 }
 
@@ -7147,7 +7336,7 @@ type ProcessChatJoinRequestsRequest struct {
 	ChatId int64 `json:"chat_id"`
 	// Invite link for which to process join requests. If empty, all join requests will be processed. Requires administrator privileges and can_invite_users right in the chat for own links and owner privileges for other links
 	InviteLink string `json:"invite_link"`
-	// True, if the requests are approved. Otherwise the requests are declived
+	// True, if the requests are approved. Otherwise the requests are declined
 	Approve bool `json:"approve"`
 }
 
@@ -9612,7 +9801,7 @@ func (client *Client) CheckChangePhoneNumberCode(req *CheckChangePhoneNumberCode
 type SetCommandsRequest struct {
 	// The scope to which the commands are relevant; pass null to change commands in the default bot command scope
 	Scope BotCommandScope `json:"scope"`
-	// A two-letter ISO 639-1 country code. If empty, the commands will be applied to all users from the given scope, for which language there are no dedicated commands
+	// A two-letter ISO 639-1 language code. If empty, the commands will be applied to all users from the given scope, for which language there are no dedicated commands
 	LanguageCode string `json:"language_code"`
 	// List of the bot's commands
 	Commands []*BotCommand `json:"commands"`
@@ -9644,7 +9833,7 @@ func (client *Client) SetCommands(req *SetCommandsRequest) (*Ok, error) {
 type DeleteCommandsRequest struct {
 	// The scope to which the commands are relevant; pass null to delete commands in the default bot command scope
 	Scope BotCommandScope `json:"scope"`
-	// A two-letter ISO 639-1 country code or an empty string
+	// A two-letter ISO 639-1 language code or an empty string
 	LanguageCode string `json:"language_code"`
 }
 
@@ -9673,7 +9862,7 @@ func (client *Client) DeleteCommands(req *DeleteCommandsRequest) (*Ok, error) {
 type GetCommandsRequest struct {
 	// The scope to which the commands are relevant; pass null to get commands in the default bot command scope
 	Scope BotCommandScope `json:"scope"`
-	// A two-letter ISO 639-1 country code or an empty string
+	// A two-letter ISO 639-1 language code or an empty string
 	LanguageCode string `json:"language_code"`
 }
 
@@ -12202,7 +12391,7 @@ type UploadStickerFileRequest struct {
 	// Sticker file owner; ignored for regular users
 	UserId int64 `json:"user_id"`
 	// Sticker file to upload
-	Sticker InputSticker `json:"sticker"`
+	Sticker *InputSticker `json:"sticker"`
 }
 
 // Uploads a file with a sticker; returns the uploaded file
@@ -12298,10 +12487,8 @@ type CreateNewStickerSetRequest struct {
 	Title string `json:"title"`
 	// Sticker set name. Can contain only English letters, digits and underscores. Must end with *"_by_<bot username>"* (*<bot_username>* is case insensitive) for bots; 1-64 characters
 	Name string `json:"name"`
-	// True, if stickers are masks. Animated stickers can't be masks
-	IsMasks bool `json:"is_masks"`
-	// List of stickers to be added to the set; must be non-empty. All stickers must be of the same type. For animated stickers, uploadStickerFile must be used before the sticker is shown
-	Stickers []InputSticker `json:"stickers"`
+	// List of stickers to be added to the set; must be non-empty. All stickers must have the same format. For TGS stickers, uploadStickerFile must be used before the sticker is shown
+	Stickers []*InputSticker `json:"stickers"`
 	// Source of the sticker set; may be empty if unknown
 	Source string `json:"source"`
 }
@@ -12316,7 +12503,6 @@ func (client *Client) CreateNewStickerSet(req *CreateNewStickerSetRequest) (*Sti
 			"user_id":  req.UserId,
 			"title":    req.Title,
 			"name":     req.Name,
-			"is_masks": req.IsMasks,
 			"stickers": req.Stickers,
 			"source":   req.Source,
 		},
@@ -12338,7 +12524,7 @@ type AddStickerToSetRequest struct {
 	// Sticker set name
 	Name string `json:"name"`
 	// Sticker to add to the set
-	Sticker InputSticker `json:"sticker"`
+	Sticker *InputSticker `json:"sticker"`
 }
 
 // Adds a new sticker to a set; for bots only. Returns the sticker set
@@ -12369,7 +12555,7 @@ type SetStickerSetThumbnailRequest struct {
 	UserId int64 `json:"user_id"`
 	// Sticker set name
 	Name string `json:"name"`
-	// Thumbnail to set in PNG or TGS format; pass null to remove the sticker set thumbnail. Animated thumbnail must be set for animated sticker sets and only for them
+	// Thumbnail to set in PNG, TGS, or WEBM format; pass null to remove the sticker set thumbnail. Thumbnail format must match the format of stickers in the set
 	Thumbnail InputFile `json:"thumbnail"`
 }
 
@@ -12667,7 +12853,7 @@ func (client *Client) GetPhoneNumberInfo(req *GetPhoneNumberInfoRequest) (*Phone
 }
 
 type GetPhoneNumberInfoSyncRequest struct {
-	// A two-letter ISO 639-1 country code for country information localization
+	// A two-letter ISO 639-1 language code for country information localization
 	LanguageCode string `json:"language_code"`
 	// The phone number prefix
 	PhoneNumberPrefix string `json:"phone_number_prefix"`
@@ -13613,6 +13799,9 @@ func (client *Client) TestUseUpdate() (Update, error) {
 	case TypeUpdateMessageMentionRead:
 		return UnmarshalUpdateMessageMentionRead(result.Data)
 
+	case TypeUpdateMessageUnreadReactions:
+		return UnmarshalUpdateMessageUnreadReactions(result.Data)
+
 	case TypeUpdateMessageLiveLocationViewed:
 		return UnmarshalUpdateMessageLiveLocationViewed(result.Data)
 
@@ -13643,6 +13832,9 @@ func (client *Client) TestUseUpdate() (Update, error) {
 	case TypeUpdateChatActionBar:
 		return UnmarshalUpdateChatActionBar(result.Data)
 
+	case TypeUpdateChatAvailableReactions:
+		return UnmarshalUpdateChatAvailableReactions(result.Data)
+
 	case TypeUpdateChatDraftMessage:
 		return UnmarshalUpdateChatDraftMessage(result.Data)
 
@@ -13666,6 +13858,9 @@ func (client *Client) TestUseUpdate() (Update, error) {
 
 	case TypeUpdateChatUnreadMentionCount:
 		return UnmarshalUpdateChatUnreadMentionCount(result.Data)
+
+	case TypeUpdateChatUnreadReactionCount:
+		return UnmarshalUpdateChatUnreadReactionCount(result.Data)
 
 	case TypeUpdateChatVideoChat:
 		return UnmarshalUpdateChatVideoChat(result.Data)
@@ -13807,6 +14002,9 @@ func (client *Client) TestUseUpdate() (Update, error) {
 
 	case TypeUpdateUsersNearby:
 		return UnmarshalUpdateUsersNearby(result.Data)
+
+	case TypeUpdateReactions:
+		return UnmarshalUpdateReactions(result.Data)
 
 	case TypeUpdateDiceEmojis:
 		return UnmarshalUpdateDiceEmojis(result.Data)
