@@ -3699,6 +3699,9 @@ func UnmarshalInternalLinkType(data json.RawMessage) (InternalLinkType, error) {
     case TypeInternalLinkTypeLanguagePack:
         return UnmarshalInternalLinkTypeLanguagePack(data)
 
+    case TypeInternalLinkTypeLanguageSettings:
+        return UnmarshalInternalLinkTypeLanguageSettings(data)
+
     case TypeInternalLinkTypeMessage:
         return UnmarshalInternalLinkTypeMessage(data)
 
@@ -3710,6 +3713,9 @@ func UnmarshalInternalLinkType(data json.RawMessage) (InternalLinkType, error) {
 
     case TypeInternalLinkTypePhoneNumberConfirmation:
         return UnmarshalInternalLinkTypePhoneNumberConfirmation(data)
+
+    case TypeInternalLinkTypePrivacyAndSecuritySettings:
+        return UnmarshalInternalLinkTypePrivacyAndSecuritySettings(data)
 
     case TypeInternalLinkTypeProxy:
         return UnmarshalInternalLinkTypeProxy(data)
@@ -10764,6 +10770,14 @@ func UnmarshalInternalLinkTypeLanguagePack(data json.RawMessage) (*InternalLinkT
     return &resp, err
 }
 
+func UnmarshalInternalLinkTypeLanguageSettings(data json.RawMessage) (*InternalLinkTypeLanguageSettings, error) {
+    var resp InternalLinkTypeLanguageSettings
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalInternalLinkTypeMessage(data json.RawMessage) (*InternalLinkTypeMessage, error) {
     var resp InternalLinkTypeMessage
 
@@ -10790,6 +10804,14 @@ func UnmarshalInternalLinkTypePassportDataRequest(data json.RawMessage) (*Intern
 
 func UnmarshalInternalLinkTypePhoneNumberConfirmation(data json.RawMessage) (*InternalLinkTypePhoneNumberConfirmation, error) {
     var resp InternalLinkTypePhoneNumberConfirmation
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInternalLinkTypePrivacyAndSecuritySettings(data json.RawMessage) (*InternalLinkTypePrivacyAndSecuritySettings, error) {
+    var resp InternalLinkTypePrivacyAndSecuritySettings
 
     err := json.Unmarshal(data, &resp)
 
@@ -14813,6 +14835,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeInternalLinkTypeLanguagePack:
         return UnmarshalInternalLinkTypeLanguagePack(data)
 
+    case TypeInternalLinkTypeLanguageSettings:
+        return UnmarshalInternalLinkTypeLanguageSettings(data)
+
     case TypeInternalLinkTypeMessage:
         return UnmarshalInternalLinkTypeMessage(data)
 
@@ -14824,6 +14849,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeInternalLinkTypePhoneNumberConfirmation:
         return UnmarshalInternalLinkTypePhoneNumberConfirmation(data)
+
+    case TypeInternalLinkTypePrivacyAndSecuritySettings:
+        return UnmarshalInternalLinkTypePrivacyAndSecuritySettings(data)
 
     case TypeInternalLinkTypeProxy:
         return UnmarshalInternalLinkTypeProxy(data)

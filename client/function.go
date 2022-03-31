@@ -4761,6 +4761,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
     case TypeInternalLinkTypeLanguagePack:
         return UnmarshalInternalLinkTypeLanguagePack(result.Data)
 
+    case TypeInternalLinkTypeLanguageSettings:
+        return UnmarshalInternalLinkTypeLanguageSettings(result.Data)
+
     case TypeInternalLinkTypeMessage:
         return UnmarshalInternalLinkTypeMessage(result.Data)
 
@@ -4772,6 +4775,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
 
     case TypeInternalLinkTypePhoneNumberConfirmation:
         return UnmarshalInternalLinkTypePhoneNumberConfirmation(result.Data)
+
+    case TypeInternalLinkTypePrivacyAndSecuritySettings:
+        return UnmarshalInternalLinkTypePrivacyAndSecuritySettings(result.Data)
 
     case TypeInternalLinkTypeProxy:
         return UnmarshalInternalLinkTypeProxy(result.Data)

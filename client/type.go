@@ -1090,10 +1090,12 @@ const (
     TypeInternalLinkTypeFilterSettings = "internalLinkTypeFilterSettings"
     TypeInternalLinkTypeGame = "internalLinkTypeGame"
     TypeInternalLinkTypeLanguagePack = "internalLinkTypeLanguagePack"
+    TypeInternalLinkTypeLanguageSettings = "internalLinkTypeLanguageSettings"
     TypeInternalLinkTypeMessage = "internalLinkTypeMessage"
     TypeInternalLinkTypeMessageDraft = "internalLinkTypeMessageDraft"
     TypeInternalLinkTypePassportDataRequest = "internalLinkTypePassportDataRequest"
     TypeInternalLinkTypePhoneNumberConfirmation = "internalLinkTypePhoneNumberConfirmation"
+    TypeInternalLinkTypePrivacyAndSecuritySettings = "internalLinkTypePrivacyAndSecuritySettings"
     TypeInternalLinkTypeProxy = "internalLinkTypeProxy"
     TypeInternalLinkTypePublicChat = "internalLinkTypePublicChat"
     TypeInternalLinkTypeQrCodeAuthentication = "internalLinkTypeQrCodeAuthentication"
@@ -26553,6 +26555,31 @@ func (*InternalLinkTypeLanguagePack) InternalLinkTypeType() string {
     return TypeInternalLinkTypeLanguagePack
 }
 
+// The link is a link to the language settings section of the app
+type InternalLinkTypeLanguageSettings struct{
+    meta
+}
+
+func (entity *InternalLinkTypeLanguageSettings) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InternalLinkTypeLanguageSettings
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InternalLinkTypeLanguageSettings) GetClass() string {
+    return ClassInternalLinkType
+}
+
+func (*InternalLinkTypeLanguageSettings) GetType() string {
+    return TypeInternalLinkTypeLanguageSettings
+}
+
+func (*InternalLinkTypeLanguageSettings) InternalLinkTypeType() string {
+    return TypeInternalLinkTypeLanguageSettings
+}
+
 // The link is a link to a Telegram message. Call getMessageLinkInfo with the given URL to process the link
 type InternalLinkTypeMessage struct {
     meta
@@ -26671,6 +26698,31 @@ func (*InternalLinkTypePhoneNumberConfirmation) GetType() string {
 
 func (*InternalLinkTypePhoneNumberConfirmation) InternalLinkTypeType() string {
     return TypeInternalLinkTypePhoneNumberConfirmation
+}
+
+// The link is a link to the privacy and security settings section of the app
+type InternalLinkTypePrivacyAndSecuritySettings struct{
+    meta
+}
+
+func (entity *InternalLinkTypePrivacyAndSecuritySettings) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InternalLinkTypePrivacyAndSecuritySettings
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InternalLinkTypePrivacyAndSecuritySettings) GetClass() string {
+    return ClassInternalLinkType
+}
+
+func (*InternalLinkTypePrivacyAndSecuritySettings) GetType() string {
+    return TypeInternalLinkTypePrivacyAndSecuritySettings
+}
+
+func (*InternalLinkTypePrivacyAndSecuritySettings) InternalLinkTypeType() string {
+    return TypeInternalLinkTypePrivacyAndSecuritySettings
 }
 
 // The link is a link to a proxy. Call addProxy with the given parameters to process the link and add the proxy
