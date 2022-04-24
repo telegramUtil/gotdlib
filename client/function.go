@@ -1976,7 +1976,7 @@ type DeleteChatRequest struct {
     ChatId int64 `json:"chat_id"`
 }
 
-// Deletes a chat along with all messages in the corresponding chat for all chat members; requires owner privileges. For group chats this will release the username and remove all members. Chats with more than 1000 members can't be deleted using this method
+// Deletes a chat along with all messages in the corresponding chat for all chat members. For group chats this will release the username and remove all members. Use the field chat.can_be_deleted_for_all_users to find whether the method can be applied to the chat
 func (client *Client) DeleteChat(req *DeleteChatRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -2728,7 +2728,7 @@ type SendMessageRequest struct {
     ChatId int64 `json:"chat_id"`
     // If not 0, a message thread identifier in which the message will be sent
     MessageThreadId int64 `json:"message_thread_id"`
-    // Identifier of the message to reply to or 0
+    // Identifier of the replied message; 0 if none
     ReplyToMessageId int64 `json:"reply_to_message_id"`
     // Options to be used to send the message; pass null to use default options
     Options *MessageSendOptions `json:"options"`
@@ -2769,7 +2769,7 @@ type SendMessageAlbumRequest struct {
     ChatId int64 `json:"chat_id"`
     // If not 0, a message thread identifier in which the messages will be sent
     MessageThreadId int64 `json:"message_thread_id"`
-    // Identifier of a message to reply to or 0
+    // Identifier of a replied message; 0 if none
     ReplyToMessageId int64 `json:"reply_to_message_id"`
     // Options to be used to send the messages; pass null to use default options
     Options *MessageSendOptions `json:"options"`
@@ -2842,7 +2842,7 @@ type SendInlineQueryResultMessageRequest struct {
     ChatId int64 `json:"chat_id"`
     // If not 0, a message thread identifier in which the message will be sent
     MessageThreadId int64 `json:"message_thread_id"`
-    // Identifier of a message to reply to or 0
+    // Identifier of a replied message; 0 if none
     ReplyToMessageId int64 `json:"reply_to_message_id"`
     // Options to be used to send the message; pass null to use default options
     Options *MessageSendOptions `json:"options"`
@@ -2985,7 +2985,7 @@ type AddLocalMessageRequest struct {
     ChatId int64 `json:"chat_id"`
     // Identifier of the sender of the message
     SenderId MessageSender `json:"sender_id"`
-    // Identifier of the message to reply to or 0
+    // Identifier of the replied message; 0 if none
     ReplyToMessageId int64 `json:"reply_to_message_id"`
     // Pass true to disable notification for the message
     DisableNotification bool `json:"disable_notification"`
@@ -3944,6 +3944,37 @@ func GetJsonString(req *GetJsonStringRequest) (*Text, error) {
 func (client *Client) GetJsonString(req *GetJsonStringRequest) (*Text, error) {
     return GetJsonString(req)}
 
+type GetThemeParametersJsonStringRequest struct { 
+    // Theme parameters to convert to JSON
+    Theme *ThemeParameters `json:"theme"`
+}
+
+// Converts a themeParameters object to corresponding JSON-serialized string. Can be called synchronously
+func GetThemeParametersJsonString(req *GetThemeParametersJsonStringRequest) (*Text, error) {
+    result, err := Execute(Request{
+        meta: meta{
+            Type: "getThemeParametersJsonString",
+        },
+        Data: map[string]interface{}{
+            "theme": req.Theme,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalText(result.Data)
+}
+
+// deprecated
+// Converts a themeParameters object to corresponding JSON-serialized string. Can be called synchronously
+func (client *Client) GetThemeParametersJsonString(req *GetThemeParametersJsonStringRequest) (*Text, error) {
+    return GetThemeParametersJsonString(req)}
+
 type SetPollAnswerRequest struct { 
     // Identifier of the chat to which the poll belongs
     ChatId int64 `json:"chat_id"`
@@ -4228,6 +4259,163 @@ func (client *Client) AnswerInlineQuery(req *AnswerInlineQueryRequest) (*Ok, err
     }
 
     return UnmarshalOk(result.Data)
+}
+
+type GetWebAppUrlRequest struct { 
+    // Identifier of the target bot
+    BotUserId int64 `json:"bot_user_id"`
+    // The URL from the keyboardButtonTypeWebApp button
+    Url string `json:"url"`
+    // Preferred web app theme; pass null to use the default theme
+    Theme *ThemeParameters `json:"theme"`
+}
+
+// Returns an HTTPS URL of a web app to open after keyboardButtonTypeWebApp button is pressed
+func (client *Client) GetWebAppUrl(req *GetWebAppUrlRequest) (*HttpUrl, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getWebAppUrl",
+        },
+        Data: map[string]interface{}{
+            "bot_user_id": req.BotUserId,
+            "url": req.Url,
+            "theme": req.Theme,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalHttpUrl(result.Data)
+}
+
+type SendWebAppDataRequest struct { 
+    // Identifier of the target bot
+    BotUserId int64 `json:"bot_user_id"`
+    // Text of the keyboardButtonTypeWebApp button, which opened the web app
+    ButtonText string `json:"button_text"`
+    // Received data
+    Data string `json:"data"`
+}
+
+// Sends data received from a keyboardButtonTypeWebApp web app to a bot
+func (client *Client) SendWebAppData(req *SendWebAppDataRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "sendWebAppData",
+        },
+        Data: map[string]interface{}{
+            "bot_user_id": req.BotUserId,
+            "button_text": req.ButtonText,
+            "data": req.Data,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type OpenWebAppRequest struct { 
+    // Identifier of the chat in which the web app is opened. Web apps can be opened only in private chats for now
+    ChatId int64 `json:"chat_id"`
+    // Identifier of the bot, providing the web app
+    BotUserId int64 `json:"bot_user_id"`
+    // The URL from an inlineKeyboardButtonTypeWebApp button, a botMenuButton button, or an internalLinkTypeAttachmentMenuBot link, or an empty string otherwise
+    Url string `json:"url"`
+    // Preferred web app theme; pass null to use the default theme
+    Theme *ThemeParameters `json:"theme"`
+    // Identifier of the replied message for the message sent by the web app; 0 if none
+    ReplyToMessageId int64 `json:"reply_to_message_id"`
+}
+
+// Informs TDLib that a web app is being opened from attachment menu, a botMenuButton button, an internalLinkTypeAttachmentMenuBot link, or an inlineKeyboardButtonTypeWebApp button. For each bot, a confirmation alert about data sent to the bot must be shown once
+func (client *Client) OpenWebApp(req *OpenWebAppRequest) (*WebAppInfo, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "openWebApp",
+        },
+        Data: map[string]interface{}{
+            "chat_id": req.ChatId,
+            "bot_user_id": req.BotUserId,
+            "url": req.Url,
+            "theme": req.Theme,
+            "reply_to_message_id": req.ReplyToMessageId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalWebAppInfo(result.Data)
+}
+
+type CloseWebAppRequest struct { 
+    // Identifier of web app launch, received from openWebApp
+    WebAppLaunchId JsonInt64 `json:"web_app_launch_id"`
+}
+
+// Informs TDLib that a previously opened web app was closed
+func (client *Client) CloseWebApp(req *CloseWebAppRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "closeWebApp",
+        },
+        Data: map[string]interface{}{
+            "web_app_launch_id": req.WebAppLaunchId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type AnswerWebAppQueryRequest struct { 
+    // Identifier of the web app query
+    WebAppQueryId string `json:"web_app_query_id"`
+    // The result of the query
+    Result InputInlineQueryResult `json:"result"`
+}
+
+// Sets the result of interaction with a web app and sends corresponding message on behalf of the user to the chat from which the query originated; for bots only
+func (client *Client) AnswerWebAppQuery(req *AnswerWebAppQueryRequest) (*SentWebAppMessage, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "answerWebAppQuery",
+        },
+        Data: map[string]interface{}{
+            "web_app_query_id": req.WebAppQueryId,
+            "result": req.Result,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalSentWebAppMessage(result.Data)
 }
 
 type GetCallbackQueryAnswerRequest struct { 
@@ -4734,6 +4922,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
     case TypeInternalLinkTypeActiveSessions:
         return UnmarshalInternalLinkTypeActiveSessions(result.Data)
 
+    case TypeInternalLinkTypeAttachmentMenuBot:
+        return UnmarshalInternalLinkTypeAttachmentMenuBot(result.Data)
+
     case TypeInternalLinkTypeAuthenticationCode:
         return UnmarshalInternalLinkTypeAuthenticationCode(result.Data)
 
@@ -4745,6 +4936,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
 
     case TypeInternalLinkTypeBotStartInGroup:
         return UnmarshalInternalLinkTypeBotStartInGroup(result.Data)
+
+    case TypeInternalLinkTypeBotAddToChannel:
+        return UnmarshalInternalLinkTypeBotAddToChannel(result.Data)
 
     case TypeInternalLinkTypeChangePhoneNumber:
         return UnmarshalInternalLinkTypeChangePhoneNumber(result.Data)
@@ -5464,11 +5658,11 @@ func (client *Client) SetChatPhoto(req *SetChatPhotoRequest) (*Ok, error) {
 type SetChatMessageTtlRequest struct { 
     // Chat identifier
     ChatId int64 `json:"chat_id"`
-    // New TTL value, in seconds; must be one of 0, 86400, 7 * 86400, or 31 * 86400 unless the chat is secret
+    // New TTL value, in seconds; unless the chat is secret, it must be from 0 up to 365 * 86400 and be divisible by 86400
     Ttl int32 `json:"ttl"`
 }
 
-// Changes the message TTL in a chat. Requires can_delete_messages administrator right in basic groups, supergroups and channels Message TTL can't be changed in a chat with the current user (Saved Messages) and the chat 777000 (Telegram)
+// Changes the message TTL in a chat. Requires can_delete_messages administrator right in basic groups, supergroups and channels Message TTL can't be changed in a chat with the current user (Saved Messages) and the chat 777000 (Telegram).
 func (client *Client) SetChatMessageTtl(req *SetChatMessageTtlRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -6322,6 +6516,103 @@ func (client *Client) ClearAllDraftMessages(req *ClearAllDraftMessagesRequest) (
     return UnmarshalOk(result.Data)
 }
 
+type GetSavedNotificationSoundRequest struct { 
+    // Identifier of the notification sound
+    NotificationSoundId JsonInt64 `json:"notification_sound_id"`
+}
+
+// Returns saved notification sound by its identifier. Returns a 404 error if there is no saved notification sound with the specified identifier
+func (client *Client) GetSavedNotificationSound(req *GetSavedNotificationSoundRequest) (*NotificationSounds, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getSavedNotificationSound",
+        },
+        Data: map[string]interface{}{
+            "notification_sound_id": req.NotificationSoundId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalNotificationSounds(result.Data)
+}
+
+// Returns list of saved notification sounds. If a sound isn't in the list, then default sound needs to be used
+func (client *Client) GetSavedNotificationSounds() (*NotificationSounds, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getSavedNotificationSounds",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalNotificationSounds(result.Data)
+}
+
+type AddSavedNotificationSoundRequest struct { 
+    // Notification sound file to add
+    Sound InputFile `json:"sound"`
+}
+
+// Adds a new notification sound to the list of saved notification sounds. The new notification sound is added to the top of the list. If it is already in the list, its position isn't changed
+func (client *Client) AddSavedNotificationSound(req *AddSavedNotificationSoundRequest) (*NotificationSound, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "addSavedNotificationSound",
+        },
+        Data: map[string]interface{}{
+            "sound": req.Sound,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalNotificationSound(result.Data)
+}
+
+type RemoveSavedNotificationSoundRequest struct { 
+    // Identifier of the notification sound
+    NotificationSoundId JsonInt64 `json:"notification_sound_id"`
+}
+
+// Removes a notification sound from the list of saved notification sounds
+func (client *Client) RemoveSavedNotificationSound(req *RemoveSavedNotificationSoundRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "removeSavedNotificationSound",
+        },
+        Data: map[string]interface{}{
+            "notification_sound_id": req.NotificationSoundId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
 type GetChatNotificationSettingsExceptionsRequest struct { 
     // If specified, only chats from the scope will be returned; pass null to return chats from all scopes
     Scope NotificationSettingsScope `json:"scope"`
@@ -6406,7 +6697,7 @@ func (client *Client) SetScopeNotificationSettings(req *SetScopeNotificationSett
     return UnmarshalOk(result.Data)
 }
 
-// Resets all notification settings to their default values. By default, all chats are unmuted, the sound is set to "default" and message previews are shown
+// Resets all notification settings to their default values. By default, all chats are unmuted and message previews are shown
 func (client *Client) ResetAllNotificationSettings() (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -6473,6 +6764,61 @@ func (client *Client) SetPinnedChats(req *SetPinnedChatsRequest) (*Ok, error) {
         Data: map[string]interface{}{
             "chat_list": req.ChatList,
             "chat_ids": req.ChatIds,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type GetAttachmentMenuBotRequest struct { 
+    // Bot's user identifier
+    BotUserId int64 `json:"bot_user_id"`
+}
+
+// Returns information about a bot that can be added to attachment menu
+func (client *Client) GetAttachmentMenuBot(req *GetAttachmentMenuBotRequest) (*AttachmentMenuBot, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getAttachmentMenuBot",
+        },
+        Data: map[string]interface{}{
+            "bot_user_id": req.BotUserId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalAttachmentMenuBot(result.Data)
+}
+
+type ToggleBotIsAddedToAttachmentMenuRequest struct { 
+    // Bot's user identifier
+    BotUserId int64 `json:"bot_user_id"`
+    // Pass true to add the bot to attachment menu; pass false to remove the bot from attachment menu
+    IsAdded bool `json:"is_added"`
+}
+
+// Adds or removes a bot to attachment menu. Bot can be added to attachment menu, only if userTypeBot.can_be_added_to_attachment_menu == true
+func (client *Client) ToggleBotIsAddedToAttachmentMenu(req *ToggleBotIsAddedToAttachmentMenuRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "toggleBotIsAddedToAttachmentMenu",
+        },
+        Data: map[string]interface{}{
+            "bot_user_id": req.BotUserId,
+            "is_added": req.IsAdded,
         },
     })
     if err != nil {
@@ -7830,7 +8176,7 @@ func (client *Client) SetVideoChatDefaultParticipant(req *SetVideoChatDefaultPar
 }
 
 type CreateVideoChatRequest struct { 
-    // Chat identifier, in which the video chat will be created
+    // Identifier of a chat in which the video chat will be created
     ChatId int64 `json:"chat_id"`
     // Group call title; if empty, chat title will be used
     Title string `json:"title"`
@@ -10214,6 +10560,113 @@ func (client *Client) GetCommands(req *GetCommandsRequest) (*BotCommands, error)
     return UnmarshalBotCommands(result.Data)
 }
 
+type SetMenuButtonRequest struct { 
+    // Identifier of the user or 0 to set menu button for all users
+    UserId int64 `json:"user_id"`
+    // New menu button
+    MenuButton *BotMenuButton `json:"menu_button"`
+}
+
+// Sets menu button for the given user or for all users; for bots only
+func (client *Client) SetMenuButton(req *SetMenuButtonRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setMenuButton",
+        },
+        Data: map[string]interface{}{
+            "user_id": req.UserId,
+            "menu_button": req.MenuButton,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type GetMenuButtonRequest struct { 
+    // Identifier of the user or 0 to get the default menu button
+    UserId int64 `json:"user_id"`
+}
+
+// Returns menu button set by the bot for the given user; for bots only
+func (client *Client) GetMenuButton(req *GetMenuButtonRequest) (*BotMenuButton, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getMenuButton",
+        },
+        Data: map[string]interface{}{
+            "user_id": req.UserId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalBotMenuButton(result.Data)
+}
+
+type SetDefaultGroupAdministratorRightsRequest struct { 
+    // Default administrator rights for adding the bot to basic group and supergroup chats; may be null
+    DefaultGroupAdministratorRights *ChatAdministratorRights `json:"default_group_administrator_rights"`
+}
+
+// Sets default administrator rights for adding the bot to basic group and supergroup chats; for bots only
+func (client *Client) SetDefaultGroupAdministratorRights(req *SetDefaultGroupAdministratorRightsRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setDefaultGroupAdministratorRights",
+        },
+        Data: map[string]interface{}{
+            "default_group_administrator_rights": req.DefaultGroupAdministratorRights,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type SetDefaultChannelAdministratorRightsRequest struct { 
+    // Default administrator rights for adding the bot to channels; may be null
+    DefaultChannelAdministratorRights *ChatAdministratorRights `json:"default_channel_administrator_rights"`
+}
+
+// Sets default administrator rights for adding the bot to channel chats; for bots only
+func (client *Client) SetDefaultChannelAdministratorRights(req *SetDefaultChannelAdministratorRightsRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setDefaultChannelAdministratorRights",
+        },
+        Data: map[string]interface{}{
+            "default_channel_administrator_rights": req.DefaultChannelAdministratorRights,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
 // Returns all active sessions of the current user
 func (client *Client) GetActiveSessions() (*Sessions, error) {
     result, err := client.Send(Request{
@@ -10705,7 +11158,7 @@ type GetPaymentFormRequest struct {
     // Message identifier
     MessageId int64 `json:"message_id"`
     // Preferred payment form theme; pass null to use the default theme
-    Theme *PaymentFormTheme `json:"theme"`
+    Theme *ThemeParameters `json:"theme"`
 }
 
 // Returns an invoice payment form. This method must be called when the user presses inlineKeyboardButtonBuy
@@ -12973,7 +13426,7 @@ type GetMapThumbnailFileRequest struct {
     Height int32 `json:"height"`
     // Map scale; 1-3
     Scale int32 `json:"scale"`
-    // Identifier of a chat, in which the thumbnail will be shown. Use 0 if unknown
+    // Identifier of a chat in which the thumbnail will be shown. Use 0 if unknown
     ChatId int64 `json:"chat_id"`
 }
 
@@ -14015,7 +14468,7 @@ type TestProxyRequest struct {
     Port int32 `json:"port"`
     // Proxy type
     Type ProxyType `json:"type"`
-    // Identifier of a datacenter, with which to test connection
+    // Identifier of a datacenter with which to test connection
     DcId int32 `json:"dc_id"`
     // The maximum overall timeout for the request
     Timeout float64 `json:"timeout"`
@@ -14313,6 +14766,9 @@ func (client *Client) TestUseUpdate() (Update, error) {
     case TypeUpdateSavedAnimations:
         return UnmarshalUpdateSavedAnimations(result.Data)
 
+    case TypeUpdateSavedNotificationSounds:
+        return UnmarshalUpdateSavedNotificationSounds(result.Data)
+
     case TypeUpdateSelectedBackground:
         return UnmarshalUpdateSelectedBackground(result.Data)
 
@@ -14330,6 +14786,12 @@ func (client *Client) TestUseUpdate() (Update, error) {
 
     case TypeUpdateUsersNearby:
         return UnmarshalUpdateUsersNearby(result.Data)
+
+    case TypeUpdateAttachmentMenuBots:
+        return UnmarshalUpdateAttachmentMenuBots(result.Data)
+
+    case TypeUpdateWebAppMessageSent:
+        return UnmarshalUpdateWebAppMessageSent(result.Data)
 
     case TypeUpdateReactions:
         return UnmarshalUpdateReactions(result.Data)
