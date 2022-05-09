@@ -77,6 +77,7 @@ const (
     ClassJsonValue = "JsonValue"
     ClassUserPrivacySettingRule = "UserPrivacySettingRule"
     ClassUserPrivacySetting = "UserPrivacySetting"
+    ClassSessionType = "SessionType"
     ClassChatReportReason = "ChatReportReason"
     ClassInternalLinkType = "InternalLinkType"
     ClassFileType = "FileType"
@@ -1088,6 +1089,23 @@ const (
     TypeUserPrivacySettingAllowPeerToPeerCalls = "userPrivacySettingAllowPeerToPeerCalls"
     TypeUserPrivacySettingAllowFindingByPhoneNumber = "userPrivacySettingAllowFindingByPhoneNumber"
     TypeAccountTtl = "accountTtl"
+    TypeSessionTypeAndroid = "sessionTypeAndroid"
+    TypeSessionTypeApple = "sessionTypeApple"
+    TypeSessionTypeBrave = "sessionTypeBrave"
+    TypeSessionTypeChrome = "sessionTypeChrome"
+    TypeSessionTypeEdge = "sessionTypeEdge"
+    TypeSessionTypeFirefox = "sessionTypeFirefox"
+    TypeSessionTypeIpad = "sessionTypeIpad"
+    TypeSessionTypeIphone = "sessionTypeIphone"
+    TypeSessionTypeLinux = "sessionTypeLinux"
+    TypeSessionTypeMac = "sessionTypeMac"
+    TypeSessionTypeOpera = "sessionTypeOpera"
+    TypeSessionTypeSafari = "sessionTypeSafari"
+    TypeSessionTypeUbuntu = "sessionTypeUbuntu"
+    TypeSessionTypeUnknown = "sessionTypeUnknown"
+    TypeSessionTypeVivaldi = "sessionTypeVivaldi"
+    TypeSessionTypeWindows = "sessionTypeWindows"
+    TypeSessionTypeXbox = "sessionTypeXbox"
     TypeSession = "session"
     TypeSessions = "sessions"
     TypeConnectedWebsite = "connectedWebsite"
@@ -1690,6 +1708,11 @@ type UserPrivacySettingRule interface {
 // Describes available user privacy settings
 type UserPrivacySetting interface {
     UserPrivacySettingType() string
+}
+
+// Represents the type of a session
+type SessionType interface {
+    SessionTypeType() string
 }
 
 // Describes the reason why a chat is reported
@@ -18907,6 +18930,8 @@ type CallStateDiscarded struct {
     NeedRating bool `json:"need_rating"`
     // True, if the call debug information must be sent to the server
     NeedDebugInformation bool `json:"need_debug_information"`
+    // True, if the call log must be sent to the server
+    NeedLog bool `json:"need_log"`
 }
 
 func (entity *CallStateDiscarded) MarshalJSON() ([]byte, error) {
@@ -18934,6 +18959,7 @@ func (callStateDiscarded *CallStateDiscarded) UnmarshalJSON(data []byte) error {
         Reason json.RawMessage `json:"reason"`
         NeedRating bool `json:"need_rating"`
         NeedDebugInformation bool `json:"need_debug_information"`
+        NeedLog bool `json:"need_log"`
     }
 
     err := json.Unmarshal(data, &tmp)
@@ -18943,6 +18969,7 @@ func (callStateDiscarded *CallStateDiscarded) UnmarshalJSON(data []byte) error {
 
     callStateDiscarded.NeedRating = tmp.NeedRating
     callStateDiscarded.NeedDebugInformation = tmp.NeedDebugInformation
+    callStateDiscarded.NeedLog = tmp.NeedLog
 
     fieldReason, _ := UnmarshalCallDiscardReason(tmp.Reason)
     callStateDiscarded.Reason = fieldReason
@@ -25381,8 +25408,8 @@ type Notification struct {
     Id int32 `json:"id"`
     // Notification date
     Date int32 `json:"date"`
-    // Identifier of the notification sound to be played; 0 if sound is disabled
-    SoundId JsonInt64 `json:"sound_id"`
+    // True, if the notification was explicitly sent without sound
+    IsSilent bool `json:"is_silent"`
     // Notification type
     Type NotificationType `json:"type"`
 }
@@ -25407,7 +25434,7 @@ func (notification *Notification) UnmarshalJSON(data []byte) error {
     var tmp struct {
         Id int32 `json:"id"`
         Date int32 `json:"date"`
-        SoundId JsonInt64 `json:"sound_id"`
+        IsSilent bool `json:"is_silent"`
         Type json.RawMessage `json:"type"`
     }
 
@@ -25418,7 +25445,7 @@ func (notification *Notification) UnmarshalJSON(data []byte) error {
 
     notification.Id = tmp.Id
     notification.Date = tmp.Date
-    notification.SoundId = tmp.SoundId
+    notification.IsSilent = tmp.IsSilent
 
     fieldType, _ := UnmarshalNotificationType(tmp.Type)
     notification.Type = fieldType
@@ -26278,6 +26305,431 @@ func (*AccountTtl) GetType() string {
     return TypeAccountTtl
 }
 
+// The session is running on an Android device
+type SessionTypeAndroid struct{
+    meta
+}
+
+func (entity *SessionTypeAndroid) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeAndroid
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeAndroid) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeAndroid) GetType() string {
+    return TypeSessionTypeAndroid
+}
+
+func (*SessionTypeAndroid) SessionTypeType() string {
+    return TypeSessionTypeAndroid
+}
+
+// The session is running on a generic Apple device
+type SessionTypeApple struct{
+    meta
+}
+
+func (entity *SessionTypeApple) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeApple
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeApple) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeApple) GetType() string {
+    return TypeSessionTypeApple
+}
+
+func (*SessionTypeApple) SessionTypeType() string {
+    return TypeSessionTypeApple
+}
+
+// The session is running on the Brave browser
+type SessionTypeBrave struct{
+    meta
+}
+
+func (entity *SessionTypeBrave) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeBrave
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeBrave) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeBrave) GetType() string {
+    return TypeSessionTypeBrave
+}
+
+func (*SessionTypeBrave) SessionTypeType() string {
+    return TypeSessionTypeBrave
+}
+
+// The session is running on the Chrome browser
+type SessionTypeChrome struct{
+    meta
+}
+
+func (entity *SessionTypeChrome) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeChrome
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeChrome) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeChrome) GetType() string {
+    return TypeSessionTypeChrome
+}
+
+func (*SessionTypeChrome) SessionTypeType() string {
+    return TypeSessionTypeChrome
+}
+
+// The session is running on the Edge browser
+type SessionTypeEdge struct{
+    meta
+}
+
+func (entity *SessionTypeEdge) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeEdge
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeEdge) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeEdge) GetType() string {
+    return TypeSessionTypeEdge
+}
+
+func (*SessionTypeEdge) SessionTypeType() string {
+    return TypeSessionTypeEdge
+}
+
+// The session is running on the Firefox browser
+type SessionTypeFirefox struct{
+    meta
+}
+
+func (entity *SessionTypeFirefox) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeFirefox
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeFirefox) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeFirefox) GetType() string {
+    return TypeSessionTypeFirefox
+}
+
+func (*SessionTypeFirefox) SessionTypeType() string {
+    return TypeSessionTypeFirefox
+}
+
+// The session is running on an iPad device
+type SessionTypeIpad struct{
+    meta
+}
+
+func (entity *SessionTypeIpad) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeIpad
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeIpad) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeIpad) GetType() string {
+    return TypeSessionTypeIpad
+}
+
+func (*SessionTypeIpad) SessionTypeType() string {
+    return TypeSessionTypeIpad
+}
+
+// The session is running on an iPhone device
+type SessionTypeIphone struct{
+    meta
+}
+
+func (entity *SessionTypeIphone) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeIphone
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeIphone) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeIphone) GetType() string {
+    return TypeSessionTypeIphone
+}
+
+func (*SessionTypeIphone) SessionTypeType() string {
+    return TypeSessionTypeIphone
+}
+
+// The session is running on a Linux device
+type SessionTypeLinux struct{
+    meta
+}
+
+func (entity *SessionTypeLinux) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeLinux
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeLinux) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeLinux) GetType() string {
+    return TypeSessionTypeLinux
+}
+
+func (*SessionTypeLinux) SessionTypeType() string {
+    return TypeSessionTypeLinux
+}
+
+// The session is running on a Mac device
+type SessionTypeMac struct{
+    meta
+}
+
+func (entity *SessionTypeMac) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeMac
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeMac) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeMac) GetType() string {
+    return TypeSessionTypeMac
+}
+
+func (*SessionTypeMac) SessionTypeType() string {
+    return TypeSessionTypeMac
+}
+
+// The session is running on the Opera browser
+type SessionTypeOpera struct{
+    meta
+}
+
+func (entity *SessionTypeOpera) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeOpera
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeOpera) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeOpera) GetType() string {
+    return TypeSessionTypeOpera
+}
+
+func (*SessionTypeOpera) SessionTypeType() string {
+    return TypeSessionTypeOpera
+}
+
+// The session is running on the Safari browser
+type SessionTypeSafari struct{
+    meta
+}
+
+func (entity *SessionTypeSafari) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeSafari
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeSafari) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeSafari) GetType() string {
+    return TypeSessionTypeSafari
+}
+
+func (*SessionTypeSafari) SessionTypeType() string {
+    return TypeSessionTypeSafari
+}
+
+// The session is running on an Ubuntu device
+type SessionTypeUbuntu struct{
+    meta
+}
+
+func (entity *SessionTypeUbuntu) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeUbuntu
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeUbuntu) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeUbuntu) GetType() string {
+    return TypeSessionTypeUbuntu
+}
+
+func (*SessionTypeUbuntu) SessionTypeType() string {
+    return TypeSessionTypeUbuntu
+}
+
+// The session is running on an unknown type of device
+type SessionTypeUnknown struct{
+    meta
+}
+
+func (entity *SessionTypeUnknown) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeUnknown
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeUnknown) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeUnknown) GetType() string {
+    return TypeSessionTypeUnknown
+}
+
+func (*SessionTypeUnknown) SessionTypeType() string {
+    return TypeSessionTypeUnknown
+}
+
+// The session is running on the Vivaldi browser
+type SessionTypeVivaldi struct{
+    meta
+}
+
+func (entity *SessionTypeVivaldi) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeVivaldi
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeVivaldi) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeVivaldi) GetType() string {
+    return TypeSessionTypeVivaldi
+}
+
+func (*SessionTypeVivaldi) SessionTypeType() string {
+    return TypeSessionTypeVivaldi
+}
+
+// The session is running on a Windows device
+type SessionTypeWindows struct{
+    meta
+}
+
+func (entity *SessionTypeWindows) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeWindows
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeWindows) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeWindows) GetType() string {
+    return TypeSessionTypeWindows
+}
+
+func (*SessionTypeWindows) SessionTypeType() string {
+    return TypeSessionTypeWindows
+}
+
+// The session is running on an Xbox console
+type SessionTypeXbox struct{
+    meta
+}
+
+func (entity *SessionTypeXbox) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub SessionTypeXbox
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*SessionTypeXbox) GetClass() string {
+    return ClassSessionType
+}
+
+func (*SessionTypeXbox) GetType() string {
+    return TypeSessionTypeXbox
+}
+
+func (*SessionTypeXbox) SessionTypeType() string {
+    return TypeSessionTypeXbox
+}
+
 // Contains information about one session in a Telegram application used by the current user. Sessions must be shown to the user in the returned order
 type Session struct {
     meta
@@ -26291,6 +26743,8 @@ type Session struct {
     CanAcceptSecretChats bool `json:"can_accept_secret_chats"`
     // True, if incoming calls can be accepted by the session
     CanAcceptCalls bool `json:"can_accept_calls"`
+    // Session type based on the system and application version, which can be used to display a corresponding icon
+    Type SessionType `json:"type"`
     // Telegram API identifier, as provided by the application
     ApiId int32 `json:"api_id"`
     // Name of the application, as provided by the application
@@ -26331,6 +26785,57 @@ func (*Session) GetClass() string {
 
 func (*Session) GetType() string {
     return TypeSession
+}
+
+func (session *Session) UnmarshalJSON(data []byte) error {
+    var tmp struct {
+        Id JsonInt64 `json:"id"`
+        IsCurrent bool `json:"is_current"`
+        IsPasswordPending bool `json:"is_password_pending"`
+        CanAcceptSecretChats bool `json:"can_accept_secret_chats"`
+        CanAcceptCalls bool `json:"can_accept_calls"`
+        Type json.RawMessage `json:"type"`
+        ApiId int32 `json:"api_id"`
+        ApplicationName string `json:"application_name"`
+        ApplicationVersion string `json:"application_version"`
+        IsOfficialApplication bool `json:"is_official_application"`
+        DeviceModel string `json:"device_model"`
+        Platform string `json:"platform"`
+        SystemVersion string `json:"system_version"`
+        LogInDate int32 `json:"log_in_date"`
+        LastActiveDate int32 `json:"last_active_date"`
+        Ip string `json:"ip"`
+        Country string `json:"country"`
+        Region string `json:"region"`
+    }
+
+    err := json.Unmarshal(data, &tmp)
+    if err != nil {
+        return err
+    }
+
+    session.Id = tmp.Id
+    session.IsCurrent = tmp.IsCurrent
+    session.IsPasswordPending = tmp.IsPasswordPending
+    session.CanAcceptSecretChats = tmp.CanAcceptSecretChats
+    session.CanAcceptCalls = tmp.CanAcceptCalls
+    session.ApiId = tmp.ApiId
+    session.ApplicationName = tmp.ApplicationName
+    session.ApplicationVersion = tmp.ApplicationVersion
+    session.IsOfficialApplication = tmp.IsOfficialApplication
+    session.DeviceModel = tmp.DeviceModel
+    session.Platform = tmp.Platform
+    session.SystemVersion = tmp.SystemVersion
+    session.LogInDate = tmp.LogInDate
+    session.LastActiveDate = tmp.LastActiveDate
+    session.Ip = tmp.Ip
+    session.Country = tmp.Country
+    session.Region = tmp.Region
+
+    fieldType, _ := UnmarshalSessionType(tmp.Type)
+    session.Type = fieldType
+
+    return nil
 }
 
 // Contains a list of sessions

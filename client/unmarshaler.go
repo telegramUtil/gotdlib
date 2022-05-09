@@ -3614,6 +3614,85 @@ func UnmarshalListOfUserPrivacySetting(dataList []json.RawMessage) ([]UserPrivac
     return list, nil
 }
 
+func UnmarshalSessionType(data json.RawMessage) (SessionType, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeSessionTypeAndroid:
+        return UnmarshalSessionTypeAndroid(data)
+
+    case TypeSessionTypeApple:
+        return UnmarshalSessionTypeApple(data)
+
+    case TypeSessionTypeBrave:
+        return UnmarshalSessionTypeBrave(data)
+
+    case TypeSessionTypeChrome:
+        return UnmarshalSessionTypeChrome(data)
+
+    case TypeSessionTypeEdge:
+        return UnmarshalSessionTypeEdge(data)
+
+    case TypeSessionTypeFirefox:
+        return UnmarshalSessionTypeFirefox(data)
+
+    case TypeSessionTypeIpad:
+        return UnmarshalSessionTypeIpad(data)
+
+    case TypeSessionTypeIphone:
+        return UnmarshalSessionTypeIphone(data)
+
+    case TypeSessionTypeLinux:
+        return UnmarshalSessionTypeLinux(data)
+
+    case TypeSessionTypeMac:
+        return UnmarshalSessionTypeMac(data)
+
+    case TypeSessionTypeOpera:
+        return UnmarshalSessionTypeOpera(data)
+
+    case TypeSessionTypeSafari:
+        return UnmarshalSessionTypeSafari(data)
+
+    case TypeSessionTypeUbuntu:
+        return UnmarshalSessionTypeUbuntu(data)
+
+    case TypeSessionTypeUnknown:
+        return UnmarshalSessionTypeUnknown(data)
+
+    case TypeSessionTypeVivaldi:
+        return UnmarshalSessionTypeVivaldi(data)
+
+    case TypeSessionTypeWindows:
+        return UnmarshalSessionTypeWindows(data)
+
+    case TypeSessionTypeXbox:
+        return UnmarshalSessionTypeXbox(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfSessionType(dataList []json.RawMessage) ([]SessionType, error) {
+    list := []SessionType{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalSessionType(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
 func UnmarshalChatReportReason(data json.RawMessage) (ChatReportReason, error) {
     var meta meta
 
@@ -10712,6 +10791,142 @@ func UnmarshalAccountTtl(data json.RawMessage) (*AccountTtl, error) {
     return &resp, err
 }
 
+func UnmarshalSessionTypeAndroid(data json.RawMessage) (*SessionTypeAndroid, error) {
+    var resp SessionTypeAndroid
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeApple(data json.RawMessage) (*SessionTypeApple, error) {
+    var resp SessionTypeApple
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeBrave(data json.RawMessage) (*SessionTypeBrave, error) {
+    var resp SessionTypeBrave
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeChrome(data json.RawMessage) (*SessionTypeChrome, error) {
+    var resp SessionTypeChrome
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeEdge(data json.RawMessage) (*SessionTypeEdge, error) {
+    var resp SessionTypeEdge
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeFirefox(data json.RawMessage) (*SessionTypeFirefox, error) {
+    var resp SessionTypeFirefox
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeIpad(data json.RawMessage) (*SessionTypeIpad, error) {
+    var resp SessionTypeIpad
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeIphone(data json.RawMessage) (*SessionTypeIphone, error) {
+    var resp SessionTypeIphone
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeLinux(data json.RawMessage) (*SessionTypeLinux, error) {
+    var resp SessionTypeLinux
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeMac(data json.RawMessage) (*SessionTypeMac, error) {
+    var resp SessionTypeMac
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeOpera(data json.RawMessage) (*SessionTypeOpera, error) {
+    var resp SessionTypeOpera
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeSafari(data json.RawMessage) (*SessionTypeSafari, error) {
+    var resp SessionTypeSafari
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeUbuntu(data json.RawMessage) (*SessionTypeUbuntu, error) {
+    var resp SessionTypeUbuntu
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeUnknown(data json.RawMessage) (*SessionTypeUnknown, error) {
+    var resp SessionTypeUnknown
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeVivaldi(data json.RawMessage) (*SessionTypeVivaldi, error) {
+    var resp SessionTypeVivaldi
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeWindows(data json.RawMessage) (*SessionTypeWindows, error) {
+    var resp SessionTypeWindows
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSessionTypeXbox(data json.RawMessage) (*SessionTypeXbox, error) {
+    var resp SessionTypeXbox
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalSession(data json.RawMessage) (*Session, error) {
     var resp Session
 
@@ -14983,6 +15198,57 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeAccountTtl:
         return UnmarshalAccountTtl(data)
+
+    case TypeSessionTypeAndroid:
+        return UnmarshalSessionTypeAndroid(data)
+
+    case TypeSessionTypeApple:
+        return UnmarshalSessionTypeApple(data)
+
+    case TypeSessionTypeBrave:
+        return UnmarshalSessionTypeBrave(data)
+
+    case TypeSessionTypeChrome:
+        return UnmarshalSessionTypeChrome(data)
+
+    case TypeSessionTypeEdge:
+        return UnmarshalSessionTypeEdge(data)
+
+    case TypeSessionTypeFirefox:
+        return UnmarshalSessionTypeFirefox(data)
+
+    case TypeSessionTypeIpad:
+        return UnmarshalSessionTypeIpad(data)
+
+    case TypeSessionTypeIphone:
+        return UnmarshalSessionTypeIphone(data)
+
+    case TypeSessionTypeLinux:
+        return UnmarshalSessionTypeLinux(data)
+
+    case TypeSessionTypeMac:
+        return UnmarshalSessionTypeMac(data)
+
+    case TypeSessionTypeOpera:
+        return UnmarshalSessionTypeOpera(data)
+
+    case TypeSessionTypeSafari:
+        return UnmarshalSessionTypeSafari(data)
+
+    case TypeSessionTypeUbuntu:
+        return UnmarshalSessionTypeUbuntu(data)
+
+    case TypeSessionTypeUnknown:
+        return UnmarshalSessionTypeUnknown(data)
+
+    case TypeSessionTypeVivaldi:
+        return UnmarshalSessionTypeVivaldi(data)
+
+    case TypeSessionTypeWindows:
+        return UnmarshalSessionTypeWindows(data)
+
+    case TypeSessionTypeXbox:
+        return UnmarshalSessionTypeXbox(data)
 
     case TypeSession:
         return UnmarshalSession(data)

@@ -8098,7 +8098,7 @@ type SendCallDebugInformationRequest struct {
     DebugInformation string `json:"debug_information"`
 }
 
-// Sends debug information for a call
+// Sends debug information for a call to Telegram servers
 func (client *Client) SendCallDebugInformation(req *SendCallDebugInformationRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -8107,6 +8107,35 @@ func (client *Client) SendCallDebugInformation(req *SendCallDebugInformationRequ
         Data: map[string]interface{}{
             "call_id": req.CallId,
             "debug_information": req.DebugInformation,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type SendCallLogRequest struct { 
+    // Call identifier
+    CallId int32 `json:"call_id"`
+    // Call log file. Only inputFileLocal and inputFileGenerated are supported
+    LogFile InputFile `json:"log_file"`
+}
+
+// Sends log file for a call to Telegram servers
+func (client *Client) SendCallLog(req *SendCallLogRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "sendCallLog",
+        },
+        Data: map[string]interface{}{
+            "call_id": req.CallId,
+            "log_file": req.LogFile,
         },
     })
     if err != nil {
@@ -9299,7 +9328,7 @@ type SearchUserByPhoneNumberRequest struct {
     PhoneNumber string `json:"phone_number"`
 }
 
-// Searches a user by their phone number
+// Searches a user by their phone number. Returns a 404 error if the user can't be found
 func (client *Client) SearchUserByPhoneNumber(req *SearchUserByPhoneNumberRequest) (*User, error) {
     result, err := client.Send(Request{
         meta: meta{
