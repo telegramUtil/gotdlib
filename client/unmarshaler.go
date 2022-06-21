@@ -1397,6 +1397,77 @@ func UnmarshalListOfInputCredentials(dataList []json.RawMessage) ([]InputCredent
     return list, nil
 }
 
+func UnmarshalPaymentProvider(data json.RawMessage) (PaymentProvider, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypePaymentProviderSmartGlocal:
+        return UnmarshalPaymentProviderSmartGlocal(data)
+
+    case TypePaymentProviderStripe:
+        return UnmarshalPaymentProviderStripe(data)
+
+    case TypePaymentProviderOther:
+        return UnmarshalPaymentProviderOther(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfPaymentProvider(dataList []json.RawMessage) ([]PaymentProvider, error) {
+    list := []PaymentProvider{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalPaymentProvider(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
+func UnmarshalInputInvoice(data json.RawMessage) (InputInvoice, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeInputInvoiceMessage:
+        return UnmarshalInputInvoiceMessage(data)
+
+    case TypeInputInvoiceName:
+        return UnmarshalInputInvoiceName(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfInputInvoice(dataList []json.RawMessage) ([]InputInvoice, error) {
+    list := []InputInvoice{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalInputInvoice(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
 func UnmarshalPassportElementType(data json.RawMessage) (PassportElementType, error) {
     var meta meta
 
@@ -2869,6 +2940,165 @@ func UnmarshalListOfLanguagePackStringValue(dataList []json.RawMessage) ([]Langu
     return list, nil
 }
 
+func UnmarshalPremiumLimitType(data json.RawMessage) (PremiumLimitType, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypePremiumLimitTypeSupergroupCount:
+        return UnmarshalPremiumLimitTypeSupergroupCount(data)
+
+    case TypePremiumLimitTypePinnedChatCount:
+        return UnmarshalPremiumLimitTypePinnedChatCount(data)
+
+    case TypePremiumLimitTypeCreatedPublicChatCount:
+        return UnmarshalPremiumLimitTypeCreatedPublicChatCount(data)
+
+    case TypePremiumLimitTypeSavedAnimationCount:
+        return UnmarshalPremiumLimitTypeSavedAnimationCount(data)
+
+    case TypePremiumLimitTypeFavoriteStickerCount:
+        return UnmarshalPremiumLimitTypeFavoriteStickerCount(data)
+
+    case TypePremiumLimitTypeChatFilterCount:
+        return UnmarshalPremiumLimitTypeChatFilterCount(data)
+
+    case TypePremiumLimitTypeChatFilterChosenChatCount:
+        return UnmarshalPremiumLimitTypeChatFilterChosenChatCount(data)
+
+    case TypePremiumLimitTypePinnedArchivedChatCount:
+        return UnmarshalPremiumLimitTypePinnedArchivedChatCount(data)
+
+    case TypePremiumLimitTypeCaptionLength:
+        return UnmarshalPremiumLimitTypeCaptionLength(data)
+
+    case TypePremiumLimitTypeBioLength:
+        return UnmarshalPremiumLimitTypeBioLength(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfPremiumLimitType(dataList []json.RawMessage) ([]PremiumLimitType, error) {
+    list := []PremiumLimitType{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalPremiumLimitType(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
+func UnmarshalPremiumFeature(data json.RawMessage) (PremiumFeature, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypePremiumFeatureIncreasedLimits:
+        return UnmarshalPremiumFeatureIncreasedLimits(data)
+
+    case TypePremiumFeatureIncreasedUploadFileSize:
+        return UnmarshalPremiumFeatureIncreasedUploadFileSize(data)
+
+    case TypePremiumFeatureImprovedDownloadSpeed:
+        return UnmarshalPremiumFeatureImprovedDownloadSpeed(data)
+
+    case TypePremiumFeatureVoiceRecognition:
+        return UnmarshalPremiumFeatureVoiceRecognition(data)
+
+    case TypePremiumFeatureDisabledAds:
+        return UnmarshalPremiumFeatureDisabledAds(data)
+
+    case TypePremiumFeatureUniqueReactions:
+        return UnmarshalPremiumFeatureUniqueReactions(data)
+
+    case TypePremiumFeatureUniqueStickers:
+        return UnmarshalPremiumFeatureUniqueStickers(data)
+
+    case TypePremiumFeatureAdvancedChatManagement:
+        return UnmarshalPremiumFeatureAdvancedChatManagement(data)
+
+    case TypePremiumFeatureProfileBadge:
+        return UnmarshalPremiumFeatureProfileBadge(data)
+
+    case TypePremiumFeatureAnimatedProfilePhoto:
+        return UnmarshalPremiumFeatureAnimatedProfilePhoto(data)
+
+    case TypePremiumFeatureAppIcons:
+        return UnmarshalPremiumFeatureAppIcons(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfPremiumFeature(dataList []json.RawMessage) ([]PremiumFeature, error) {
+    list := []PremiumFeature{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalPremiumFeature(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
+func UnmarshalPremiumSource(data json.RawMessage) (PremiumSource, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypePremiumSourceLimitExceeded:
+        return UnmarshalPremiumSourceLimitExceeded(data)
+
+    case TypePremiumSourceFeature:
+        return UnmarshalPremiumSourceFeature(data)
+
+    case TypePremiumSourceLink:
+        return UnmarshalPremiumSourceLink(data)
+
+    case TypePremiumSourceSettings:
+        return UnmarshalPremiumSourceSettings(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfPremiumSource(dataList []json.RawMessage) ([]PremiumSource, error) {
+    list := []PremiumSource{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalPremiumSource(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
 func UnmarshalDeviceToken(data json.RawMessage) (DeviceToken, error) {
     var meta meta
 
@@ -3319,6 +3549,9 @@ func UnmarshalPushMessageContent(data json.RawMessage) (PushMessageContent, erro
     case TypePushMessageContentChatJoinByRequest:
         return UnmarshalPushMessageContentChatJoinByRequest(data)
 
+    case TypePushMessageContentRecurringPayment:
+        return UnmarshalPushMessageContentRecurringPayment(data)
+
     case TypePushMessageContentMessageForwards:
         return UnmarshalPushMessageContentMessageForwards(data)
 
@@ -3751,6 +3984,43 @@ func UnmarshalListOfChatReportReason(dataList []json.RawMessage) ([]ChatReportRe
     return list, nil
 }
 
+func UnmarshalTargetChat(data json.RawMessage) (TargetChat, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeTargetChatCurrent:
+        return UnmarshalTargetChatCurrent(data)
+
+    case TypeTargetChatChosen:
+        return UnmarshalTargetChatChosen(data)
+
+    case TypeTargetChatInternalLink:
+        return UnmarshalTargetChatInternalLink(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfTargetChat(dataList []json.RawMessage) ([]TargetChat, error) {
+    list := []TargetChat{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalTargetChat(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
 func UnmarshalInternalLinkType(data json.RawMessage) (InternalLinkType, error) {
     var meta meta
 
@@ -3793,6 +4063,9 @@ func UnmarshalInternalLinkType(data json.RawMessage) (InternalLinkType, error) {
     case TypeInternalLinkTypeGame:
         return UnmarshalInternalLinkTypeGame(data)
 
+    case TypeInternalLinkTypeInvoice:
+        return UnmarshalInternalLinkTypeInvoice(data)
+
     case TypeInternalLinkTypeLanguagePack:
         return UnmarshalInternalLinkTypeLanguagePack(data)
 
@@ -3810,6 +4083,9 @@ func UnmarshalInternalLinkType(data json.RawMessage) (InternalLinkType, error) {
 
     case TypeInternalLinkTypePhoneNumberConfirmation:
         return UnmarshalInternalLinkTypePhoneNumberConfirmation(data)
+
+    case TypeInternalLinkTypePremiumFeatures:
+        return UnmarshalInternalLinkTypePremiumFeatures(data)
 
     case TypeInternalLinkTypePrivacyAndSecuritySettings:
         return UnmarshalInternalLinkTypePrivacyAndSecuritySettings(data)
@@ -7167,8 +7443,24 @@ func UnmarshalInputCredentialsGooglePay(data json.RawMessage) (*InputCredentials
     return &resp, err
 }
 
-func UnmarshalPaymentsProviderStripe(data json.RawMessage) (*PaymentsProviderStripe, error) {
-    var resp PaymentsProviderStripe
+func UnmarshalPaymentProviderSmartGlocal(data json.RawMessage) (*PaymentProviderSmartGlocal, error) {
+    var resp PaymentProviderSmartGlocal
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPaymentProviderStripe(data json.RawMessage) (*PaymentProviderStripe, error) {
+    var resp PaymentProviderStripe
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPaymentProviderOther(data json.RawMessage) (*PaymentProviderOther, error) {
+    var resp PaymentProviderOther
 
     err := json.Unmarshal(data, &resp)
 
@@ -7201,6 +7493,22 @@ func UnmarshalPaymentResult(data json.RawMessage) (*PaymentResult, error) {
 
 func UnmarshalPaymentReceipt(data json.RawMessage) (*PaymentReceipt, error) {
     var resp PaymentReceipt
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInputInvoiceMessage(data json.RawMessage) (*InputInvoiceMessage, error) {
+    var resp InputInvoiceMessage
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInputInvoiceName(data json.RawMessage) (*InputInvoiceName, error) {
+    var resp InputInvoiceName
 
     err := json.Unmarshal(data, &resp)
 
@@ -8871,6 +9179,14 @@ func UnmarshalStickerSets(data json.RawMessage) (*StickerSets, error) {
     return &resp, err
 }
 
+func UnmarshalTrendingStickerSets(data json.RawMessage) (*TrendingStickerSets, error) {
+    var resp TrendingStickerSets
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalCallDiscardReasonEmpty(data json.RawMessage) (*CallDiscardReasonEmpty, error) {
     var resp CallDiscardReasonEmpty
 
@@ -9193,6 +9509,14 @@ func UnmarshalAddedReaction(data json.RawMessage) (*AddedReaction, error) {
 
 func UnmarshalAddedReactions(data json.RawMessage) (*AddedReactions, error) {
     var resp AddedReactions
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalAvailableReaction(data json.RawMessage) (*AvailableReaction, error) {
+    var resp AvailableReaction
 
     err := json.Unmarshal(data, &resp)
 
@@ -9895,6 +10219,238 @@ func UnmarshalLocalizationTargetInfo(data json.RawMessage) (*LocalizationTargetI
     return &resp, err
 }
 
+func UnmarshalPremiumLimitTypeSupergroupCount(data json.RawMessage) (*PremiumLimitTypeSupergroupCount, error) {
+    var resp PremiumLimitTypeSupergroupCount
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimitTypePinnedChatCount(data json.RawMessage) (*PremiumLimitTypePinnedChatCount, error) {
+    var resp PremiumLimitTypePinnedChatCount
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimitTypeCreatedPublicChatCount(data json.RawMessage) (*PremiumLimitTypeCreatedPublicChatCount, error) {
+    var resp PremiumLimitTypeCreatedPublicChatCount
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimitTypeSavedAnimationCount(data json.RawMessage) (*PremiumLimitTypeSavedAnimationCount, error) {
+    var resp PremiumLimitTypeSavedAnimationCount
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimitTypeFavoriteStickerCount(data json.RawMessage) (*PremiumLimitTypeFavoriteStickerCount, error) {
+    var resp PremiumLimitTypeFavoriteStickerCount
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimitTypeChatFilterCount(data json.RawMessage) (*PremiumLimitTypeChatFilterCount, error) {
+    var resp PremiumLimitTypeChatFilterCount
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimitTypeChatFilterChosenChatCount(data json.RawMessage) (*PremiumLimitTypeChatFilterChosenChatCount, error) {
+    var resp PremiumLimitTypeChatFilterChosenChatCount
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimitTypePinnedArchivedChatCount(data json.RawMessage) (*PremiumLimitTypePinnedArchivedChatCount, error) {
+    var resp PremiumLimitTypePinnedArchivedChatCount
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimitTypeCaptionLength(data json.RawMessage) (*PremiumLimitTypeCaptionLength, error) {
+    var resp PremiumLimitTypeCaptionLength
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimitTypeBioLength(data json.RawMessage) (*PremiumLimitTypeBioLength, error) {
+    var resp PremiumLimitTypeBioLength
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureIncreasedLimits(data json.RawMessage) (*PremiumFeatureIncreasedLimits, error) {
+    var resp PremiumFeatureIncreasedLimits
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureIncreasedUploadFileSize(data json.RawMessage) (*PremiumFeatureIncreasedUploadFileSize, error) {
+    var resp PremiumFeatureIncreasedUploadFileSize
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureImprovedDownloadSpeed(data json.RawMessage) (*PremiumFeatureImprovedDownloadSpeed, error) {
+    var resp PremiumFeatureImprovedDownloadSpeed
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureVoiceRecognition(data json.RawMessage) (*PremiumFeatureVoiceRecognition, error) {
+    var resp PremiumFeatureVoiceRecognition
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureDisabledAds(data json.RawMessage) (*PremiumFeatureDisabledAds, error) {
+    var resp PremiumFeatureDisabledAds
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureUniqueReactions(data json.RawMessage) (*PremiumFeatureUniqueReactions, error) {
+    var resp PremiumFeatureUniqueReactions
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureUniqueStickers(data json.RawMessage) (*PremiumFeatureUniqueStickers, error) {
+    var resp PremiumFeatureUniqueStickers
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureAdvancedChatManagement(data json.RawMessage) (*PremiumFeatureAdvancedChatManagement, error) {
+    var resp PremiumFeatureAdvancedChatManagement
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureProfileBadge(data json.RawMessage) (*PremiumFeatureProfileBadge, error) {
+    var resp PremiumFeatureProfileBadge
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureAnimatedProfilePhoto(data json.RawMessage) (*PremiumFeatureAnimatedProfilePhoto, error) {
+    var resp PremiumFeatureAnimatedProfilePhoto
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatureAppIcons(data json.RawMessage) (*PremiumFeatureAppIcons, error) {
+    var resp PremiumFeatureAppIcons
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumLimit(data json.RawMessage) (*PremiumLimit, error) {
+    var resp PremiumLimit
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeatures(data json.RawMessage) (*PremiumFeatures, error) {
+    var resp PremiumFeatures
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumSourceLimitExceeded(data json.RawMessage) (*PremiumSourceLimitExceeded, error) {
+    var resp PremiumSourceLimitExceeded
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumSourceFeature(data json.RawMessage) (*PremiumSourceFeature, error) {
+    var resp PremiumSourceFeature
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumSourceLink(data json.RawMessage) (*PremiumSourceLink, error) {
+    var resp PremiumSourceLink
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumSourceSettings(data json.RawMessage) (*PremiumSourceSettings, error) {
+    var resp PremiumSourceSettings
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumFeaturePromotionAnimation(data json.RawMessage) (*PremiumFeaturePromotionAnimation, error) {
+    var resp PremiumFeaturePromotionAnimation
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumState(data json.RawMessage) (*PremiumState, error) {
+    var resp PremiumState
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalDeviceTokenFirebaseCloudMessaging(data json.RawMessage) (*DeviceTokenFirebaseCloudMessaging, error) {
     var resp DeviceTokenFirebaseCloudMessaging
 
@@ -10441,6 +10997,14 @@ func UnmarshalPushMessageContentChatJoinByLink(data json.RawMessage) (*PushMessa
 
 func UnmarshalPushMessageContentChatJoinByRequest(data json.RawMessage) (*PushMessageContentChatJoinByRequest, error) {
     var resp PushMessageContentChatJoinByRequest
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPushMessageContentRecurringPayment(data json.RawMessage) (*PushMessageContentRecurringPayment, error) {
+    var resp PushMessageContentRecurringPayment
 
     err := json.Unmarshal(data, &resp)
 
@@ -11039,6 +11603,30 @@ func UnmarshalChatReportReasonCustom(data json.RawMessage) (*ChatReportReasonCus
     return &resp, err
 }
 
+func UnmarshalTargetChatCurrent(data json.RawMessage) (*TargetChatCurrent, error) {
+    var resp TargetChatCurrent
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalTargetChatChosen(data json.RawMessage) (*TargetChatChosen, error) {
+    var resp TargetChatChosen
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalTargetChatInternalLink(data json.RawMessage) (*TargetChatInternalLink, error) {
+    var resp TargetChatInternalLink
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalInternalLinkTypeActiveSessions(data json.RawMessage) (*InternalLinkTypeActiveSessions, error) {
     var resp InternalLinkTypeActiveSessions
 
@@ -11127,6 +11715,14 @@ func UnmarshalInternalLinkTypeGame(data json.RawMessage) (*InternalLinkTypeGame,
     return &resp, err
 }
 
+func UnmarshalInternalLinkTypeInvoice(data json.RawMessage) (*InternalLinkTypeInvoice, error) {
+    var resp InternalLinkTypeInvoice
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalInternalLinkTypeLanguagePack(data json.RawMessage) (*InternalLinkTypeLanguagePack, error) {
     var resp InternalLinkTypeLanguagePack
 
@@ -11169,6 +11765,14 @@ func UnmarshalInternalLinkTypePassportDataRequest(data json.RawMessage) (*Intern
 
 func UnmarshalInternalLinkTypePhoneNumberConfirmation(data json.RawMessage) (*InternalLinkTypePhoneNumberConfirmation, error) {
     var resp InternalLinkTypePhoneNumberConfirmation
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInternalLinkTypePremiumFeatures(data json.RawMessage) (*InternalLinkTypePremiumFeatures, error) {
+    var resp InternalLinkTypePremiumFeatures
 
     err := json.Unmarshal(data, &resp)
 
@@ -11761,6 +12365,14 @@ func UnmarshalText(data json.RawMessage) (*Text, error) {
 
 func UnmarshalSeconds(data json.RawMessage) (*Seconds, error) {
     var resp Seconds
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalFileDownloadedPrefixSize(data json.RawMessage) (*FileDownloadedPrefixSize, error) {
+    var resp FileDownloadedPrefixSize
 
     err := json.Unmarshal(data, &resp)
 
@@ -13840,8 +14452,14 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeInputCredentialsGooglePay:
         return UnmarshalInputCredentialsGooglePay(data)
 
-    case TypePaymentsProviderStripe:
-        return UnmarshalPaymentsProviderStripe(data)
+    case TypePaymentProviderSmartGlocal:
+        return UnmarshalPaymentProviderSmartGlocal(data)
+
+    case TypePaymentProviderStripe:
+        return UnmarshalPaymentProviderStripe(data)
+
+    case TypePaymentProviderOther:
+        return UnmarshalPaymentProviderOther(data)
 
     case TypePaymentForm:
         return UnmarshalPaymentForm(data)
@@ -13854,6 +14472,12 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypePaymentReceipt:
         return UnmarshalPaymentReceipt(data)
+
+    case TypeInputInvoiceMessage:
+        return UnmarshalInputInvoiceMessage(data)
+
+    case TypeInputInvoiceName:
+        return UnmarshalInputInvoiceName(data)
 
     case TypeDatedFile:
         return UnmarshalDatedFile(data)
@@ -14479,6 +15103,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeStickerSets:
         return UnmarshalStickerSets(data)
 
+    case TypeTrendingStickerSets:
+        return UnmarshalTrendingStickerSets(data)
+
     case TypeCallDiscardReasonEmpty:
         return UnmarshalCallDiscardReasonEmpty(data)
 
@@ -14601,6 +15228,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeAddedReactions:
         return UnmarshalAddedReactions(data)
+
+    case TypeAvailableReaction:
+        return UnmarshalAvailableReaction(data)
 
     case TypeAvailableReactions:
         return UnmarshalAvailableReactions(data)
@@ -14863,6 +15493,93 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeLocalizationTargetInfo:
         return UnmarshalLocalizationTargetInfo(data)
 
+    case TypePremiumLimitTypeSupergroupCount:
+        return UnmarshalPremiumLimitTypeSupergroupCount(data)
+
+    case TypePremiumLimitTypePinnedChatCount:
+        return UnmarshalPremiumLimitTypePinnedChatCount(data)
+
+    case TypePremiumLimitTypeCreatedPublicChatCount:
+        return UnmarshalPremiumLimitTypeCreatedPublicChatCount(data)
+
+    case TypePremiumLimitTypeSavedAnimationCount:
+        return UnmarshalPremiumLimitTypeSavedAnimationCount(data)
+
+    case TypePremiumLimitTypeFavoriteStickerCount:
+        return UnmarshalPremiumLimitTypeFavoriteStickerCount(data)
+
+    case TypePremiumLimitTypeChatFilterCount:
+        return UnmarshalPremiumLimitTypeChatFilterCount(data)
+
+    case TypePremiumLimitTypeChatFilterChosenChatCount:
+        return UnmarshalPremiumLimitTypeChatFilterChosenChatCount(data)
+
+    case TypePremiumLimitTypePinnedArchivedChatCount:
+        return UnmarshalPremiumLimitTypePinnedArchivedChatCount(data)
+
+    case TypePremiumLimitTypeCaptionLength:
+        return UnmarshalPremiumLimitTypeCaptionLength(data)
+
+    case TypePremiumLimitTypeBioLength:
+        return UnmarshalPremiumLimitTypeBioLength(data)
+
+    case TypePremiumFeatureIncreasedLimits:
+        return UnmarshalPremiumFeatureIncreasedLimits(data)
+
+    case TypePremiumFeatureIncreasedUploadFileSize:
+        return UnmarshalPremiumFeatureIncreasedUploadFileSize(data)
+
+    case TypePremiumFeatureImprovedDownloadSpeed:
+        return UnmarshalPremiumFeatureImprovedDownloadSpeed(data)
+
+    case TypePremiumFeatureVoiceRecognition:
+        return UnmarshalPremiumFeatureVoiceRecognition(data)
+
+    case TypePremiumFeatureDisabledAds:
+        return UnmarshalPremiumFeatureDisabledAds(data)
+
+    case TypePremiumFeatureUniqueReactions:
+        return UnmarshalPremiumFeatureUniqueReactions(data)
+
+    case TypePremiumFeatureUniqueStickers:
+        return UnmarshalPremiumFeatureUniqueStickers(data)
+
+    case TypePremiumFeatureAdvancedChatManagement:
+        return UnmarshalPremiumFeatureAdvancedChatManagement(data)
+
+    case TypePremiumFeatureProfileBadge:
+        return UnmarshalPremiumFeatureProfileBadge(data)
+
+    case TypePremiumFeatureAnimatedProfilePhoto:
+        return UnmarshalPremiumFeatureAnimatedProfilePhoto(data)
+
+    case TypePremiumFeatureAppIcons:
+        return UnmarshalPremiumFeatureAppIcons(data)
+
+    case TypePremiumLimit:
+        return UnmarshalPremiumLimit(data)
+
+    case TypePremiumFeatures:
+        return UnmarshalPremiumFeatures(data)
+
+    case TypePremiumSourceLimitExceeded:
+        return UnmarshalPremiumSourceLimitExceeded(data)
+
+    case TypePremiumSourceFeature:
+        return UnmarshalPremiumSourceFeature(data)
+
+    case TypePremiumSourceLink:
+        return UnmarshalPremiumSourceLink(data)
+
+    case TypePremiumSourceSettings:
+        return UnmarshalPremiumSourceSettings(data)
+
+    case TypePremiumFeaturePromotionAnimation:
+        return UnmarshalPremiumFeaturePromotionAnimation(data)
+
+    case TypePremiumState:
+        return UnmarshalPremiumState(data)
+
     case TypeDeviceTokenFirebaseCloudMessaging:
         return UnmarshalDeviceTokenFirebaseCloudMessaging(data)
 
@@ -15069,6 +15786,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypePushMessageContentChatJoinByRequest:
         return UnmarshalPushMessageContentChatJoinByRequest(data)
+
+    case TypePushMessageContentRecurringPayment:
+        return UnmarshalPushMessageContentRecurringPayment(data)
 
     case TypePushMessageContentMessageForwards:
         return UnmarshalPushMessageContentMessageForwards(data)
@@ -15292,6 +16012,15 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeChatReportReasonCustom:
         return UnmarshalChatReportReasonCustom(data)
 
+    case TypeTargetChatCurrent:
+        return UnmarshalTargetChatCurrent(data)
+
+    case TypeTargetChatChosen:
+        return UnmarshalTargetChatChosen(data)
+
+    case TypeTargetChatInternalLink:
+        return UnmarshalTargetChatInternalLink(data)
+
     case TypeInternalLinkTypeActiveSessions:
         return UnmarshalInternalLinkTypeActiveSessions(data)
 
@@ -15325,6 +16054,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeInternalLinkTypeGame:
         return UnmarshalInternalLinkTypeGame(data)
 
+    case TypeInternalLinkTypeInvoice:
+        return UnmarshalInternalLinkTypeInvoice(data)
+
     case TypeInternalLinkTypeLanguagePack:
         return UnmarshalInternalLinkTypeLanguagePack(data)
 
@@ -15342,6 +16074,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeInternalLinkTypePhoneNumberConfirmation:
         return UnmarshalInternalLinkTypePhoneNumberConfirmation(data)
+
+    case TypeInternalLinkTypePremiumFeatures:
+        return UnmarshalInternalLinkTypePremiumFeatures(data)
 
     case TypeInternalLinkTypePrivacyAndSecuritySettings:
         return UnmarshalInternalLinkTypePrivacyAndSecuritySettings(data)
@@ -15564,6 +16299,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeSeconds:
         return UnmarshalSeconds(data)
+
+    case TypeFileDownloadedPrefixSize:
+        return UnmarshalFileDownloadedPrefixSize(data)
 
     case TypeDeepLinkInfo:
         return UnmarshalDeepLinkInfo(data)

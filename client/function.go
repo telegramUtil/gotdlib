@@ -1772,7 +1772,7 @@ type CheckCreatedPublicChatsLimitRequest struct {
     Type PublicChatType `json:"type"`
 }
 
-// Checks whether the maximum number of owned public chats has been reached. Returns corresponding error if the limit was reached
+// Checks whether the maximum number of owned public chats has been reached. Returns corresponding error if the limit was reached. The limit can be increased with Telegram Premium
 func (client *Client) CheckCreatedPublicChatsLimit(req *CheckCreatedPublicChatsLimitRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -1812,7 +1812,7 @@ func (client *Client) GetSuitableDiscussionChats() (*Chats, error) {
     return UnmarshalChats(result.Data)
 }
 
-// Returns a list of recently inactive supergroups and channels. Can be used when user reaches limit on the number of joined supergroups and channels and receives CHANNELS_TOO_MUCH error
+// Returns a list of recently inactive supergroups and channels. Can be used when user reaches limit on the number of joined supergroups and channels and receives CHANNELS_TOO_MUCH error. Also, the limit can be increased with Telegram Premium
 func (client *Client) GetInactiveSupergroupChats() (*Chats, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -2668,6 +2668,67 @@ func (client *Client) TranslateText(req *TranslateTextRequest) (*Text, error) {
     return UnmarshalText(result.Data)
 }
 
+type RecognizeSpeechRequest struct { 
+    // Identifier of the chat to which the message belongs
+    ChatId int64 `json:"chat_id"`
+    // Identifier of the message
+    MessageId int64 `json:"message_id"`
+}
+
+// Recognizes speech in a voice note message. The message must be successfully sent and must not be scheduled. May return an error with a message "MSG_VOICE_TOO_LONG" if the voice note is too long to be recognized
+func (client *Client) RecognizeSpeech(req *RecognizeSpeechRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "recognizeSpeech",
+        },
+        Data: map[string]interface{}{
+            "chat_id": req.ChatId,
+            "message_id": req.MessageId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type RateSpeechRecognitionRequest struct { 
+    // Identifier of the chat to which the message belongs
+    ChatId int64 `json:"chat_id"`
+    // Identifier of the message
+    MessageId int64 `json:"message_id"`
+    // Pass true if the speech recognition is good
+    IsGood bool `json:"is_good"`
+}
+
+// Rates recognized speech in a voice note message
+func (client *Client) RateSpeechRecognition(req *RateSpeechRecognitionRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "rateSpeechRecognition",
+        },
+        Data: map[string]interface{}{
+            "chat_id": req.ChatId,
+            "message_id": req.MessageId,
+            "is_good": req.IsGood,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
 type GetChatAvailableMessageSendersRequest struct { 
     // Chat identifier
     ChatId int64 `json:"chat_id"`
@@ -3494,7 +3555,7 @@ type GetMessageAvailableReactionsRequest struct {
     MessageId int64 `json:"message_id"`
 }
 
-// Returns reactions, which can be added to a message. The list can change after updateReactions, updateChatAvailableReactions for the chat, or updateMessageInteractionInfo for the message
+// Returns reactions, which can be added to a message. The list can change after updateReactions, updateChatAvailableReactions for the chat, or updateMessageInteractionInfo for the message. The method will return Premium reactions, even the current user has no Premium subscription
 func (client *Client) GetMessageAvailableReactions(req *GetMessageAvailableReactionsRequest) (*AvailableReactions, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -4266,11 +4327,11 @@ type GetWebAppUrlRequest struct {
     BotUserId int64 `json:"bot_user_id"`
     // The URL from the keyboardButtonTypeWebApp button
     Url string `json:"url"`
-    // Preferred web app theme; pass null to use the default theme
+    // Preferred Web App theme; pass null to use the default theme
     Theme *ThemeParameters `json:"theme"`
 }
 
-// Returns an HTTPS URL of a web app to open after keyboardButtonTypeWebApp button is pressed
+// Returns an HTTPS URL of a Web App to open after keyboardButtonTypeWebApp button is pressed
 func (client *Client) GetWebAppUrl(req *GetWebAppUrlRequest) (*HttpUrl, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -4296,13 +4357,13 @@ func (client *Client) GetWebAppUrl(req *GetWebAppUrlRequest) (*HttpUrl, error) {
 type SendWebAppDataRequest struct { 
     // Identifier of the target bot
     BotUserId int64 `json:"bot_user_id"`
-    // Text of the keyboardButtonTypeWebApp button, which opened the web app
+    // Text of the keyboardButtonTypeWebApp button, which opened the Web App
     ButtonText string `json:"button_text"`
     // Received data
     Data string `json:"data"`
 }
 
-// Sends data received from a keyboardButtonTypeWebApp web app to a bot
+// Sends data received from a keyboardButtonTypeWebApp Web App to a bot
 func (client *Client) SendWebAppData(req *SendWebAppDataRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -4326,19 +4387,19 @@ func (client *Client) SendWebAppData(req *SendWebAppDataRequest) (*Ok, error) {
 }
 
 type OpenWebAppRequest struct { 
-    // Identifier of the chat in which the web app is opened. Web apps can be opened only in private chats for now
+    // Identifier of the chat in which the Web App is opened
     ChatId int64 `json:"chat_id"`
-    // Identifier of the bot, providing the web app
+    // Identifier of the bot, providing the Web App
     BotUserId int64 `json:"bot_user_id"`
     // The URL from an inlineKeyboardButtonTypeWebApp button, a botMenuButton button, or an internalLinkTypeAttachmentMenuBot link, or an empty string otherwise
     Url string `json:"url"`
-    // Preferred web app theme; pass null to use the default theme
+    // Preferred Web App theme; pass null to use the default theme
     Theme *ThemeParameters `json:"theme"`
-    // Identifier of the replied message for the message sent by the web app; 0 if none
+    // Identifier of the replied message for the message sent by the Web App; 0 if none
     ReplyToMessageId int64 `json:"reply_to_message_id"`
 }
 
-// Informs TDLib that a web app is being opened from attachment menu, a botMenuButton button, an internalLinkTypeAttachmentMenuBot link, or an inlineKeyboardButtonTypeWebApp button. For each bot, a confirmation alert about data sent to the bot must be shown once
+// Informs TDLib that a Web App is being opened from attachment menu, a botMenuButton button, an internalLinkTypeAttachmentMenuBot link, or an inlineKeyboardButtonTypeWebApp button. For each bot, a confirmation alert about data sent to the bot must be shown once
 func (client *Client) OpenWebApp(req *OpenWebAppRequest) (*WebAppInfo, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -4364,11 +4425,11 @@ func (client *Client) OpenWebApp(req *OpenWebAppRequest) (*WebAppInfo, error) {
 }
 
 type CloseWebAppRequest struct { 
-    // Identifier of web app launch, received from openWebApp
+    // Identifier of Web App launch, received from openWebApp
     WebAppLaunchId JsonInt64 `json:"web_app_launch_id"`
 }
 
-// Informs TDLib that a previously opened web app was closed
+// Informs TDLib that a previously opened Web App was closed
 func (client *Client) CloseWebApp(req *CloseWebAppRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -4390,13 +4451,13 @@ func (client *Client) CloseWebApp(req *CloseWebAppRequest) (*Ok, error) {
 }
 
 type AnswerWebAppQueryRequest struct { 
-    // Identifier of the web app query
+    // Identifier of the Web App query
     WebAppQueryId string `json:"web_app_query_id"`
     // The result of the query
     Result InputInlineQueryResult `json:"result"`
 }
 
-// Sets the result of interaction with a web app and sends corresponding message on behalf of the user to the chat from which the query originated; for bots only
+// Sets the result of interaction with a Web App and sends corresponding message on behalf of the user to the chat from which the query originated; for bots only
 func (client *Client) AnswerWebAppQuery(req *AnswerWebAppQueryRequest) (*SentWebAppMessage, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -4952,6 +5013,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
     case TypeInternalLinkTypeGame:
         return UnmarshalInternalLinkTypeGame(result.Data)
 
+    case TypeInternalLinkTypeInvoice:
+        return UnmarshalInternalLinkTypeInvoice(result.Data)
+
     case TypeInternalLinkTypeLanguagePack:
         return UnmarshalInternalLinkTypeLanguagePack(result.Data)
 
@@ -4969,6 +5033,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
 
     case TypeInternalLinkTypePhoneNumberConfirmation:
         return UnmarshalInternalLinkTypePhoneNumberConfirmation(result.Data)
+
+    case TypeInternalLinkTypePremiumFeatures:
+        return UnmarshalInternalLinkTypePremiumFeatures(result.Data)
 
     case TypeInternalLinkTypePrivacyAndSecuritySettings:
         return UnmarshalInternalLinkTypePrivacyAndSecuritySettings(result.Data)
@@ -5445,7 +5512,7 @@ type CreateChatFilterRequest struct {
     Filter *ChatFilter `json:"filter"`
 }
 
-// Creates new chat filter. Returns information about the created chat filter
+// Creates new chat filter. Returns information about the created chat filter. There can be up to GetOption("chat_filter_count_max") chat filters, but the limit can be increased with Telegram Premium
 func (client *Client) CreateChatFilter(req *CreateChatFilterRequest) (*ChatFilterInfo, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -5524,6 +5591,8 @@ func (client *Client) DeleteChatFilter(req *DeleteChatFilterRequest) (*Ok, error
 type ReorderChatFiltersRequest struct { 
     // Identifiers of chat filters in the new correct order
     ChatFilterIds []int32 `json:"chat_filter_ids"`
+    // Position of the main chat list among chat filters, 0-based. Can be non-zero only for Premium users
+    MainChatListPosition int32 `json:"main_chat_list_position"`
 }
 
 // Changes the order of chat filters
@@ -5534,6 +5603,7 @@ func (client *Client) ReorderChatFilters(req *ReorderChatFiltersRequest) (*Ok, e
         },
         Data: map[string]interface{}{
             "chat_filter_ids": req.ChatFilterIds,
+            "main_chat_list_position": req.MainChatListPosition,
         },
     })
     if err != nil {
@@ -6159,7 +6229,7 @@ type JoinChatRequest struct {
     ChatId int64 `json:"chat_id"`
 }
 
-// Adds the current user as a new member to a chat. Private and secret chats can't be joined using this method
+// Adds the current user as a new member to a chat. Private and secret chats can't be joined using this method. May return an error with a message "INVITE_REQUEST_SENT" if only a join request was created
 func (client *Client) JoinChat(req *JoinChatRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -6725,7 +6795,7 @@ type ToggleChatIsPinnedRequest struct {
     IsPinned bool `json:"is_pinned"`
 }
 
-// Changes the pinned state of a chat. There can be up to GetOption("pinned_chat_count_max")/GetOption("pinned_archived_chat_count_max") pinned non-secret chats and the same number of secret chats in the main/archive chat list
+// Changes the pinned state of a chat. There can be up to GetOption("pinned_chat_count_max")/GetOption("pinned_archived_chat_count_max") pinned non-secret chats and the same number of secret chats in the main/archive chat list. The limit can be increased with Telegram Premium
 func (client *Client) ToggleChatIsPinned(req *ToggleChatIsPinnedRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -6838,9 +6908,9 @@ type DownloadFileRequest struct {
     // Priority of the download (1-32). The higher the priority, the earlier the file will be downloaded. If the priorities of two files are equal, then the last one for which downloadFile/addFileToDownloads was called will be downloaded first
     Priority int32 `json:"priority"`
     // The starting position from which the file needs to be downloaded
-    Offset int32 `json:"offset"`
+    Offset int64 `json:"offset"`
     // Number of bytes which need to be downloaded starting from the "offset" position before the download will automatically be canceled; use 0 to download without a limit
-    Limit int32 `json:"limit"`
+    Limit int64 `json:"limit"`
     // Pass true to return response only after the file download has succeeded, has failed, has been canceled, or a new downloadFile request with different offset/limit parameters was sent; pass false to return file state immediately, just after the download has been started
     Synchronous bool `json:"synchronous"`
 }
@@ -6874,11 +6944,11 @@ type GetFileDownloadedPrefixSizeRequest struct {
     // Identifier of the file
     FileId int32 `json:"file_id"`
     // Offset from which downloaded prefix size needs to be calculated
-    Offset int32 `json:"offset"`
+    Offset int64 `json:"offset"`
 }
 
 // Returns file downloaded prefix size from a given offset, in bytes
-func (client *Client) GetFileDownloadedPrefixSize(req *GetFileDownloadedPrefixSizeRequest) (*Count, error) {
+func (client *Client) GetFileDownloadedPrefixSize(req *GetFileDownloadedPrefixSizeRequest) (*FileDownloadedPrefixSize, error) {
     result, err := client.Send(Request{
         meta: meta{
             Type: "getFileDownloadedPrefixSize",
@@ -6896,7 +6966,7 @@ func (client *Client) GetFileDownloadedPrefixSize(req *GetFileDownloadedPrefixSi
         return nil, buildResponseError(result.Data)
     }
 
-    return UnmarshalCount(result.Data)
+    return UnmarshalFileDownloadedPrefixSize(result.Data)
 }
 
 type CancelDownloadFileRequest struct { 
@@ -7019,7 +7089,7 @@ type WriteGeneratedFilePartRequest struct {
     // The identifier of the generation process
     GenerationId JsonInt64 `json:"generation_id"`
     // The offset from which to write the data to the file
-    Offset int32 `json:"offset"`
+    Offset int64 `json:"offset"`
     // The data to write
     Data []byte `json:"data"`
 }
@@ -7051,9 +7121,9 @@ type SetFileGenerationProgressRequest struct {
     // The identifier of the generation process
     GenerationId JsonInt64 `json:"generation_id"`
     // Expected size of the generated file, in bytes; 0 if unknown
-    ExpectedSize int32 `json:"expected_size"`
+    ExpectedSize int64 `json:"expected_size"`
     // The number of bytes already generated
-    LocalPrefixSize int32 `json:"local_prefix_size"`
+    LocalPrefixSize int64 `json:"local_prefix_size"`
 }
 
 // Informs TDLib on a file generation progress
@@ -7112,9 +7182,9 @@ type ReadFilePartRequest struct {
     // Identifier of the file. The file must be located in the TDLib file cache
     FileId int32 `json:"file_id"`
     // The offset from which to read the file
-    Offset int32 `json:"offset"`
+    Offset int64 `json:"offset"`
     // Number of bytes to read. An error will be returned if there are not enough bytes available in the file from the specified position. Pass 0 to read all available data from the specified position
-    Count int32 `json:"count"`
+    Count int64 `json:"count"`
 }
 
 // Reads a part of a file from the TDLib file cache and returns read bytes. This method is intended to be used only if the application has no direct access to TDLib's file system, because it is usually slower than a direct read from the file
@@ -7360,7 +7430,7 @@ type GetMessageFileTypeRequest struct {
     MessageFileHead string `json:"message_file_head"`
 }
 
-// Returns information about a file with messages exported from another app
+// Returns information about a file with messages exported from another application
 func (client *Client) GetMessageFileType(req *GetMessageFileTypeRequest) (MessageFileType, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -7805,7 +7875,7 @@ type JoinChatByInviteLinkRequest struct {
     InviteLink string `json:"invite_link"`
 }
 
-// Uses an invite link to add the current user to the chat if possible
+// Uses an invite link to add the current user to the chat if possible. May return an error with a message "INVITE_REQUEST_SENT" if only a join request was created
 func (client *Client) JoinChatByInviteLink(req *JoinChatByInviteLinkRequest) (*Chat, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -9531,7 +9601,7 @@ type GetTrendingStickerSetsRequest struct {
 }
 
 // Returns a list of trending sticker sets. For optimal performance, the number of returned sticker sets is chosen by TDLib
-func (client *Client) GetTrendingStickerSets(req *GetTrendingStickerSetsRequest) (*StickerSets, error) {
+func (client *Client) GetTrendingStickerSets(req *GetTrendingStickerSetsRequest) (*TrendingStickerSets, error) {
     result, err := client.Send(Request{
         meta: meta{
             Type: "getTrendingStickerSets",
@@ -9549,7 +9619,7 @@ func (client *Client) GetTrendingStickerSets(req *GetTrendingStickerSetsRequest)
         return nil, buildResponseError(result.Data)
     }
 
-    return UnmarshalStickerSets(result.Data)
+    return UnmarshalTrendingStickerSets(result.Data)
 }
 
 type GetAttachedStickerSetsRequest struct { 
@@ -10040,6 +10110,25 @@ func (client *Client) GetAnimatedEmoji(req *GetAnimatedEmojiRequest) (*AnimatedE
     return UnmarshalAnimatedEmoji(result.Data)
 }
 
+// Returns all emojis, which has a corresponding animated emoji
+func (client *Client) GetAllAnimatedEmojis() (*Emojis, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getAllAnimatedEmojis",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalEmojis(result.Data)
+}
+
 type GetEmojiSuggestionsUrlRequest struct { 
     // Language code for which the emoji replacements will be suggested
     LanguageCode string `json:"language_code"`
@@ -10348,7 +10437,7 @@ func (client *Client) SetName(req *SetNameRequest) (*Ok, error) {
 }
 
 type SetBioRequest struct { 
-    // The new value of the user bio; 0-70 characters without line feeds
+    // The new value of the user bio; 0-GetOption("bio_length_max") characters without line feeds
     Bio string `json:"bio"`
 }
 
@@ -10995,6 +11084,64 @@ func (client *Client) ToggleSupergroupSignMessages(req *ToggleSupergroupSignMess
     return UnmarshalOk(result.Data)
 }
 
+type ToggleSupergroupJoinToSendMessagesRequest struct { 
+    // Identifier of the supergroup
+    SupergroupId int64 `json:"supergroup_id"`
+    // New value of join_to_send_messages
+    JoinToSendMessages bool `json:"join_to_send_messages"`
+}
+
+// Toggles whether joining is mandatory to send messages to a discussion supergroup; requires can_restrict_members administrator right
+func (client *Client) ToggleSupergroupJoinToSendMessages(req *ToggleSupergroupJoinToSendMessagesRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "toggleSupergroupJoinToSendMessages",
+        },
+        Data: map[string]interface{}{
+            "supergroup_id": req.SupergroupId,
+            "join_to_send_messages": req.JoinToSendMessages,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type ToggleSupergroupJoinByRequestRequest struct { 
+    // Identifier of the channel
+    SupergroupId int64 `json:"supergroup_id"`
+    // New value of join_by_request
+    JoinByRequest bool `json:"join_by_request"`
+}
+
+// Toggles whether all users directly joining the supergroup need to be approved by supergroup administrators; requires can_restrict_members administrator right
+func (client *Client) ToggleSupergroupJoinByRequest(req *ToggleSupergroupJoinByRequestRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "toggleSupergroupJoinByRequest",
+        },
+        Data: map[string]interface{}{
+            "supergroup_id": req.SupergroupId,
+            "join_by_request": req.JoinByRequest,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
 type ToggleSupergroupIsAllHistoryAvailableRequest struct { 
     // The identifier of the supergroup
     SupergroupId int64 `json:"supergroup_id"`
@@ -11182,10 +11329,8 @@ func (client *Client) GetChatEventLog(req *GetChatEventLogRequest) (*ChatEvents,
 }
 
 type GetPaymentFormRequest struct { 
-    // Chat identifier of the Invoice message
-    ChatId int64 `json:"chat_id"`
-    // Message identifier
-    MessageId int64 `json:"message_id"`
+    // The invoice
+    InputInvoice InputInvoice `json:"input_invoice"`
     // Preferred payment form theme; pass null to use the default theme
     Theme *ThemeParameters `json:"theme"`
 }
@@ -11197,8 +11342,7 @@ func (client *Client) GetPaymentForm(req *GetPaymentFormRequest) (*PaymentForm, 
             Type: "getPaymentForm",
         },
         Data: map[string]interface{}{
-            "chat_id": req.ChatId,
-            "message_id": req.MessageId,
+            "input_invoice": req.InputInvoice,
             "theme": req.Theme,
         },
     })
@@ -11214,10 +11358,8 @@ func (client *Client) GetPaymentForm(req *GetPaymentFormRequest) (*PaymentForm, 
 }
 
 type ValidateOrderInfoRequest struct { 
-    // Chat identifier of the Invoice message
-    ChatId int64 `json:"chat_id"`
-    // Message identifier
-    MessageId int64 `json:"message_id"`
+    // The invoice
+    InputInvoice InputInvoice `json:"input_invoice"`
     // The order information, provided by the user; pass null if empty
     OrderInfo *OrderInfo `json:"order_info"`
     // Pass true to save the order information
@@ -11231,8 +11373,7 @@ func (client *Client) ValidateOrderInfo(req *ValidateOrderInfoRequest) (*Validat
             Type: "validateOrderInfo",
         },
         Data: map[string]interface{}{
-            "chat_id": req.ChatId,
-            "message_id": req.MessageId,
+            "input_invoice": req.InputInvoice,
             "order_info": req.OrderInfo,
             "allow_save": req.AllowSave,
         },
@@ -11249,10 +11390,8 @@ func (client *Client) ValidateOrderInfo(req *ValidateOrderInfoRequest) (*Validat
 }
 
 type SendPaymentFormRequest struct { 
-    // Chat identifier of the Invoice message
-    ChatId int64 `json:"chat_id"`
-    // Message identifier
-    MessageId int64 `json:"message_id"`
+    // The invoice
+    InputInvoice InputInvoice `json:"input_invoice"`
     // Payment form identifier returned by getPaymentForm
     PaymentFormId JsonInt64 `json:"payment_form_id"`
     // Identifier returned by validateOrderInfo, or an empty string
@@ -11272,8 +11411,7 @@ func (client *Client) SendPaymentForm(req *SendPaymentFormRequest) (*PaymentResu
             Type: "sendPaymentForm",
         },
         Data: map[string]interface{}{
-            "chat_id": req.ChatId,
-            "message_id": req.MessageId,
+            "input_invoice": req.InputInvoice,
             "payment_form_id": req.PaymentFormId,
             "order_info_id": req.OrderInfoId,
             "shipping_option_id": req.ShippingOptionId,
@@ -11376,6 +11514,32 @@ func (client *Client) DeleteSavedCredentials() (*Ok, error) {
     }
 
     return UnmarshalOk(result.Data)
+}
+
+type CreateInvoiceLinkRequest struct { 
+    // Information about the invoice of the type inputMessageInvoice
+    Invoice InputMessageContent `json:"invoice"`
+}
+
+// Creates a link for the given invoice; for bots only
+func (client *Client) CreateInvoiceLink(req *CreateInvoiceLinkRequest) (*HttpUrl, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "createInvoiceLink",
+        },
+        Data: map[string]interface{}{
+            "invoice": req.Invoice,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalHttpUrl(result.Data)
 }
 
 // Returns a user that can be contacted to get support
@@ -13392,7 +13556,7 @@ func (client *Client) SetStickerSetThumbnail(req *SetStickerSetThumbnailRequest)
 type SetStickerPositionInSetRequest struct { 
     // Sticker
     Sticker InputFile `json:"sticker"`
-    // New position of the sticker in the set, zero-based
+    // New position of the sticker in the set, 0-based
     Position int32 `json:"position"`
 }
 
@@ -13483,6 +13647,141 @@ func (client *Client) GetMapThumbnailFile(req *GetMapThumbnailFileRequest) (*Fil
     }
 
     return UnmarshalFile(result.Data)
+}
+
+type GetPremiumLimitRequest struct { 
+    // Type of the limit
+    LimitType PremiumLimitType `json:"limit_type"`
+}
+
+// Returns information about a limit, increased for Premium users. Returns a 404 error if the limit is unknown
+func (client *Client) GetPremiumLimit(req *GetPremiumLimitRequest) (*PremiumLimit, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getPremiumLimit",
+        },
+        Data: map[string]interface{}{
+            "limit_type": req.LimitType,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalPremiumLimit(result.Data)
+}
+
+type GetPremiumFeaturesRequest struct { 
+    // Source of the request; pass null if the method is called from some non-standard source
+    Source PremiumSource `json:"source"`
+}
+
+// Returns information about features, available to Premium users
+func (client *Client) GetPremiumFeatures(req *GetPremiumFeaturesRequest) (*PremiumFeatures, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getPremiumFeatures",
+        },
+        Data: map[string]interface{}{
+            "source": req.Source,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalPremiumFeatures(result.Data)
+}
+
+// Returns examples of premium stickers for demonstration purposes
+func (client *Client) GetPremiumStickers() (*Stickers, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getPremiumStickers",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalStickers(result.Data)
+}
+
+type ViewPremiumFeatureRequest struct { 
+    // The viewed premium feature
+    Feature PremiumFeature `json:"feature"`
+}
+
+// Informs TDLib that the user viewed detailed information about a Premium feature on the Premium features screen
+func (client *Client) ViewPremiumFeature(req *ViewPremiumFeatureRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "viewPremiumFeature",
+        },
+        Data: map[string]interface{}{
+            "feature": req.Feature,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+// Informs TDLib that the user clicked Premium subscription button on the Premium features screen
+func (client *Client) ClickPremiumSubscriptionButton() (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "clickPremiumSubscriptionButton",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+// Returns state of Telegram Premium subscription and promotion videos for Premium features
+func (client *Client) GetPremiumState() (*PremiumState, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getPremiumState",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalPremiumState(result.Data)
 }
 
 type AcceptTermsOfServiceRequest struct { 
