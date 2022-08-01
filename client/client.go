@@ -213,6 +213,35 @@ func (client *Client) Send(req Request) (*Response, error) {
 				}
 			}
 		}
+		if response.Type != "error" && req.Type == "forwardMessages" {
+			ms, err := UnmarshalMessages(response.Data)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, m := range ms.Messages {
+				successCatcher := make(chan *Response, 1)
+				client.successMsgStore.Store(m.Id, successCatcher)
+
+				defer (func() {
+					client.successMsgStore.Delete(m.Id)
+					close(successCatcher)
+				})()
+
+				select {
+				case modResponse := <-successCatcher:
+					m2, err2 := UnmarshalUpdateMessageSendSucceeded(modResponse.Data)
+					if err2 != nil {
+						return response, nil
+					}
+					response.Data = bytes.ReplaceAll(response.Data, []byte("{\"@type\":\"messageSendingStatePending\"}"), []byte("{\"@type\":\"updateMessageSendSucceeded\"}"))
+					response.Data = bytes.Replace(response.Data, []byte("\"id\":"+strconv.FormatInt(m.Id, 10)), []byte("\"id\":"+strconv.FormatInt(m2.Message.Id, 10)), 1)
+				case <-time.After(10 * time.Second):
+					return response, nil
+				}
+			}
+			return response, nil
+		}
 		return response, nil
 	case <-ctx.Done():
 		return nil, errors.New("response catching timeout")
