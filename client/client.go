@@ -19,6 +19,7 @@ type Client struct {
 	listenerStore   *listenerStore
 	catchersStore   *sync.Map
 	successMsgStore *sync.Map
+	forwardMsgStore *sync.Map
 	updatesTimeout  time.Duration
 	catchTimeout    time.Duration
 }
@@ -74,6 +75,7 @@ func NewClient(authorizationStateHandler AuthorizationStateHandler, options ...O
 		listenerStore:   newListenerStore(),
 		catchersStore:   &sync.Map{},
 		successMsgStore: &sync.Map{},
+		forwardMsgStore: &sync.Map{},
 	}
 
 	client.extraGenerator = UuidV4Generator()
@@ -110,9 +112,13 @@ func (client *Client) processResponse(response *Response) {
 	}
 
 	if typ.GetType() == (&UpdateMessageSendSucceeded{}).GetType() {
-		value, ok := client.successMsgStore.Load(typ.(*UpdateMessageSendSucceeded).OldMessageId)
-		if ok {
-			value.(chan *Response) <- response
+		sendVal, sOk := client.successMsgStore.Load(typ.(*UpdateMessageSendSucceeded).OldMessageId)
+		if sOk {
+			sendVal.(chan *Response) <- response
+		}
+		forwardVal, fOk := client.forwardMsgStore.Load(typ.(*UpdateMessageSendSucceeded).OldMessageId)
+		if fOk {
+			forwardVal.(chan *Response) <- response
 		}
 	}
 
@@ -220,16 +226,16 @@ func (client *Client) Send(req Request) (*Response, error) {
 			}
 
 			for _, m := range ms.Messages {
-				successCatcher := make(chan *Response, 1)
-				client.successMsgStore.Store(m.Id, successCatcher)
+				forwardCatcher := make(chan *Response, 1)
+				client.forwardMsgStore.Store(m.Id, forwardCatcher)
 
 				defer (func() {
-					client.successMsgStore.Delete(m.Id)
-					close(successCatcher)
+					client.forwardMsgStore.Delete(m.Id)
+					close(forwardCatcher)
 				})()
 
 				select {
-				case modResponse := <-successCatcher:
+				case modResponse := <-forwardCatcher:
 					m2, err2 := UnmarshalUpdateMessageSendSucceeded(modResponse.Data)
 					if err2 != nil {
 						return response, nil
