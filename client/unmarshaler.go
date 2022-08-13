@@ -240,6 +240,43 @@ func UnmarshalListOfMaskPoint(dataList []json.RawMessage) ([]MaskPoint, error) {
     return list, nil
 }
 
+func UnmarshalStickerFormat(data json.RawMessage) (StickerFormat, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeStickerFormatWebp:
+        return UnmarshalStickerFormatWebp(data)
+
+    case TypeStickerFormatTgs:
+        return UnmarshalStickerFormatTgs(data)
+
+    case TypeStickerFormatWebm:
+        return UnmarshalStickerFormatWebm(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfStickerFormat(dataList []json.RawMessage) ([]StickerFormat, error) {
+    list := []StickerFormat{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalStickerFormat(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
 func UnmarshalStickerType(data json.RawMessage) (StickerType, error) {
     var meta meta
 
@@ -249,17 +286,14 @@ func UnmarshalStickerType(data json.RawMessage) (StickerType, error) {
     }
 
     switch meta.Type {
-    case TypeStickerTypeStatic:
-        return UnmarshalStickerTypeStatic(data)
-
-    case TypeStickerTypeAnimated:
-        return UnmarshalStickerTypeAnimated(data)
-
-    case TypeStickerTypeVideo:
-        return UnmarshalStickerTypeVideo(data)
+    case TypeStickerTypeRegular:
+        return UnmarshalStickerTypeRegular(data)
 
     case TypeStickerTypeMask:
         return UnmarshalStickerTypeMask(data)
+
+    case TypeStickerTypeCustomEmoji:
+        return UnmarshalStickerTypeCustomEmoji(data)
 
     default:
         return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
@@ -1917,6 +1951,9 @@ func UnmarshalMessageContent(data json.RawMessage) (MessageContent, error) {
     case TypeMessagePaymentSuccessfulBot:
         return UnmarshalMessagePaymentSuccessfulBot(data)
 
+    case TypeMessageGiftedPremium:
+        return UnmarshalMessageGiftedPremium(data)
+
     case TypeMessageContactRegistered:
         return UnmarshalMessageContactRegistered(data)
 
@@ -2022,6 +2059,9 @@ func UnmarshalTextEntityType(data json.RawMessage) (TextEntityType, error) {
 
     case TypeTextEntityTypeMentionName:
         return UnmarshalTextEntityTypeMentionName(data)
+
+    case TypeTextEntityTypeCustomEmoji:
+        return UnmarshalTextEntityTypeCustomEmoji(data)
 
     case TypeTextEntityTypeMediaTimestamp:
         return UnmarshalTextEntityTypeMediaTimestamp(data)
@@ -2605,6 +2645,43 @@ func UnmarshalListOfDiceStickers(dataList []json.RawMessage) ([]DiceStickers, er
     return list, nil
 }
 
+func UnmarshalSpeechRecognitionResult(data json.RawMessage) (SpeechRecognitionResult, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeSpeechRecognitionResultPending:
+        return UnmarshalSpeechRecognitionResultPending(data)
+
+    case TypeSpeechRecognitionResultText:
+        return UnmarshalSpeechRecognitionResultText(data)
+
+    case TypeSpeechRecognitionResultError:
+        return UnmarshalSpeechRecognitionResultError(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfSpeechRecognitionResult(dataList []json.RawMessage) ([]SpeechRecognitionResult, error) {
+    list := []SpeechRecognitionResult{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalSpeechRecognitionResult(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
 func UnmarshalInputInlineQueryResult(data json.RawMessage) (InputInlineQueryResult, error) {
     var meta meta
 
@@ -3028,6 +3105,9 @@ func UnmarshalPremiumFeature(data json.RawMessage) (PremiumFeature, error) {
     case TypePremiumFeatureUniqueStickers:
         return UnmarshalPremiumFeatureUniqueStickers(data)
 
+    case TypePremiumFeatureCustomEmoji:
+        return UnmarshalPremiumFeatureCustomEmoji(data)
+
     case TypePremiumFeatureAdvancedChatManagement:
         return UnmarshalPremiumFeatureAdvancedChatManagement(data)
 
@@ -3090,6 +3170,40 @@ func UnmarshalListOfPremiumSource(dataList []json.RawMessage) ([]PremiumSource, 
 
     for _, data := range dataList {
         entity, err := UnmarshalPremiumSource(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
+func UnmarshalStorePaymentPurpose(data json.RawMessage) (StorePaymentPurpose, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeStorePaymentPurposePremiumSubscription:
+        return UnmarshalStorePaymentPurposePremiumSubscription(data)
+
+    case TypeStorePaymentPurposeGiftedPremium:
+        return UnmarshalStorePaymentPurposeGiftedPremium(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfStorePaymentPurpose(dataList []json.RawMessage) ([]StorePaymentPurpose, error) {
+    list := []StorePaymentPurpose{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalStorePaymentPurpose(data)
         if err != nil {
             return nil, err
         }
@@ -3828,6 +3942,9 @@ func UnmarshalUserPrivacySetting(data json.RawMessage) (UserPrivacySetting, erro
     case TypeUserPrivacySettingAllowFindingByPhoneNumber:
         return UnmarshalUserPrivacySettingAllowFindingByPhoneNumber(data)
 
+    case TypeUserPrivacySettingAllowPrivateVoiceAndVideoNoteMessages:
+        return UnmarshalUserPrivacySettingAllowPrivateVoiceAndVideoNoteMessages(data)
+
     default:
         return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
     }
@@ -4098,6 +4215,9 @@ func UnmarshalInternalLinkType(data json.RawMessage) (InternalLinkType, error) {
 
     case TypeInternalLinkTypeQrCodeAuthentication:
         return UnmarshalInternalLinkTypeQrCodeAuthentication(data)
+
+    case TypeInternalLinkTypeRestorePurchases:
+        return UnmarshalInternalLinkTypeRestorePurchases(data)
 
     case TypeInternalLinkTypeSettings:
         return UnmarshalInternalLinkTypeSettings(data)
@@ -5475,24 +5595,32 @@ func UnmarshalMaskPosition(data json.RawMessage) (*MaskPosition, error) {
     return &resp, err
 }
 
-func UnmarshalStickerTypeStatic(data json.RawMessage) (*StickerTypeStatic, error) {
-    var resp StickerTypeStatic
+func UnmarshalStickerFormatWebp(data json.RawMessage) (*StickerFormatWebp, error) {
+    var resp StickerFormatWebp
 
     err := json.Unmarshal(data, &resp)
 
     return &resp, err
 }
 
-func UnmarshalStickerTypeAnimated(data json.RawMessage) (*StickerTypeAnimated, error) {
-    var resp StickerTypeAnimated
+func UnmarshalStickerFormatTgs(data json.RawMessage) (*StickerFormatTgs, error) {
+    var resp StickerFormatTgs
 
     err := json.Unmarshal(data, &resp)
 
     return &resp, err
 }
 
-func UnmarshalStickerTypeVideo(data json.RawMessage) (*StickerTypeVideo, error) {
-    var resp StickerTypeVideo
+func UnmarshalStickerFormatWebm(data json.RawMessage) (*StickerFormatWebm, error) {
+    var resp StickerFormatWebm
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStickerTypeRegular(data json.RawMessage) (*StickerTypeRegular, error) {
+    var resp StickerTypeRegular
 
     err := json.Unmarshal(data, &resp)
 
@@ -5501,6 +5629,14 @@ func UnmarshalStickerTypeVideo(data json.RawMessage) (*StickerTypeVideo, error) 
 
 func UnmarshalStickerTypeMask(data json.RawMessage) (*StickerTypeMask, error) {
     var resp StickerTypeMask
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStickerTypeCustomEmoji(data json.RawMessage) (*StickerTypeCustomEmoji, error) {
+    var resp StickerTypeCustomEmoji
 
     err := json.Unmarshal(data, &resp)
 
@@ -5789,6 +5925,14 @@ func UnmarshalChatPermissions(data json.RawMessage) (*ChatPermissions, error) {
 
 func UnmarshalChatAdministratorRights(data json.RawMessage) (*ChatAdministratorRights, error) {
     var resp ChatAdministratorRights
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalPremiumGiftOption(data json.RawMessage) (*PremiumGiftOption, error) {
+    var resp PremiumGiftOption
 
     err := json.Unmarshal(data, &resp)
 
@@ -7467,6 +7611,14 @@ func UnmarshalPaymentProviderOther(data json.RawMessage) (*PaymentProviderOther,
     return &resp, err
 }
 
+func UnmarshalPaymentOption(data json.RawMessage) (*PaymentOption, error) {
+    var resp PaymentOption
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalPaymentForm(data json.RawMessage) (*PaymentForm, error) {
     var resp PaymentForm
 
@@ -8443,6 +8595,14 @@ func UnmarshalMessagePaymentSuccessfulBot(data json.RawMessage) (*MessagePayment
     return &resp, err
 }
 
+func UnmarshalMessageGiftedPremium(data json.RawMessage) (*MessageGiftedPremium, error) {
+    var resp MessageGiftedPremium
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalMessageContactRegistered(data json.RawMessage) (*MessageContactRegistered, error) {
     var resp MessageContactRegistered
 
@@ -8645,6 +8805,14 @@ func UnmarshalTextEntityTypeTextUrl(data json.RawMessage) (*TextEntityTypeTextUr
 
 func UnmarshalTextEntityTypeMentionName(data json.RawMessage) (*TextEntityTypeMentionName, error) {
     var resp TextEntityTypeMentionName
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalTextEntityTypeCustomEmoji(data json.RawMessage) (*TextEntityTypeCustomEmoji, error) {
+    var resp TextEntityTypeCustomEmoji
 
     err := json.Unmarshal(data, &resp)
 
@@ -9571,6 +9739,30 @@ func UnmarshalImportedContacts(data json.RawMessage) (*ImportedContacts, error) 
     return &resp, err
 }
 
+func UnmarshalSpeechRecognitionResultPending(data json.RawMessage) (*SpeechRecognitionResultPending, error) {
+    var resp SpeechRecognitionResultPending
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSpeechRecognitionResultText(data json.RawMessage) (*SpeechRecognitionResultText, error) {
+    var resp SpeechRecognitionResultText
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalSpeechRecognitionResultError(data json.RawMessage) (*SpeechRecognitionResultError, error) {
+    var resp SpeechRecognitionResultError
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalAttachmentMenuBotColor(data json.RawMessage) (*AttachmentMenuBotColor, error) {
     var resp AttachmentMenuBotColor
 
@@ -10355,6 +10547,14 @@ func UnmarshalPremiumFeatureUniqueStickers(data json.RawMessage) (*PremiumFeatur
     return &resp, err
 }
 
+func UnmarshalPremiumFeatureCustomEmoji(data json.RawMessage) (*PremiumFeatureCustomEmoji, error) {
+    var resp PremiumFeatureCustomEmoji
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalPremiumFeatureAdvancedChatManagement(data json.RawMessage) (*PremiumFeatureAdvancedChatManagement, error) {
     var resp PremiumFeatureAdvancedChatManagement
 
@@ -10445,6 +10645,22 @@ func UnmarshalPremiumFeaturePromotionAnimation(data json.RawMessage) (*PremiumFe
 
 func UnmarshalPremiumState(data json.RawMessage) (*PremiumState, error) {
     var resp PremiumState
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStorePaymentPurposePremiumSubscription(data json.RawMessage) (*StorePaymentPurposePremiumSubscription, error) {
+    var resp StorePaymentPurposePremiumSubscription
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStorePaymentPurposeGiftedPremium(data json.RawMessage) (*StorePaymentPurposeGiftedPremium, error) {
+    var resp StorePaymentPurposeGiftedPremium
 
     err := json.Unmarshal(data, &resp)
 
@@ -11347,6 +11563,14 @@ func UnmarshalUserPrivacySettingAllowFindingByPhoneNumber(data json.RawMessage) 
     return &resp, err
 }
 
+func UnmarshalUserPrivacySettingAllowPrivateVoiceAndVideoNoteMessages(data json.RawMessage) (*UserPrivacySettingAllowPrivateVoiceAndVideoNoteMessages, error) {
+    var resp UserPrivacySettingAllowPrivateVoiceAndVideoNoteMessages
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalAccountTtl(data json.RawMessage) (*AccountTtl, error) {
     var resp AccountTtl
 
@@ -11805,6 +12029,14 @@ func UnmarshalInternalLinkTypePublicChat(data json.RawMessage) (*InternalLinkTyp
 
 func UnmarshalInternalLinkTypeQrCodeAuthentication(data json.RawMessage) (*InternalLinkTypeQrCodeAuthentication, error) {
     var resp InternalLinkTypeQrCodeAuthentication
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInternalLinkTypeRestorePurchases(data json.RawMessage) (*InternalLinkTypeRestorePurchases, error) {
+    var resp InternalLinkTypeRestorePurchases
 
     err := json.Unmarshal(data, &resp)
 
@@ -13714,17 +13946,23 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeMaskPosition:
         return UnmarshalMaskPosition(data)
 
-    case TypeStickerTypeStatic:
-        return UnmarshalStickerTypeStatic(data)
+    case TypeStickerFormatWebp:
+        return UnmarshalStickerFormatWebp(data)
 
-    case TypeStickerTypeAnimated:
-        return UnmarshalStickerTypeAnimated(data)
+    case TypeStickerFormatTgs:
+        return UnmarshalStickerFormatTgs(data)
 
-    case TypeStickerTypeVideo:
-        return UnmarshalStickerTypeVideo(data)
+    case TypeStickerFormatWebm:
+        return UnmarshalStickerFormatWebm(data)
+
+    case TypeStickerTypeRegular:
+        return UnmarshalStickerTypeRegular(data)
 
     case TypeStickerTypeMask:
         return UnmarshalStickerTypeMask(data)
+
+    case TypeStickerTypeCustomEmoji:
+        return UnmarshalStickerTypeCustomEmoji(data)
 
     case TypeClosedVectorPath:
         return UnmarshalClosedVectorPath(data)
@@ -13833,6 +14071,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeChatAdministratorRights:
         return UnmarshalChatAdministratorRights(data)
+
+    case TypePremiumGiftOption:
+        return UnmarshalPremiumGiftOption(data)
 
     case TypeUser:
         return UnmarshalUser(data)
@@ -14461,6 +14702,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypePaymentProviderOther:
         return UnmarshalPaymentProviderOther(data)
 
+    case TypePaymentOption:
+        return UnmarshalPaymentOption(data)
+
     case TypePaymentForm:
         return UnmarshalPaymentForm(data)
 
@@ -14827,6 +15071,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeMessagePaymentSuccessfulBot:
         return UnmarshalMessagePaymentSuccessfulBot(data)
 
+    case TypeMessageGiftedPremium:
+        return UnmarshalMessageGiftedPremium(data)
+
     case TypeMessageContactRegistered:
         return UnmarshalMessageContactRegistered(data)
 
@@ -14904,6 +15151,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeTextEntityTypeMentionName:
         return UnmarshalTextEntityTypeMentionName(data)
+
+    case TypeTextEntityTypeCustomEmoji:
+        return UnmarshalTextEntityTypeCustomEmoji(data)
 
     case TypeTextEntityTypeMediaTimestamp:
         return UnmarshalTextEntityTypeMediaTimestamp(data)
@@ -15250,6 +15500,15 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeImportedContacts:
         return UnmarshalImportedContacts(data)
 
+    case TypeSpeechRecognitionResultPending:
+        return UnmarshalSpeechRecognitionResultPending(data)
+
+    case TypeSpeechRecognitionResultText:
+        return UnmarshalSpeechRecognitionResultText(data)
+
+    case TypeSpeechRecognitionResultError:
+        return UnmarshalSpeechRecognitionResultError(data)
+
     case TypeAttachmentMenuBotColor:
         return UnmarshalAttachmentMenuBotColor(data)
 
@@ -15544,6 +15803,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypePremiumFeatureUniqueStickers:
         return UnmarshalPremiumFeatureUniqueStickers(data)
 
+    case TypePremiumFeatureCustomEmoji:
+        return UnmarshalPremiumFeatureCustomEmoji(data)
+
     case TypePremiumFeatureAdvancedChatManagement:
         return UnmarshalPremiumFeatureAdvancedChatManagement(data)
 
@@ -15579,6 +15841,12 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypePremiumState:
         return UnmarshalPremiumState(data)
+
+    case TypeStorePaymentPurposePremiumSubscription:
+        return UnmarshalStorePaymentPurposePremiumSubscription(data)
+
+    case TypeStorePaymentPurposeGiftedPremium:
+        return UnmarshalStorePaymentPurposeGiftedPremium(data)
 
     case TypeDeviceTokenFirebaseCloudMessaging:
         return UnmarshalDeviceTokenFirebaseCloudMessaging(data)
@@ -15916,6 +16184,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeUserPrivacySettingAllowFindingByPhoneNumber:
         return UnmarshalUserPrivacySettingAllowFindingByPhoneNumber(data)
 
+    case TypeUserPrivacySettingAllowPrivateVoiceAndVideoNoteMessages:
+        return UnmarshalUserPrivacySettingAllowPrivateVoiceAndVideoNoteMessages(data)
+
     case TypeAccountTtl:
         return UnmarshalAccountTtl(data)
 
@@ -16089,6 +16360,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeInternalLinkTypeQrCodeAuthentication:
         return UnmarshalInternalLinkTypeQrCodeAuthentication(data)
+
+    case TypeInternalLinkTypeRestorePurchases:
+        return UnmarshalInternalLinkTypeRestorePurchases(data)
 
     case TypeInternalLinkTypeSettings:
         return UnmarshalInternalLinkTypeSettings(data)

@@ -243,11 +243,11 @@ func (client *Client) RegisterUser(req *RegisterUserRequest) (*Ok, error) {
 }
 
 type CheckAuthenticationPasswordRequest struct { 
-    // The password to check
+    // The 2-step verification password to check
     Password string `json:"password"`
 }
 
-// Checks the authentication password for correctness. Works only when the current authorization state is authorizationStateWaitPassword
+// Checks the 2-step verification password for correctness. Works only when the current authorization state is authorizationStateWaitPassword
 func (client *Client) CheckAuthenticationPassword(req *CheckAuthenticationPasswordRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -268,7 +268,7 @@ func (client *Client) CheckAuthenticationPassword(req *CheckAuthenticationPasswo
     return UnmarshalOk(result.Data)
 }
 
-// Requests to send a password recovery code to an email address that was previously set up. Works only when the current authorization state is authorizationStateWaitPassword
+// Requests to send a 2-step verification password recovery code to an email address that was previously set up. Works only when the current authorization state is authorizationStateWaitPassword
 func (client *Client) RequestAuthenticationPasswordRecovery() (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -292,7 +292,7 @@ type CheckAuthenticationPasswordRecoveryCodeRequest struct {
     RecoveryCode string `json:"recovery_code"`
 }
 
-// Checks whether a password recovery code sent to an email address is valid. Works only when the current authorization state is authorizationStateWaitPassword
+// Checks whether a 2-step verification password recovery code sent to an email address is valid. Works only when the current authorization state is authorizationStateWaitPassword
 func (client *Client) CheckAuthenticationPasswordRecoveryCode(req *CheckAuthenticationPasswordRecoveryCodeRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -316,13 +316,13 @@ func (client *Client) CheckAuthenticationPasswordRecoveryCode(req *CheckAuthenti
 type RecoverAuthenticationPasswordRequest struct { 
     // Recovery code to check
     RecoveryCode string `json:"recovery_code"`
-    // New password of the user; may be empty to remove the password
+    // New 2-step verification password of the user; may be empty to remove the password
     NewPassword string `json:"new_password"`
     // New password hint; may be empty
     NewHint string `json:"new_hint"`
 }
 
-// Recovers the password with a password recovery code sent to an email address that was previously set up. Works only when the current authorization state is authorizationStateWaitPassword
+// Recovers the 2-step verification password with a password recovery code sent to an email address that was previously set up. Works only when the current authorization state is authorizationStateWaitPassword
 func (client *Client) RecoverAuthenticationPassword(req *RecoverAuthenticationPasswordRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -519,9 +519,9 @@ func (client *Client) GetPasswordState() (*PasswordState, error) {
 }
 
 type SetPasswordRequest struct { 
-    // Previous password of the user
+    // Previous 2-step verification password of the user
     OldPassword string `json:"old_password"`
-    // New password of the user; may be empty to remove the password
+    // New 2-step verification password of the user; may be empty to remove the password
     NewPassword string `json:"new_password"`
     // New password hint; may be empty
     NewHint string `json:"new_hint"`
@@ -531,7 +531,7 @@ type SetPasswordRequest struct {
     NewRecoveryEmailAddress string `json:"new_recovery_email_address"`
 }
 
-// Changes the password for the current user. If a new recovery email address is specified, then the change will not be applied until the new recovery email address is confirmed
+// Changes the 2-step verification password for the current user. If a new recovery email address is specified, then the change will not be applied until the new recovery email address is confirmed
 func (client *Client) SetPassword(req *SetPasswordRequest) (*PasswordState, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -557,7 +557,7 @@ func (client *Client) SetPassword(req *SetPasswordRequest) (*PasswordState, erro
 }
 
 type GetRecoveryEmailAddressRequest struct { 
-    // The password for the current user
+    // The 2-step verification password for the current user
     Password string `json:"password"`
 }
 
@@ -583,7 +583,7 @@ func (client *Client) GetRecoveryEmailAddress(req *GetRecoveryEmailAddressReques
 }
 
 type SetRecoveryEmailAddressRequest struct { 
-    // Password of the current user
+    // The 2-step verification password of the current user
     Password string `json:"password"`
     // New recovery email address
     NewRecoveryEmailAddress string `json:"new_recovery_email_address"`
@@ -704,7 +704,7 @@ func (client *Client) CheckPasswordRecoveryCode(req *CheckPasswordRecoveryCodeRe
 type RecoverPasswordRequest struct { 
     // Recovery code to check
     RecoveryCode string `json:"recovery_code"`
-    // New password of the user; may be empty to remove the password
+    // New 2-step verification password of the user; may be empty to remove the password
     NewPassword string `json:"new_password"`
     // New password hint; may be empty
     NewHint string `json:"new_hint"`
@@ -784,7 +784,7 @@ func (client *Client) CancelPasswordReset() (*Ok, error) {
 }
 
 type CreateTemporaryPasswordRequest struct { 
-    // Persistent user password
+    // The 2-step verification password of the current user
     Password string `json:"password"`
     // Time during which the temporary password will be valid, in seconds; must be between 60 and 86400
     ValidFor int32 `json:"valid_for"`
@@ -2141,7 +2141,7 @@ type SearchCallMessagesRequest struct {
     OnlyMissed bool `json:"only_missed"`
 }
 
-// Searches for call messages. Returns the results in reverse chronological order (i. e., in order of decreasing message_id). For optimal performance, the number of returned messages is chosen by TDLib
+// Searches for call messages. Returns the results in reverse chronological order (i.e., in order of decreasing message_id). For optimal performance, the number of returned messages is chosen by TDLib
 func (client *Client) SearchCallMessages(req *SearchCallMessagesRequest) (*Messages, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -3555,7 +3555,7 @@ type GetMessageAvailableReactionsRequest struct {
     MessageId int64 `json:"message_id"`
 }
 
-// Returns reactions, which can be added to a message. The list can change after updateReactions, updateChatAvailableReactions for the chat, or updateMessageInteractionInfo for the message. The method will return Premium reactions, even the current user has no Premium subscription
+// Returns reactions, which can be added to a message. The list can change after updateReactions, updateChatAvailableReactions for the chat, or updateMessageInteractionInfo for the message
 func (client *Client) GetMessageAvailableReactions(req *GetMessageAvailableReactionsRequest) (*AvailableReactions, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -3688,7 +3688,7 @@ type ParseTextEntitiesRequest struct {
     ParseMode TextParseMode `json:"parse_mode"`
 }
 
-// Parses Bold, Italic, Underline, Strikethrough, Spoiler, Code, Pre, PreCode, TextUrl and MentionName entities contained in the text. Can be called synchronously
+// Parses Bold, Italic, Underline, Strikethrough, Spoiler, CustomEmoji, Code, Pre, PreCode, TextUrl and MentionName entities contained in the text. Can be called synchronously
 func ParseTextEntities(req *ParseTextEntitiesRequest) (*FormattedText, error) {
     result, err := Execute(Request{
         meta: meta{
@@ -3711,7 +3711,7 @@ func ParseTextEntities(req *ParseTextEntitiesRequest) (*FormattedText, error) {
 }
 
 // deprecated
-// Parses Bold, Italic, Underline, Strikethrough, Spoiler, Code, Pre, PreCode, TextUrl and MentionName entities contained in the text. Can be called synchronously
+// Parses Bold, Italic, Underline, Strikethrough, Spoiler, CustomEmoji, Code, Pre, PreCode, TextUrl and MentionName entities contained in the text. Can be called synchronously
 func (client *Client) ParseTextEntities(req *ParseTextEntitiesRequest) (*FormattedText, error) {
     return ParseTextEntities(req)}
 
@@ -5049,6 +5049,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
     case TypeInternalLinkTypeQrCodeAuthentication:
         return UnmarshalInternalLinkTypeQrCodeAuthentication(result.Data)
 
+    case TypeInternalLinkTypeRestorePurchases:
+        return UnmarshalInternalLinkTypeRestorePurchases(result.Data)
+
     case TypeInternalLinkTypeSettings:
         return UnmarshalInternalLinkTypeSettings(result.Data)
 
@@ -5847,7 +5850,7 @@ func (client *Client) SetChatDraftMessage(req *SetChatDraftMessageRequest) (*Ok,
 type SetChatNotificationSettingsRequest struct { 
     // Chat identifier
     ChatId int64 `json:"chat_id"`
-    // New notification settings for the chat. If the chat is muted for more than 1 week, it is considered to be muted forever
+    // New notification settings for the chat. If the chat is muted for more than 366 days, it is considered to be muted forever
     NotificationSettings *ChatNotificationSettings `json:"notification_settings"`
 }
 
@@ -6443,7 +6446,7 @@ type TransferChatOwnershipRequest struct {
     ChatId int64 `json:"chat_id"`
     // Identifier of the user to which transfer the ownership. The ownership can't be transferred to a bot or to a deleted user
     UserId int64 `json:"user_id"`
-    // The password of the current user
+    // The 2-step verification password of the current user
     Password string `json:"password"`
 }
 
@@ -7027,20 +7030,20 @@ func (client *Client) GetSuggestedFileName(req *GetSuggestedFileNameRequest) (*T
     return UnmarshalText(result.Data)
 }
 
-type UploadFileRequest struct { 
+type PreliminaryUploadFileRequest struct { 
     // File to upload
     File InputFile `json:"file"`
     // File type; pass null if unknown
     FileType FileType `json:"file_type"`
-    // Priority of the upload (1-32). The higher the priority, the earlier the file will be uploaded. If the priorities of two files are equal, then the first one for which uploadFile was called will be uploaded first
+    // Priority of the upload (1-32). The higher the priority, the earlier the file will be uploaded. If the priorities of two files are equal, then the first one for which preliminaryUploadFile was called will be uploaded first
     Priority int32 `json:"priority"`
 }
 
-// Asynchronously uploads a file to the cloud without sending it in a message. updateFile will be used to notify about upload progress and successful completion of the upload. The file will not have a persistent remote identifier until it will be sent in a message
-func (client *Client) UploadFile(req *UploadFileRequest) (*File, error) {
+// Preliminary uploads a file to the cloud before sending it in a message, which can be useful for uploading of being recorded voice and video notes. Updates updateFile will be used to notify about upload progress and successful completion of the upload. The file will not have a persistent remote identifier until it will be sent in a message
+func (client *Client) PreliminaryUploadFile(req *PreliminaryUploadFileRequest) (*File, error) {
     result, err := client.Send(Request{
         meta: meta{
-            Type: "uploadFile",
+            Type: "preliminaryUploadFile",
         },
         Data: map[string]interface{}{
             "file": req.File,
@@ -7059,16 +7062,16 @@ func (client *Client) UploadFile(req *UploadFileRequest) (*File, error) {
     return UnmarshalFile(result.Data)
 }
 
-type CancelUploadFileRequest struct { 
+type CancelPreliminaryUploadFileRequest struct { 
     // Identifier of the file to stop uploading
     FileId int32 `json:"file_id"`
 }
 
-// Stops the uploading of a file. Supported only for files uploaded by using uploadFile. For other files the behavior is undefined
-func (client *Client) CancelUploadFile(req *CancelUploadFileRequest) (*Ok, error) {
+// Stops the preliminary uploading of a file. Supported only for files uploaded by using preliminaryUploadFile. For other files the behavior is undefined
+func (client *Client) CancelPreliminaryUploadFile(req *CancelPreliminaryUploadFileRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
-            Type: "cancelUploadFile",
+            Type: "cancelPreliminaryUploadFile",
         },
         Data: map[string]interface{}{
             "file_id": req.FileId,
@@ -9478,21 +9481,27 @@ func (client *Client) GetUserProfilePhotos(req *GetUserProfilePhotosRequest) (*C
 }
 
 type GetStickersRequest struct { 
+    // Type of the sticker sets to return
+    StickerType StickerType `json:"sticker_type"`
     // String representation of emoji. If empty, returns all known installed stickers
     Emoji string `json:"emoji"`
     // The maximum number of stickers to be returned
     Limit int32 `json:"limit"`
+    // Chat identifier for which to return stickers. Available custom emoji may be different for different chats
+    ChatId int64 `json:"chat_id"`
 }
 
-// Returns stickers from the installed sticker sets that correspond to a given emoji. If the emoji is non-empty, favorite and recently used stickers may also be returned
+// Returns stickers from the installed sticker sets that correspond to a given emoji. If the emoji is non-empty, then favorite, recently used or trending stickers may also be returned
 func (client *Client) GetStickers(req *GetStickersRequest) (*Stickers, error) {
     result, err := client.Send(Request{
         meta: meta{
             Type: "getStickers",
         },
         Data: map[string]interface{}{
+            "sticker_type": req.StickerType,
             "emoji": req.Emoji,
             "limit": req.Limit,
+            "chat_id": req.ChatId,
         },
     })
     if err != nil {
@@ -9509,7 +9518,7 @@ func (client *Client) GetStickers(req *GetStickersRequest) (*Stickers, error) {
 type SearchStickersRequest struct { 
     // String representation of emoji; must be non-empty
     Emoji string `json:"emoji"`
-    // The maximum number of stickers to be returned
+    // The maximum number of stickers to be returned; 0-100
     Limit int32 `json:"limit"`
 }
 
@@ -9535,9 +9544,35 @@ func (client *Client) SearchStickers(req *SearchStickersRequest) (*Stickers, err
     return UnmarshalStickers(result.Data)
 }
 
+type GetPremiumStickersRequest struct { 
+    // The maximum number of stickers to be returned; 0-100
+    Limit int32 `json:"limit"`
+}
+
+// Returns premium stickers from regular sticker sets
+func (client *Client) GetPremiumStickers(req *GetPremiumStickersRequest) (*Stickers, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getPremiumStickers",
+        },
+        Data: map[string]interface{}{
+            "limit": req.Limit,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalStickers(result.Data)
+}
+
 type GetInstalledStickerSetsRequest struct { 
-    // Pass true to return mask sticker sets; pass false to return ordinary sticker sets
-    IsMasks bool `json:"is_masks"`
+    // Type of the sticker sets to return
+    StickerType StickerType `json:"sticker_type"`
 }
 
 // Returns a list of installed sticker sets
@@ -9547,7 +9582,7 @@ func (client *Client) GetInstalledStickerSets(req *GetInstalledStickerSetsReques
             Type: "getInstalledStickerSets",
         },
         Data: map[string]interface{}{
-            "is_masks": req.IsMasks,
+            "sticker_type": req.StickerType,
         },
     })
     if err != nil {
@@ -9562,8 +9597,8 @@ func (client *Client) GetInstalledStickerSets(req *GetInstalledStickerSetsReques
 }
 
 type GetArchivedStickerSetsRequest struct { 
-    // Pass true to return mask stickers sets; pass false to return ordinary sticker sets
-    IsMasks bool `json:"is_masks"`
+    // Type of the sticker sets to return
+    StickerType StickerType `json:"sticker_type"`
     // Identifier of the sticker set from which to return the result
     OffsetStickerSetId JsonInt64 `json:"offset_sticker_set_id"`
     // The maximum number of sticker sets to return; up to 100
@@ -9577,7 +9612,7 @@ func (client *Client) GetArchivedStickerSets(req *GetArchivedStickerSetsRequest)
             Type: "getArchivedStickerSets",
         },
         Data: map[string]interface{}{
-            "is_masks": req.IsMasks,
+            "sticker_type": req.StickerType,
             "offset_sticker_set_id": req.OffsetStickerSetId,
             "limit": req.Limit,
         },
@@ -9594,6 +9629,8 @@ func (client *Client) GetArchivedStickerSets(req *GetArchivedStickerSetsRequest)
 }
 
 type GetTrendingStickerSetsRequest struct { 
+    // Type of the sticker sets to return
+    StickerType StickerType `json:"sticker_type"`
     // The offset from which to return the sticker sets; must be non-negative
     Offset int32 `json:"offset"`
     // The maximum number of sticker sets to be returned; up to 100. For optimal performance, the number of returned sticker sets is chosen by TDLib and can be smaller than the specified limit, even if the end of the list has not been reached
@@ -9607,6 +9644,7 @@ func (client *Client) GetTrendingStickerSets(req *GetTrendingStickerSetsRequest)
             Type: "getTrendingStickerSets",
         },
         Data: map[string]interface{}{
+            "sticker_type": req.StickerType,
             "offset": req.Offset,
             "limit": req.Limit,
         },
@@ -9701,8 +9739,8 @@ func (client *Client) SearchStickerSet(req *SearchStickerSetRequest) (*StickerSe
 }
 
 type SearchInstalledStickerSetsRequest struct { 
-    // Pass true to return mask sticker sets; pass false to return ordinary sticker sets
-    IsMasks bool `json:"is_masks"`
+    // Type of the sticker sets to search for
+    StickerType StickerType `json:"sticker_type"`
     // Query to search for
     Query string `json:"query"`
     // The maximum number of sticker sets to return
@@ -9716,7 +9754,7 @@ func (client *Client) SearchInstalledStickerSets(req *SearchInstalledStickerSets
             Type: "searchInstalledStickerSets",
         },
         Data: map[string]interface{}{
-            "is_masks": req.IsMasks,
+            "sticker_type": req.StickerType,
             "query": req.Query,
             "limit": req.Limit,
         },
@@ -9817,8 +9855,8 @@ func (client *Client) ViewTrendingStickerSets(req *ViewTrendingStickerSetsReques
 }
 
 type ReorderInstalledStickerSetsRequest struct { 
-    // Pass true to change the order of mask sticker sets; pass false to change the order of ordinary sticker sets
-    IsMasks bool `json:"is_masks"`
+    // Type of the sticker sets to reorder
+    StickerType StickerType `json:"sticker_type"`
     // Identifiers of installed sticker sets in the new correct order
     StickerSetIds []JsonInt64 `json:"sticker_set_ids"`
 }
@@ -9830,7 +9868,7 @@ func (client *Client) ReorderInstalledStickerSets(req *ReorderInstalledStickerSe
             Type: "reorderInstalledStickerSets",
         },
         Data: map[string]interface{}{
-            "is_masks": req.IsMasks,
+            "sticker_type": req.StickerType,
             "sticker_set_ids": req.StickerSetIds,
         },
     })
@@ -9878,7 +9916,7 @@ type AddRecentStickerRequest struct {
     Sticker InputFile `json:"sticker"`
 }
 
-// Manually adds a new sticker to the list of recently used stickers. The new sticker is added to the top of the list. If the sticker was already in the list, it is removed from the list first. Only stickers belonging to a sticker set can be added to this list
+// Manually adds a new sticker to the list of recently used stickers. The new sticker is added to the top of the list. If the sticker was already in the list, it is removed from the list first. Only stickers belonging to a sticker set can be added to this list. Emoji stickers can't be added to recent stickers
 func (client *Client) AddRecentSticker(req *AddRecentStickerRequest) (*Stickers, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -9979,7 +10017,7 @@ type AddFavoriteStickerRequest struct {
     Sticker InputFile `json:"sticker"`
 }
 
-// Adds a new sticker to the list of favorite stickers. The new sticker is added to the top of the list. If the sticker was already in the list, it is removed from the list first. Only stickers belonging to a sticker set can be added to this list
+// Adds a new sticker to the list of favorite stickers. The new sticker is added to the top of the list. If the sticker was already in the list, it is removed from the list first. Only stickers belonging to a sticker set can be added to this list. Emoji stickers can't be added to favorite stickers
 func (client *Client) AddFavoriteSticker(req *AddFavoriteStickerRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -10110,25 +10148,6 @@ func (client *Client) GetAnimatedEmoji(req *GetAnimatedEmojiRequest) (*AnimatedE
     return UnmarshalAnimatedEmoji(result.Data)
 }
 
-// Returns all emojis, which has a corresponding animated emoji
-func (client *Client) GetAllAnimatedEmojis() (*Emojis, error) {
-    result, err := client.Send(Request{
-        meta: meta{
-            Type: "getAllAnimatedEmojis",
-        },
-        Data: map[string]interface{}{},
-    })
-    if err != nil {
-        return nil, err
-    }
-
-    if result.Type == "error" {
-        return nil, buildResponseError(result.Data)
-    }
-
-    return UnmarshalEmojis(result.Data)
-}
-
 type GetEmojiSuggestionsUrlRequest struct { 
     // Language code for which the emoji replacements will be suggested
     LanguageCode string `json:"language_code"`
@@ -10153,6 +10172,32 @@ func (client *Client) GetEmojiSuggestionsUrl(req *GetEmojiSuggestionsUrlRequest)
     }
 
     return UnmarshalHttpUrl(result.Data)
+}
+
+type GetCustomEmojiStickersRequest struct { 
+    // Identifiers of custom emoji stickers. At most 200 custom emoji stickers can be received simultaneously
+    CustomEmojiIds []JsonInt64 `json:"custom_emoji_ids"`
+}
+
+// Returns list of custom emoji stickers by their identifiers. Stickers are returned in arbitrary order. Only found stickers are returned
+func (client *Client) GetCustomEmojiStickers(req *GetCustomEmojiStickersRequest) (*Stickers, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getCustomEmojiStickers",
+        },
+        Data: map[string]interface{}{
+            "custom_emoji_ids": req.CustomEmojiIds,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalStickers(result.Data)
 }
 
 // Returns saved animations
@@ -11302,7 +11347,7 @@ type GetChatEventLogRequest struct {
     UserIds []int64 `json:"user_ids"`
 }
 
-// Returns a list of service actions taken by chat members and administrators in the last 48 hours. Available only for supergroups and channels. Requires administrator rights. Returns results in reverse chronological order (i. e., in order of decreasing event_id)
+// Returns a list of service actions taken by chat members and administrators in the last 48 hours. Available only for supergroups and channels. Requires administrator rights. Returns results in reverse chronological order (i.e., in order of decreasing event_id)
 func (client *Client) GetChatEventLog(req *GetChatEventLogRequest) (*ChatEvents, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -12134,9 +12179,9 @@ type GetOptionRequest struct {
     Name string `json:"name"`
 }
 
-// Returns the value of an option by its name. (Check the list of available options on https://core.telegram.org/tdlib/options.) Can be called before authorization
-func (client *Client) GetOption(req *GetOptionRequest) (OptionValue, error) {
-    result, err := client.Send(Request{
+// Returns the value of an option by its name. (Check the list of available options on https://core.telegram.org/tdlib/options.) Can be called before authorization. Can be called synchronously for options "version" and "commit_hash"
+func GetOption(req *GetOptionRequest) (OptionValue, error) {
+    result, err := Execute(Request{
         meta: meta{
             Type: "getOption",
         },
@@ -12169,6 +12214,11 @@ func (client *Client) GetOption(req *GetOptionRequest) (OptionValue, error) {
         return nil, errors.New("invalid type")
    }
 }
+
+// deprecated
+// Returns the value of an option by its name. (Check the list of available options on https://core.telegram.org/tdlib/options.) Can be called before authorization. Can be called synchronously for options "version" and "commit_hash"
+func (client *Client) GetOption(req *GetOptionRequest) (OptionValue, error) {
+    return GetOption(req)}
 
 type SetOptionRequest struct { 
     // The name of the option
@@ -12247,6 +12297,8 @@ func (client *Client) GetAccountTtl() (*AccountTtl, error) {
 type DeleteAccountRequest struct { 
     // The reason why the account was deleted; optional
     Reason string `json:"reason"`
+    // The 2-step verification password of the current user. If not specified, account deletion can be canceled within one week
+    Password string `json:"password"`
 }
 
 // Deletes the account of the current user, deleting all information associated with the user from the server. The phone number of the account can be used to create a new account. Can be called before authorization when the current authorization state is authorizationStateWaitPassword
@@ -12257,6 +12309,7 @@ func (client *Client) DeleteAccount(req *DeleteAccountRequest) (*Ok, error) {
         },
         Data: map[string]interface{}{
             "reason": req.Reason,
+            "password": req.Password,
         },
     })
     if err != nil {
@@ -12768,7 +12821,7 @@ func (client *Client) GetBankCardInfo(req *GetBankCardInfoRequest) (*BankCardInf
 type GetPassportElementRequest struct { 
     // Telegram Passport element type
     Type PassportElementType `json:"type"`
-    // Password of the current user
+    // The 2-step verification password of the current user
     Password string `json:"password"`
 }
 
@@ -12837,7 +12890,7 @@ func (client *Client) GetPassportElement(req *GetPassportElementRequest) (Passpo
 }
 
 type GetAllPassportElementsRequest struct { 
-    // Password of the current user
+    // The 2-step verification password of the current user
     Password string `json:"password"`
 }
 
@@ -12865,7 +12918,7 @@ func (client *Client) GetAllPassportElements(req *GetAllPassportElementsRequest)
 type SetPassportElementRequest struct { 
     // Input Telegram Passport element
     Element InputPassportElement `json:"element"`
-    // Password of the current user
+    // The 2-step verification password of the current user
     Password string `json:"password"`
 }
 
@@ -13197,7 +13250,7 @@ func (client *Client) GetPassportAuthorizationForm(req *GetPassportAuthorization
 type GetPassportAuthorizationFormAvailableElementsRequest struct { 
     // Authorization form identifier
     AutorizationFormId int32 `json:"autorization_form_id"`
-    // Password of the current user
+    // The 2-step verification password of the current user
     Password string `json:"password"`
 }
 
@@ -13458,6 +13511,8 @@ type CreateNewStickerSetRequest struct {
     Title string `json:"title"`
     // Sticker set name. Can contain only English letters, digits and underscores. Must end with *"_by_<bot username>"* (*<bot_username>* is case insensitive) for bots; 1-64 characters
     Name string `json:"name"`
+    // Type of the stickers in the set
+    StickerType StickerType `json:"sticker_type"`
     // List of stickers to be added to the set; must be non-empty. All stickers must have the same format. For TGS stickers, uploadStickerFile must be used before the sticker is shown
     Stickers []*InputSticker `json:"stickers"`
     // Source of the sticker set; may be empty if unknown
@@ -13474,6 +13529,7 @@ func (client *Client) CreateNewStickerSet(req *CreateNewStickerSetRequest) (*Sti
             "user_id": req.UserId,
             "title": req.Title,
             "name": req.Name,
+            "sticker_type": req.StickerType,
             "stickers": req.Stickers,
             "source": req.Source,
         },
@@ -13702,10 +13758,10 @@ func (client *Client) GetPremiumFeatures(req *GetPremiumFeaturesRequest) (*Premi
 }
 
 // Returns examples of premium stickers for demonstration purposes
-func (client *Client) GetPremiumStickers() (*Stickers, error) {
+func (client *Client) GetPremiumStickerExamples() (*Stickers, error) {
     result, err := client.Send(Request{
         meta: meta{
-            Type: "getPremiumStickers",
+            Type: "getPremiumStickerExamples",
         },
         Data: map[string]interface{}{},
     })
@@ -13782,6 +13838,96 @@ func (client *Client) GetPremiumState() (*PremiumState, error) {
     }
 
     return UnmarshalPremiumState(result.Data)
+}
+
+type CanPurchasePremiumRequest struct { 
+    // Transaction purpose
+    Purpose StorePaymentPurpose `json:"purpose"`
+}
+
+// Checks whether Telegram Premium purchase is possible. Must be called before in-store Premium purchase
+func (client *Client) CanPurchasePremium(req *CanPurchasePremiumRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "canPurchasePremium",
+        },
+        Data: map[string]interface{}{
+            "purpose": req.Purpose,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type AssignAppStoreTransactionRequest struct { 
+    // App Store receipt
+    Receipt []byte `json:"receipt"`
+    // Transaction purpose
+    Purpose StorePaymentPurpose `json:"purpose"`
+}
+
+// Informs server about a purchase through App Store. For official applications only
+func (client *Client) AssignAppStoreTransaction(req *AssignAppStoreTransactionRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "assignAppStoreTransaction",
+        },
+        Data: map[string]interface{}{
+            "receipt": req.Receipt,
+            "purpose": req.Purpose,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type AssignGooglePlayTransactionRequest struct { 
+    // Application package name
+    PackageName string `json:"package_name"`
+    // Identifier of the purchased store product
+    StoreProductId string `json:"store_product_id"`
+    // Google Play purchase token
+    PurchaseToken string `json:"purchase_token"`
+    // Transaction purpose
+    Purpose StorePaymentPurpose `json:"purpose"`
+}
+
+// Informs server about a purchase through Google Play. For official applications only
+func (client *Client) AssignGooglePlayTransaction(req *AssignGooglePlayTransactionRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "assignGooglePlayTransaction",
+        },
+        Data: map[string]interface{}{
+            "package_name": req.PackageName,
+            "store_product_id": req.StoreProductId,
+            "purchase_token": req.PurchaseToken,
+            "purpose": req.Purpose,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
 }
 
 type AcceptTermsOfServiceRequest struct { 
