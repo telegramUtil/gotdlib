@@ -9,8 +9,8 @@ import (
 	tdlib "github.com/c0re100/gotdlib/client"
 )
 
-func GetTdParameters() *tdlib.TdlibParameters {
-	return &tdlib.TdlibParameters{
+func GetTdParameters() *tdlib.SetTdlibParametersRequest {
+	return &tdlib.SetTdlibParametersRequest{
 		UseTestDc:              false,
 		DatabaseDirectory:      "./tdlib-db",
 		FilesDirectory:         "./tdlib-files",

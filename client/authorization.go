@@ -46,7 +46,7 @@ func Authorize(client *Client, authorizationStateHandler AuthorizationStateHandl
 }
 
 type clientAuthorizer struct {
-	TdlibParameters chan *TdlibParameters
+	TdlibParameters chan *SetTdlibParametersRequest
 	PhoneNumber     chan string
 	Code            chan string
 	State           chan AuthorizationState
@@ -55,7 +55,7 @@ type clientAuthorizer struct {
 
 func ClientAuthorizer() *clientAuthorizer {
 	return &clientAuthorizer{
-		TdlibParameters: make(chan *TdlibParameters, 1),
+		TdlibParameters: make(chan *SetTdlibParametersRequest, 1),
 		PhoneNumber:     make(chan string, 1),
 		Code:            make(chan string, 1),
 		State:           make(chan AuthorizationState, 10),
@@ -68,13 +68,7 @@ func (stateHandler *clientAuthorizer) Handle(client *Client, state Authorization
 
 	switch state.AuthorizationStateType() {
 	case TypeAuthorizationStateWaitTdlibParameters:
-		_, err := client.SetTdlibParameters(&SetTdlibParametersRequest{
-			Parameters: <-stateHandler.TdlibParameters,
-		})
-		return err
-
-	case TypeAuthorizationStateWaitEncryptionKey:
-		_, err := client.CheckDatabaseEncryptionKey(&CheckDatabaseEncryptionKeyRequest{})
+		_, err := client.SetTdlibParameters(<-stateHandler.TdlibParameters)
 		return err
 
 	case TypeAuthorizationStateWaitPhoneNumber:
@@ -169,14 +163,14 @@ func CliInteractor(clientAuthorizer *clientAuthorizer) {
 }
 
 type botAuthorizer struct {
-	TdlibParameters chan *TdlibParameters
+	TdlibParameters chan *SetTdlibParametersRequest
 	Token           chan string
 	State           chan AuthorizationState
 }
 
 func BotAuthorizer(token string) *botAuthorizer {
 	botAuthorizer := &botAuthorizer{
-		TdlibParameters: make(chan *TdlibParameters, 1),
+		TdlibParameters: make(chan *SetTdlibParametersRequest, 1),
 		Token:           make(chan string, 1),
 		State:           make(chan AuthorizationState, 10),
 	}
@@ -191,13 +185,7 @@ func (stateHandler *botAuthorizer) Handle(client *Client, state AuthorizationSta
 
 	switch state.AuthorizationStateType() {
 	case TypeAuthorizationStateWaitTdlibParameters:
-		_, err := client.SetTdlibParameters(&SetTdlibParametersRequest{
-			Parameters: <-stateHandler.TdlibParameters,
-		})
-		return err
-
-	case TypeAuthorizationStateWaitEncryptionKey:
-		_, err := client.CheckDatabaseEncryptionKey(&CheckDatabaseEncryptionKeyRequest{})
+		_, err := client.SetTdlibParameters(<-stateHandler.TdlibParameters)
 		return err
 
 	case TypeAuthorizationStateWaitPhoneNumber:
