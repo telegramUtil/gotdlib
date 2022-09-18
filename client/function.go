@@ -26,11 +26,14 @@ func (client *Client) GetAuthorizationState() (AuthorizationState, error) {
     case TypeAuthorizationStateWaitTdlibParameters:
         return UnmarshalAuthorizationStateWaitTdlibParameters(result.Data)
 
-    case TypeAuthorizationStateWaitEncryptionKey:
-        return UnmarshalAuthorizationStateWaitEncryptionKey(result.Data)
-
     case TypeAuthorizationStateWaitPhoneNumber:
         return UnmarshalAuthorizationStateWaitPhoneNumber(result.Data)
+
+    case TypeAuthorizationStateWaitEmailAddress:
+        return UnmarshalAuthorizationStateWaitEmailAddress(result.Data)
+
+    case TypeAuthorizationStateWaitEmailCode:
+        return UnmarshalAuthorizationStateWaitEmailCode(result.Data)
 
     case TypeAuthorizationStateWaitCode:
         return UnmarshalAuthorizationStateWaitCode(result.Data)
@@ -62,8 +65,38 @@ func (client *Client) GetAuthorizationState() (AuthorizationState, error) {
 }
 
 type SetTdlibParametersRequest struct { 
-    // Parameters for TDLib initialization
-    Parameters *TdlibParameters `json:"parameters"`
+    // Pass true to use Telegram test environment instead of the production environment
+    UseTestDc bool `json:"use_test_dc"`
+    // The path to the directory for the persistent database; if empty, the current working directory will be used
+    DatabaseDirectory string `json:"database_directory"`
+    // The path to the directory for storing files; if empty, database_directory will be used
+    FilesDirectory string `json:"files_directory"`
+    // Encryption key for the database
+    DatabaseEncryptionKey []byte `json:"database_encryption_key"`
+    // Pass true to keep information about downloaded and uploaded files between application restarts
+    UseFileDatabase bool `json:"use_file_database"`
+    // Pass true to keep cache of users, basic groups, supergroups, channels and secret chats between restarts. Implies use_file_database
+    UseChatInfoDatabase bool `json:"use_chat_info_database"`
+    // Pass true to keep cache of chats and messages between restarts. Implies use_chat_info_database
+    UseMessageDatabase bool `json:"use_message_database"`
+    // Pass true to enable support for secret chats
+    UseSecretChats bool `json:"use_secret_chats"`
+    // Application identifier for Telegram API access, which can be obtained at https://my.telegram.org
+    ApiId int32 `json:"api_id"`
+    // Application identifier hash for Telegram API access, which can be obtained at https://my.telegram.org
+    ApiHash string `json:"api_hash"`
+    // IETF language tag of the user's operating system language; must be non-empty
+    SystemLanguageCode string `json:"system_language_code"`
+    // Model of the device the application is being run on; must be non-empty
+    DeviceModel string `json:"device_model"`
+    // Version of the operating system the application is being run on. If empty, the version is automatically detected by TDLib
+    SystemVersion string `json:"system_version"`
+    // Application version; must be non-empty
+    ApplicationVersion string `json:"application_version"`
+    // Pass true to automatically delete old files in background
+    EnableStorageOptimizer bool `json:"enable_storage_optimizer"`
+    // Pass true to ignore original file names for downloaded files. Otherwise, downloaded files are saved under names as close as possible to the original name
+    IgnoreFileNames bool `json:"ignore_file_names"`
 }
 
 // Sets the parameters for TDLib initialization. Works only when the current authorization state is authorizationStateWaitTdlibParameters
@@ -73,33 +106,22 @@ func (client *Client) SetTdlibParameters(req *SetTdlibParametersRequest) (*Ok, e
             Type: "setTdlibParameters",
         },
         Data: map[string]interface{}{
-            "parameters": req.Parameters,
-        },
-    })
-    if err != nil {
-        return nil, err
-    }
-
-    if result.Type == "error" {
-        return nil, buildResponseError(result.Data)
-    }
-
-    return UnmarshalOk(result.Data)
-}
-
-type CheckDatabaseEncryptionKeyRequest struct { 
-    // Encryption key to check or set up
-    EncryptionKey []byte `json:"encryption_key"`
-}
-
-// Checks the database encryption key for correctness. Works only when the current authorization state is authorizationStateWaitEncryptionKey
-func (client *Client) CheckDatabaseEncryptionKey(req *CheckDatabaseEncryptionKeyRequest) (*Ok, error) {
-    result, err := client.Send(Request{
-        meta: meta{
-            Type: "checkDatabaseEncryptionKey",
-        },
-        Data: map[string]interface{}{
-            "encryption_key": req.EncryptionKey,
+            "use_test_dc": req.UseTestDc,
+            "database_directory": req.DatabaseDirectory,
+            "files_directory": req.FilesDirectory,
+            "database_encryption_key": req.DatabaseEncryptionKey,
+            "use_file_database": req.UseFileDatabase,
+            "use_chat_info_database": req.UseChatInfoDatabase,
+            "use_message_database": req.UseMessageDatabase,
+            "use_secret_chats": req.UseSecretChats,
+            "api_id": req.ApiId,
+            "api_hash": req.ApiHash,
+            "system_language_code": req.SystemLanguageCode,
+            "device_model": req.DeviceModel,
+            "system_version": req.SystemVersion,
+            "application_version": req.ApplicationVersion,
+            "enable_storage_optimizer": req.EnableStorageOptimizer,
+            "ignore_file_names": req.IgnoreFileNames,
         },
     })
     if err != nil {
@@ -142,13 +164,65 @@ func (client *Client) SetAuthenticationPhoneNumber(req *SetAuthenticationPhoneNu
     return UnmarshalOk(result.Data)
 }
 
-// Re-sends an authentication code to the user. Works only when the current authorization state is authorizationStateWaitCode, the next_code_type of the result is not null and the server-specified timeout has passed
+type SetAuthenticationEmailAddressRequest struct { 
+    // The email address of the user
+    EmailAddress string `json:"email_address"`
+}
+
+// Sets the email address of the user and sends an authentication code to the email address. Works only when the current authorization state is authorizationStateWaitEmailAddress
+func (client *Client) SetAuthenticationEmailAddress(req *SetAuthenticationEmailAddressRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setAuthenticationEmailAddress",
+        },
+        Data: map[string]interface{}{
+            "email_address": req.EmailAddress,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+// Resends an authentication code to the user. Works only when the current authorization state is authorizationStateWaitCode, the next_code_type of the result is not null and the server-specified timeout has passed, or when the current authorization state is authorizationStateWaitEmailCode
 func (client *Client) ResendAuthenticationCode() (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
             Type: "resendAuthenticationCode",
         },
         Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type CheckAuthenticationEmailCodeRequest struct { 
+    // Email address authentication to check
+    Code EmailAddressAuthentication `json:"code"`
+}
+
+// Checks the authentication of a email address. Works only when the current authorization state is authorizationStateWaitEmailCode
+func (client *Client) CheckAuthenticationEmailCode(req *CheckAuthenticationEmailCodeRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "checkAuthenticationEmailCode",
+        },
+        Data: map[string]interface{}{
+            "code": req.Code,
+        },
     })
     if err != nil {
         return nil, err
@@ -554,6 +628,77 @@ func (client *Client) SetPassword(req *SetPasswordRequest) (*PasswordState, erro
     }
 
     return UnmarshalPasswordState(result.Data)
+}
+
+type SetLoginEmailAddressRequest struct { 
+    // New login email address
+    NewLoginEmailAddress string `json:"new_login_email_address"`
+}
+
+// Changes the login email address of the user. The change will not be applied until the new login email address is confirmed with `checkLoginEmailAddressCode`. To use Apple ID/Google ID instead of a email address, call `checkLoginEmailAddressCode` directly
+func (client *Client) SetLoginEmailAddress(req *SetLoginEmailAddressRequest) (*EmailAddressAuthenticationCodeInfo, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setLoginEmailAddress",
+        },
+        Data: map[string]interface{}{
+            "new_login_email_address": req.NewLoginEmailAddress,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalEmailAddressAuthenticationCodeInfo(result.Data)
+}
+
+// Resends the login email address verification code
+func (client *Client) ResendLoginEmailAddressCode() (*EmailAddressAuthenticationCodeInfo, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "resendLoginEmailAddressCode",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalEmailAddressAuthenticationCodeInfo(result.Data)
+}
+
+type CheckLoginEmailAddressCodeRequest struct { 
+    // Email address authentication to check
+    Code EmailAddressAuthentication `json:"code"`
+}
+
+// Checks the login email address authentication
+func (client *Client) CheckLoginEmailAddressCode(req *CheckLoginEmailAddressCodeRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "checkLoginEmailAddressCode",
+        },
+        Data: map[string]interface{}{
+            "code": req.Code,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
 }
 
 type GetRecoveryEmailAddressRequest struct { 
@@ -3548,14 +3693,61 @@ func (client *Client) EditMessageSchedulingState(req *EditMessageSchedulingState
     return UnmarshalOk(result.Data)
 }
 
+type GetEmojiReactionRequest struct { 
+    // Text representation of the reaction
+    Emoji string `json:"emoji"`
+}
+
+// Returns information about a emoji reaction. Returns a 404 error if the reaction is not found
+func (client *Client) GetEmojiReaction(req *GetEmojiReactionRequest) (*EmojiReaction, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getEmojiReaction",
+        },
+        Data: map[string]interface{}{
+            "emoji": req.Emoji,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalEmojiReaction(result.Data)
+}
+
+// Returns TGS files with generic animations for custom emoji reactions
+func (client *Client) GetCustomEmojiReactionAnimations() (*Files, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getCustomEmojiReactionAnimations",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalFiles(result.Data)
+}
+
 type GetMessageAvailableReactionsRequest struct { 
     // Identifier of the chat to which the message belongs
     ChatId int64 `json:"chat_id"`
     // Identifier of the message
     MessageId int64 `json:"message_id"`
+    // Number of reaction per row, 5-25
+    RowSize int32 `json:"row_size"`
 }
 
-// Returns reactions, which can be added to a message. The list can change after updateReactions, updateChatAvailableReactions for the chat, or updateMessageInteractionInfo for the message
+// Returns reactions, which can be added to a message. The list can change after updateActiveEmojiReactions, updateChatAvailableReactions for the chat, or updateMessageInteractionInfo for the message
 func (client *Client) GetMessageAvailableReactions(req *GetMessageAvailableReactionsRequest) (*AvailableReactions, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -3564,6 +3756,7 @@ func (client *Client) GetMessageAvailableReactions(req *GetMessageAvailableReact
         Data: map[string]interface{}{
             "chat_id": req.ChatId,
             "message_id": req.MessageId,
+            "row_size": req.RowSize,
         },
     })
     if err != nil {
@@ -3577,28 +3770,82 @@ func (client *Client) GetMessageAvailableReactions(req *GetMessageAvailableReact
     return UnmarshalAvailableReactions(result.Data)
 }
 
-type SetMessageReactionRequest struct { 
+// Clears the list of recently used reactions
+func (client *Client) ClearRecentReactions() (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "clearRecentReactions",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type AddMessageReactionRequest struct { 
     // Identifier of the chat to which the message belongs
     ChatId int64 `json:"chat_id"`
     // Identifier of the message
     MessageId int64 `json:"message_id"`
-    // Text representation of the new chosen reaction. Can be an empty string or the currently chosen non-big reaction to remove the reaction
-    Reaction string `json:"reaction"`
+    // Type of the reaction to add
+    ReactionType ReactionType `json:"reaction_type"`
     // Pass true if the reaction is added with a big animation
     IsBig bool `json:"is_big"`
+    // Pass true if the reaction needs to be added to recent reactions
+    UpdateRecentReactions bool `json:"update_recent_reactions"`
 }
 
-// Changes chosen reaction for a message
-func (client *Client) SetMessageReaction(req *SetMessageReactionRequest) (*Ok, error) {
+// Adds a reaction to a message. Use getMessageAvailableReactions to receive the list of available reactions for the message
+func (client *Client) AddMessageReaction(req *AddMessageReactionRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
-            Type: "setMessageReaction",
+            Type: "addMessageReaction",
         },
         Data: map[string]interface{}{
             "chat_id": req.ChatId,
             "message_id": req.MessageId,
-            "reaction": req.Reaction,
+            "reaction_type": req.ReactionType,
             "is_big": req.IsBig,
+            "update_recent_reactions": req.UpdateRecentReactions,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type RemoveMessageReactionRequest struct { 
+    // Identifier of the chat to which the message belongs
+    ChatId int64 `json:"chat_id"`
+    // Identifier of the message
+    MessageId int64 `json:"message_id"`
+    // Type of the reaction to remove
+    ReactionType ReactionType `json:"reaction_type"`
+}
+
+// Removes a reaction from a message. A chosen reaction can always be removed
+func (client *Client) RemoveMessageReaction(req *RemoveMessageReactionRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "removeMessageReaction",
+        },
+        Data: map[string]interface{}{
+            "chat_id": req.ChatId,
+            "message_id": req.MessageId,
+            "reaction_type": req.ReactionType,
         },
     })
     if err != nil {
@@ -3617,8 +3864,8 @@ type GetMessageAddedReactionsRequest struct {
     ChatId int64 `json:"chat_id"`
     // Identifier of the message
     MessageId int64 `json:"message_id"`
-    // If non-empty, only added reactions with the specified text representation will be returned
-    Reaction string `json:"reaction"`
+    // Type of the reactions to return; pass null to return all added reactions
+    ReactionType ReactionType `json:"reaction_type"`
     // Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results
     Offset string `json:"offset"`
     // The maximum number of reactions to be returned; must be positive and can't be greater than 100
@@ -3634,7 +3881,7 @@ func (client *Client) GetMessageAddedReactions(req *GetMessageAddedReactionsRequ
         Data: map[string]interface{}{
             "chat_id": req.ChatId,
             "message_id": req.MessageId,
-            "reaction": req.Reaction,
+            "reaction_type": req.ReactionType,
             "offset": req.Offset,
             "limit": req.Limit,
         },
@@ -3648,6 +3895,32 @@ func (client *Client) GetMessageAddedReactions(req *GetMessageAddedReactionsRequ
     }
 
     return UnmarshalAddedReactions(result.Data)
+}
+
+type SetDefaultReactionTypeRequest struct { 
+    // New type of the default reaction
+    ReactionType ReactionType `json:"reaction_type"`
+}
+
+// Changes type of default reaction for the current user
+func (client *Client) SetDefaultReactionType(req *SetDefaultReactionTypeRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setDefaultReactionType",
+        },
+        Data: map[string]interface{}{
+            "reaction_type": req.ReactionType,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
 }
 
 type GetTextEntitiesRequest struct { 
@@ -4329,6 +4602,8 @@ type GetWebAppUrlRequest struct {
     Url string `json:"url"`
     // Preferred Web App theme; pass null to use the default theme
     Theme *ThemeParameters `json:"theme"`
+    // Short name of the application; 0-64 English letters, digits, and underscores
+    ApplicationName string `json:"application_name"`
 }
 
 // Returns an HTTPS URL of a Web App to open after keyboardButtonTypeWebApp button is pressed
@@ -4341,6 +4616,7 @@ func (client *Client) GetWebAppUrl(req *GetWebAppUrlRequest) (*HttpUrl, error) {
             "bot_user_id": req.BotUserId,
             "url": req.Url,
             "theme": req.Theme,
+            "application_name": req.ApplicationName,
         },
     })
     if err != nil {
@@ -4395,6 +4671,8 @@ type OpenWebAppRequest struct {
     Url string `json:"url"`
     // Preferred Web App theme; pass null to use the default theme
     Theme *ThemeParameters `json:"theme"`
+    // Short name of the application; 0-64 English letters, digits, and underscores
+    ApplicationName string `json:"application_name"`
     // Identifier of the replied message for the message sent by the Web App; 0 if none
     ReplyToMessageId int64 `json:"reply_to_message_id"`
 }
@@ -4410,6 +4688,7 @@ func (client *Client) OpenWebApp(req *OpenWebAppRequest) (*WebAppInfo, error) {
             "bot_user_id": req.BotUserId,
             "url": req.Url,
             "theme": req.Theme,
+            "application_name": req.ApplicationName,
             "reply_to_message_id": req.ReplyToMessageId,
         },
     })
@@ -5012,6 +5291,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
 
     case TypeInternalLinkTypeGame:
         return UnmarshalInternalLinkTypeGame(result.Data)
+
+    case TypeInternalLinkTypeInstantView:
+        return UnmarshalInternalLinkTypeInstantView(result.Data)
 
     case TypeInternalLinkTypeInvoice:
         return UnmarshalInternalLinkTypeInvoice(result.Data)
@@ -5966,8 +6248,8 @@ func (client *Client) ToggleChatDefaultDisableNotification(req *ToggleChatDefaul
 type SetChatAvailableReactionsRequest struct { 
     // Identifier of the chat
     ChatId int64 `json:"chat_id"`
-    // New list of reactions, available in the chat. All reactions must be active
-    AvailableReactions []string `json:"available_reactions"`
+    // Reactions available in the chat. All emoji reactions must be active
+    AvailableReactions ChatAvailableReactions `json:"available_reactions"`
 }
 
 // Changes reactions, available in a chat. Available for basic groups, supergroups, and channels. Requires can_change_info administrator right
@@ -6893,6 +7175,82 @@ func (client *Client) ToggleBotIsAddedToAttachmentMenu(req *ToggleBotIsAddedToAt
             "bot_user_id": req.BotUserId,
             "is_added": req.IsAdded,
         },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+// Returns up to 8 themed emoji statuses, which color must be changed to the color of the Telegram Premium badge
+func (client *Client) GetThemedEmojiStatuses() (*EmojiStatuses, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getThemedEmojiStatuses",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalEmojiStatuses(result.Data)
+}
+
+// Returns recent emoji statuses
+func (client *Client) GetRecentEmojiStatuses() (*EmojiStatuses, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getRecentEmojiStatuses",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalEmojiStatuses(result.Data)
+}
+
+// Returns default emoji statuses
+func (client *Client) GetDefaultEmojiStatuses() (*EmojiStatuses, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getDefaultEmojiStatuses",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalEmojiStatuses(result.Data)
+}
+
+// Clears the list of recently used emoji statuses
+func (client *Client) ClearRecentEmojiStatuses() (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "clearRecentEmojiStatuses",
+        },
+        Data: map[string]interface{}{},
     })
     if err != nil {
         return nil, err
@@ -10533,6 +10891,35 @@ func (client *Client) SetUsername(req *SetUsernameRequest) (*Ok, error) {
     return UnmarshalOk(result.Data)
 }
 
+type SetEmojiStatusRequest struct { 
+    // New emoji status; pass null to switch to the default badge
+    EmojiStatus *EmojiStatus `json:"emoji_status"`
+    // Duration of the status, in seconds; pass 0 to keep the status active until it will be changed manually
+    Duration int32 `json:"duration"`
+}
+
+// Changes the emoji status of the current user; for Telegram Premium users only
+func (client *Client) SetEmojiStatus(req *SetEmojiStatusRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setEmojiStatus",
+        },
+        Data: map[string]interface{}{
+            "emoji_status": req.EmojiStatus,
+            "duration": req.Duration,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
 type SetLocationRequest struct { 
     // The new location of the user
     Location *Location `json:"location"`
@@ -10588,7 +10975,7 @@ func (client *Client) ChangePhoneNumber(req *ChangePhoneNumberRequest) (*Authent
     return UnmarshalAuthenticationCodeInfo(result.Data)
 }
 
-// Re-sends the authentication code sent to confirm a new phone number for the current user. Works only if the previously received authenticationCodeInfo next_code_type was not null and the server-specified timeout has passed
+// Resends the authentication code sent to confirm a new phone number for the current user. Works only if the previously received authenticationCodeInfo next_code_type was not null and the server-specified timeout has passed
 func (client *Client) ResendChangePhoneNumberCode() (*AuthenticationCodeInfo, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -12419,6 +12806,38 @@ func (client *Client) ReportChatPhoto(req *ReportChatPhotoRequest) (*Ok, error) 
     return UnmarshalOk(result.Data)
 }
 
+type ReportMessageReactionsRequest struct { 
+    // Chat identifier
+    ChatId int64 `json:"chat_id"`
+    // Message identifier
+    MessageId int64 `json:"message_id"`
+    // Identifier of the sender, which added the reaction
+    SenderId MessageSender `json:"sender_id"`
+}
+
+// Reports reactions set on a message to the Telegram moderators. Reactions on a message can be reported only if message.can_report_reactions
+func (client *Client) ReportMessageReactions(req *ReportMessageReactionsRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "reportMessageReactions",
+        },
+        Data: map[string]interface{}{
+            "chat_id": req.ChatId,
+            "message_id": req.MessageId,
+            "sender_id": req.SenderId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
 type GetChatStatisticsRequest struct { 
     // Chat identifier
     ChatId int64 `json:"chat_id"`
@@ -13096,7 +13515,7 @@ func (client *Client) SendPhoneNumberVerificationCode(req *SendPhoneNumberVerifi
     return UnmarshalAuthenticationCodeInfo(result.Data)
 }
 
-// Re-sends the code to verify a phone number to be added to a user's Telegram Passport
+// Resends the code to verify a phone number to be added to a user's Telegram Passport
 func (client *Client) ResendPhoneNumberVerificationCode() (*AuthenticationCodeInfo, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -13167,7 +13586,7 @@ func (client *Client) SendEmailAddressVerificationCode(req *SendEmailAddressVeri
     return UnmarshalEmailAddressAuthenticationCodeInfo(result.Data)
 }
 
-// Re-sends the code to verify an email address to be added to a user's Telegram Passport
+// Resends the code to verify an email address to be added to a user's Telegram Passport
 func (client *Client) ResendEmailAddressVerificationCode() (*EmailAddressAuthenticationCodeInfo, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -14715,6 +15134,61 @@ func AddLogMessage(req *AddLogMessageRequest) (*Ok, error) {
 func (client *Client) AddLogMessage(req *AddLogMessageRequest) (*Ok, error) {
     return AddLogMessage(req)}
 
+type GetUserSupportInfoRequest struct { 
+    // User identifier
+    UserId int64 `json:"user_id"`
+}
+
+// Returns support information for the given user; for Telegram support only
+func (client *Client) GetUserSupportInfo(req *GetUserSupportInfoRequest) (*UserSupportInfo, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getUserSupportInfo",
+        },
+        Data: map[string]interface{}{
+            "user_id": req.UserId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalUserSupportInfo(result.Data)
+}
+
+type SetUserSupportInfoRequest struct { 
+    // User identifier
+    UserId int64 `json:"user_id"`
+    // New information message
+    Message *FormattedText `json:"message"`
+}
+
+// Sets support information for the given user; for Telegram support only
+func (client *Client) SetUserSupportInfo(req *SetUserSupportInfoRequest) (*UserSupportInfo, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setUserSupportInfo",
+        },
+        Data: map[string]interface{}{
+            "user_id": req.UserId,
+            "message": req.Message,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalUserSupportInfo(result.Data)
+}
+
 // Does nothing; for testing only. This is an offline method. Can be called before authorization
 func (client *Client) TestCallEmpty() (*Ok, error) {
     result, err := client.Send(Request{
@@ -15267,8 +15741,11 @@ func (client *Client) TestUseUpdate() (Update, error) {
     case TypeUpdateWebAppMessageSent:
         return UnmarshalUpdateWebAppMessageSent(result.Data)
 
-    case TypeUpdateReactions:
-        return UnmarshalUpdateReactions(result.Data)
+    case TypeUpdateActiveEmojiReactions:
+        return UnmarshalUpdateActiveEmojiReactions(result.Data)
+
+    case TypeUpdateDefaultReactionType:
+        return UnmarshalUpdateDefaultReactionType(result.Data)
 
     case TypeUpdateDiceEmojis:
         return UnmarshalUpdateDiceEmojis(result.Data)
