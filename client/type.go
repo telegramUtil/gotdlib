@@ -221,6 +221,7 @@ const (
     ClassForumTopicIcon = "ForumTopicIcon"
     ClassForumTopicInfo = "ForumTopicInfo"
     ClassForumTopic = "ForumTopic"
+    ClassForumTopics = "ForumTopics"
     ClassPageBlockCaption = "PageBlockCaption"
     ClassPageBlockListItem = "PageBlockListItem"
     ClassPageBlockTableCell = "PageBlockTableCell"
@@ -294,6 +295,7 @@ const (
     ClassAttachmentMenuBot = "AttachmentMenuBot"
     ClassSentWebAppMessage = "SentWebAppMessage"
     ClassHttpUrl = "HttpUrl"
+    ClassUserLink = "UserLink"
     ClassInlineQueryResults = "InlineQueryResults"
     ClassCallbackQueryAnswer = "CallbackQueryAnswer"
     ClassCustomRequestResult = "CustomRequestResult"
@@ -323,6 +325,7 @@ const (
     ClassJsonObjectMember = "JsonObjectMember"
     ClassUserPrivacySettingRules = "UserPrivacySettingRules"
     ClassAccountTtl = "AccountTtl"
+    ClassMessageTtl = "MessageTtl"
     ClassSession = "Session"
     ClassSessions = "Sessions"
     ClassConnectedWebsite = "ConnectedWebsite"
@@ -377,6 +380,7 @@ const (
     TypeAuthenticationCodeTypeCall = "authenticationCodeTypeCall"
     TypeAuthenticationCodeTypeFlashCall = "authenticationCodeTypeFlashCall"
     TypeAuthenticationCodeTypeMissedCall = "authenticationCodeTypeMissedCall"
+    TypeAuthenticationCodeTypeFragment = "authenticationCodeTypeFragment"
     TypeAuthenticationCodeInfo = "authenticationCodeInfo"
     TypeEmailAddressAuthenticationCodeInfo = "emailAddressAuthenticationCodeInfo"
     TypeEmailAddressAuthenticationCode = "emailAddressAuthenticationCode"
@@ -611,6 +615,7 @@ const (
     TypeForumTopicIcon = "forumTopicIcon"
     TypeForumTopicInfo = "forumTopicInfo"
     TypeForumTopic = "forumTopic"
+    TypeForumTopics = "forumTopics"
     TypeRichTextPlain = "richTextPlain"
     TypeRichTextBold = "richTextBold"
     TypeRichTextItalic = "richTextItalic"
@@ -814,6 +819,7 @@ const (
     TypeMessageForumTopicCreated = "messageForumTopicCreated"
     TypeMessageForumTopicEdited = "messageForumTopicEdited"
     TypeMessageForumTopicIsClosedToggled = "messageForumTopicIsClosedToggled"
+    TypeMessageForumTopicIsHiddenToggled = "messageForumTopicIsHiddenToggled"
     TypeMessageCustomServiceAction = "messageCustomServiceAction"
     TypeMessageGameScore = "messageGameScore"
     TypeMessagePaymentSuccessful = "messagePaymentSuccessful"
@@ -968,6 +974,7 @@ const (
     TypeAttachmentMenuBot = "attachmentMenuBot"
     TypeSentWebAppMessage = "sentWebAppMessage"
     TypeHttpUrl = "httpUrl"
+    TypeUserLink = "userLink"
     TypeInputInlineQueryResultAnimation = "inputInlineQueryResultAnimation"
     TypeInputInlineQueryResultArticle = "inputInlineQueryResultArticle"
     TypeInputInlineQueryResultAudio = "inputInlineQueryResultAudio"
@@ -1027,6 +1034,7 @@ const (
     TypeChatEventHasProtectedContentToggled = "chatEventHasProtectedContentToggled"
     TypeChatEventInvitesToggled = "chatEventInvitesToggled"
     TypeChatEventIsAllHistoryAvailableToggled = "chatEventIsAllHistoryAvailableToggled"
+    TypeChatEventIsAggressiveAntiSpamEnabledToggled = "chatEventIsAggressiveAntiSpamEnabledToggled"
     TypeChatEventSignMessagesToggled = "chatEventSignMessagesToggled"
     TypeChatEventInviteLinkEdited = "chatEventInviteLinkEdited"
     TypeChatEventInviteLinkRevoked = "chatEventInviteLinkRevoked"
@@ -1040,6 +1048,7 @@ const (
     TypeChatEventForumTopicCreated = "chatEventForumTopicCreated"
     TypeChatEventForumTopicEdited = "chatEventForumTopicEdited"
     TypeChatEventForumTopicToggleIsClosed = "chatEventForumTopicToggleIsClosed"
+    TypeChatEventForumTopicToggleIsHidden = "chatEventForumTopicToggleIsHidden"
     TypeChatEventForumTopicDeleted = "chatEventForumTopicDeleted"
     TypeChatEventForumTopicPinned = "chatEventForumTopicPinned"
     TypeChatEvent = "chatEvent"
@@ -1118,7 +1127,8 @@ const (
     TypeCheckChatUsernameResultOk = "checkChatUsernameResultOk"
     TypeCheckChatUsernameResultUsernameInvalid = "checkChatUsernameResultUsernameInvalid"
     TypeCheckChatUsernameResultUsernameOccupied = "checkChatUsernameResultUsernameOccupied"
-    TypeCheckChatUsernameResultPublicChatsTooMuch = "checkChatUsernameResultPublicChatsTooMuch"
+    TypeCheckChatUsernameResultUsernamePurchasable = "checkChatUsernameResultUsernamePurchasable"
+    TypeCheckChatUsernameResultPublicChatsTooMany = "checkChatUsernameResultPublicChatsTooMany"
     TypeCheckChatUsernameResultPublicGroupsUnavailable = "checkChatUsernameResultPublicGroupsUnavailable"
     TypeCheckStickerSetNameResultOk = "checkStickerSetNameResultOk"
     TypeCheckStickerSetNameResultNameInvalid = "checkStickerSetNameResultNameInvalid"
@@ -1200,6 +1210,7 @@ const (
     TypeUserPrivacySettingAllowFindingByPhoneNumber = "userPrivacySettingAllowFindingByPhoneNumber"
     TypeUserPrivacySettingAllowPrivateVoiceAndVideoNoteMessages = "userPrivacySettingAllowPrivateVoiceAndVideoNoteMessages"
     TypeAccountTtl = "accountTtl"
+    TypeMessageTtl = "messageTtl"
     TypeSessionTypeAndroid = "sessionTypeAndroid"
     TypeSessionTypeApple = "sessionTypeApple"
     TypeSessionTypeBrave = "sessionTypeBrave"
@@ -1266,6 +1277,7 @@ const (
     TypeInternalLinkTypeUnknownDeepLink = "internalLinkTypeUnknownDeepLink"
     TypeInternalLinkTypeUnsupportedProxy = "internalLinkTypeUnsupportedProxy"
     TypeInternalLinkTypeUserPhoneNumber = "internalLinkTypeUserPhoneNumber"
+    TypeInternalLinkTypeUserToken = "internalLinkTypeUserToken"
     TypeInternalLinkTypeVideoChat = "internalLinkTypeVideoChat"
     TypeMessageLink = "messageLink"
     TypeMessageLinkInfo = "messageLinkInfo"
@@ -1947,7 +1959,7 @@ type SuggestedAction interface {
     SuggestedActionType() string
 }
 
-// Describes the way the text needs to be parsed for TextEntities
+// Describes the way the text needs to be parsed for text entities
 type TextParseMode interface {
     TextParseModeType() string
 }
@@ -2168,6 +2180,35 @@ func (*AuthenticationCodeTypeMissedCall) GetType() string {
 
 func (*AuthenticationCodeTypeMissedCall) AuthenticationCodeTypeType() string {
     return TypeAuthenticationCodeTypeMissedCall
+}
+
+// An authentication code is delivered to https://fragment.com. The user must be logged in there via a wallet owning the phone number's NFT
+type AuthenticationCodeTypeFragment struct {
+    meta
+    // URL to open to receive the code
+    Url string `json:"url"`
+    // Length of the code
+    Length int32 `json:"length"`
+}
+
+func (entity *AuthenticationCodeTypeFragment) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub AuthenticationCodeTypeFragment
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*AuthenticationCodeTypeFragment) GetClass() string {
+    return ClassAuthenticationCodeType
+}
+
+func (*AuthenticationCodeTypeFragment) GetType() string {
+    return TypeAuthenticationCodeTypeFragment
+}
+
+func (*AuthenticationCodeTypeFragment) AuthenticationCodeTypeType() string {
+    return TypeAuthenticationCodeTypeFragment
 }
 
 // Information about the authentication code that was sent
@@ -5034,7 +5075,7 @@ func (premiumPaymentOption *PremiumPaymentOption) UnmarshalJSON(data []byte) err
 // Describes a custom emoji to be shown instead of the Telegram Premium badge
 type EmojiStatus struct {
     meta
-    // Identifier of the custom emoji in stickerFormatTgs format. If the custom emoji belongs to the sticker set GetOption("themed_emoji_statuses_sticker_set_id"), then it's color must be changed to the color of the Telegram Premium badge
+    // Identifier of the custom emoji in stickerFormatTgs format. If the custom emoji belongs to the sticker set getOption("themed_emoji_statuses_sticker_set_id"), then it's color must be changed to the color of the Telegram Premium badge
     CustomEmojiId JsonInt64 `json:"custom_emoji_id"`
 }
 
@@ -5135,13 +5176,15 @@ type User struct {
     IsPremium bool `json:"is_premium"`
     // True, if the user is Telegram support account
     IsSupport bool `json:"is_support"`
+    // True, if the user's phone number was bought on Fragment and isn't tied to a SIM card
+    HasAnonymousPhoneNumber bool `json:"has_anonymous_phone_number"`
     // If non-empty, it contains a human-readable description of the reason why access to this user must be restricted
     RestrictionReason string `json:"restriction_reason"`
     // True, if many users reported this user as a scam
     IsScam bool `json:"is_scam"`
     // True, if many users reported this user as a fake account
     IsFake bool `json:"is_fake"`
-    // If false, the user is inaccessible, and the only information known about the user is inside this class. Identifier of the user can't be passed to any method except GetUser
+    // If false, the user is inaccessible, and the only information known about the user is inside this class. Identifier of the user can't be passed to any method
     HaveAccess bool `json:"have_access"`
     // Type of the user
     Type UserType `json:"type"`
@@ -5183,6 +5226,7 @@ func (user *User) UnmarshalJSON(data []byte) error {
         IsVerified bool `json:"is_verified"`
         IsPremium bool `json:"is_premium"`
         IsSupport bool `json:"is_support"`
+        HasAnonymousPhoneNumber bool `json:"has_anonymous_phone_number"`
         RestrictionReason string `json:"restriction_reason"`
         IsScam bool `json:"is_scam"`
         IsFake bool `json:"is_fake"`
@@ -5210,6 +5254,7 @@ func (user *User) UnmarshalJSON(data []byte) error {
     user.IsVerified = tmp.IsVerified
     user.IsPremium = tmp.IsPremium
     user.IsSupport = tmp.IsSupport
+    user.HasAnonymousPhoneNumber = tmp.HasAnonymousPhoneNumber
     user.RestrictionReason = tmp.RestrictionReason
     user.IsScam = tmp.IsScam
     user.IsFake = tmp.IsFake
@@ -5560,7 +5605,7 @@ type ChatMember struct {
     MemberId MessageSender `json:"member_id"`
     // Identifier of a user that invited/promoted/banned this member in the chat; 0 if unknown
     InviterUserId int64 `json:"inviter_user_id"`
-    // Point in time (Unix timestamp) when the user joined the chat
+    // Point in time (Unix timestamp) when the user joined/was promoted/was banned in the chat
     JoinedChatDate int32 `json:"joined_chat_date"`
     // Status of the member in the chat
     Status ChatMemberStatus `json:"status"`
@@ -6584,6 +6629,8 @@ type SupergroupFullInfo struct {
     CanGetStatistics bool `json:"can_get_statistics"`
     // True, if new chat members will have access to old messages. In public, discussion, of forum groups and all channels, old messages are always available, so this option affects only private non-forum supergroups without a linked chat. The value of this field is only available for chat administrators
     IsAllHistoryAvailable bool `json:"is_all_history_available"`
+    // True, if aggressive anti-spam checks are enabled in the supergroup. The value of this field is only available for chat administrators
+    IsAggressiveAntiSpamEnabled bool `json:"is_aggressive_anti_spam_enabled"`
     // Identifier of the supergroup sticker set; 0 if none
     StickerSetId JsonInt64 `json:"sticker_set_id"`
     // Location to which the supergroup is connected; may be null
@@ -8015,26 +8062,26 @@ func (*NotificationSettingsScopeChannelChats) NotificationSettingsScopeType() st
     return TypeNotificationSettingsScopeChannelChats
 }
 
-// Contains information about notification settings for a chat
+// Contains information about notification settings for a chat or a froum topic
 type ChatNotificationSettings struct {
     meta
-    // If true, mute_for is ignored and the value for the relevant type of chat is used instead
+    // If true, mute_for is ignored and the value for the relevant type of chat or the forum chat is used instead
     UseDefaultMuteFor bool `json:"use_default_mute_for"`
     // Time left before notifications will be unmuted, in seconds
     MuteFor int32 `json:"mute_for"`
-    // If true, the value for the relevant type of chat is used instead of sound_id
+    // If true, the value for the relevant type of chat or the forum chat is used instead of sound_id
     UseDefaultSound bool `json:"use_default_sound"`
     // Identifier of the notification sound to be played; 0 if sound is disabled
     SoundId JsonInt64 `json:"sound_id"`
-    // If true, show_preview is ignored and the value for the relevant type of chat is used instead
+    // If true, show_preview is ignored and the value for the relevant type of chat or the forum chat is used instead
     UseDefaultShowPreview bool `json:"use_default_show_preview"`
     // True, if message content must be displayed in notifications
     ShowPreview bool `json:"show_preview"`
-    // If true, disable_pinned_message_notifications is ignored and the value for the relevant type of chat is used instead
+    // If true, disable_pinned_message_notifications is ignored and the value for the relevant type of chat or the forum chat is used instead
     UseDefaultDisablePinnedMessageNotifications bool `json:"use_default_disable_pinned_message_notifications"`
     // If true, notifications for incoming pinned messages will be created as for an ordinary unread message
     DisablePinnedMessageNotifications bool `json:"disable_pinned_message_notifications"`
-    // If true, disable_mention_notifications is ignored and the value for the relevant type of chat is used instead
+    // If true, disable_mention_notifications is ignored and the value for the relevant type of chat or the forum chat is used instead
     UseDefaultDisableMentionNotifications bool `json:"use_default_disable_mention_notifications"`
     // If true, notifications for messages with mentions will be created as for an ordinary unread message
     DisableMentionNotifications bool `json:"disable_mention_notifications"`
@@ -8254,11 +8301,11 @@ type ChatFilter struct {
     Title string `json:"title"`
     // The chosen icon name for short filter representation. If non-empty, must be one of "All", "Unread", "Unmuted", "Bots", "Channels", "Groups", "Private", "Custom", "Setup", "Cat", "Crown", "Favorite", "Flower", "Game", "Home", "Love", "Mask", "Party", "Sport", "Study", "Trade", "Travel", "Work", "Airplane", "Book", "Light", "Like", "Money", "Note", "Palette". If empty, use getChatFilterDefaultIconName to get default icon name for the filter
     IconName string `json:"icon_name"`
-    // The chat identifiers of pinned chats in the filtered chat list. There can be up to GetOption("chat_filter_chosen_chat_count_max") pinned and always included non-secret chats and the same number of secret chats, but the limit can be increased with Telegram Premium
+    // The chat identifiers of pinned chats in the filtered chat list. There can be up to getOption("chat_filter_chosen_chat_count_max") pinned and always included non-secret chats and the same number of secret chats, but the limit can be increased with Telegram Premium
     PinnedChatIds []int64 `json:"pinned_chat_ids"`
-    // The chat identifiers of always included chats in the filtered chat list. There can be up to GetOption("chat_filter_chosen_chat_count_max") pinned and always included non-secret chats and the same number of secret chats, but the limit can be increased with Telegram Premium
+    // The chat identifiers of always included chats in the filtered chat list. There can be up to getOption("chat_filter_chosen_chat_count_max") pinned and always included non-secret chats and the same number of secret chats, but the limit can be increased with Telegram Premium
     IncludedChatIds []int64 `json:"included_chat_ids"`
-    // The chat identifiers of always excluded chats in the filtered chat list. There can be up to GetOption("chat_filter_chosen_chat_count_max") always excluded non-secret chats and the same number of secret chats, but the limit can be increased with Telegram Premium
+    // The chat identifiers of always excluded chats in the filtered chat list. There can be up to getOption("chat_filter_chosen_chat_count_max") always excluded non-secret chats and the same number of secret chats, but the limit can be increased with Telegram Premium
     ExcludedChatIds []int64 `json:"excluded_chat_ids"`
     // True, if muted chats need to be excluded
     ExcludeMuted bool `json:"exclude_muted"`
@@ -9651,7 +9698,7 @@ func (inlineKeyboardButton *InlineKeyboardButton) UnmarshalJSON(data []byte) err
     return nil
 }
 
-// Instructs application to remove the keyboard once this message has been received. This kind of keyboard can't be received in an incoming message; instead, UpdateChatReplyMarkup with message_id == 0 will be sent
+// Instructs application to remove the keyboard once this message has been received. This kind of keyboard can't be received in an incoming message; instead, updateChatReplyMarkup with message_id == 0 will be sent
 type ReplyMarkupRemoveKeyboard struct {
     meta
     // True, if the keyboard is removed only for the mentioned users or the target user of a reply
@@ -9927,10 +9974,14 @@ type ForumTopicInfo struct {
     CreationDate int32 `json:"creation_date"`
     // Identifier of the creator of the topic
     CreatorId MessageSender `json:"creator_id"`
+    // True, if the topic is the General topic list
+    IsGeneral bool `json:"is_general"`
     // True, if the topic was created by the current user
     IsOutgoing bool `json:"is_outgoing"`
     // True, if the topic is closed
     IsClosed bool `json:"is_closed"`
+    // True, if the topic is hidden above the topic list and closed; for General topic only
+    IsHidden bool `json:"is_hidden"`
 }
 
 func (entity *ForumTopicInfo) MarshalJSON() ([]byte, error) {
@@ -9956,8 +10007,10 @@ func (forumTopicInfo *ForumTopicInfo) UnmarshalJSON(data []byte) error {
         Icon *ForumTopicIcon `json:"icon"`
         CreationDate int32 `json:"creation_date"`
         CreatorId json.RawMessage `json:"creator_id"`
+        IsGeneral bool `json:"is_general"`
         IsOutgoing bool `json:"is_outgoing"`
         IsClosed bool `json:"is_closed"`
+        IsHidden bool `json:"is_hidden"`
     }
 
     err := json.Unmarshal(data, &tmp)
@@ -9969,8 +10022,10 @@ func (forumTopicInfo *ForumTopicInfo) UnmarshalJSON(data []byte) error {
     forumTopicInfo.Name = tmp.Name
     forumTopicInfo.Icon = tmp.Icon
     forumTopicInfo.CreationDate = tmp.CreationDate
+    forumTopicInfo.IsGeneral = tmp.IsGeneral
     forumTopicInfo.IsOutgoing = tmp.IsOutgoing
     forumTopicInfo.IsClosed = tmp.IsClosed
+    forumTopicInfo.IsHidden = tmp.IsHidden
 
     fieldCreatorId, _ := UnmarshalMessageSender(tmp.CreatorId)
     forumTopicInfo.CreatorId = fieldCreatorId
@@ -9983,7 +10038,7 @@ type ForumTopic struct {
     meta
     // Basic information about the topic
     Info *ForumTopicInfo `json:"info"`
-    // Last message in the topic; may be null
+    // Last message in the topic; may be null if unknown
     LastMessage *Message `json:"last_message"`
     // True, if the topic is pinned in the topic list
     IsPinned bool `json:"is_pinned"`
@@ -10017,6 +10072,37 @@ func (*ForumTopic) GetClass() string {
 
 func (*ForumTopic) GetType() string {
     return TypeForumTopic
+}
+
+// Describes a list of forum topics
+type ForumTopics struct {
+    meta
+    // Approximate total number of forum topics found
+    TotalCount int32 `json:"total_count"`
+    // List of forum topics
+    Topics []*ForumTopic `json:"topics"`
+    // Offset date for the next getForumTopics request
+    NextOffsetDate int32 `json:"next_offset_date"`
+    // Offset message identifier for the next getForumTopics request
+    NextOffsetMessageId int64 `json:"next_offset_message_id"`
+    // Offset message thread identifier for the next getForumTopics request
+    NextOffsetMessageThreadId int64 `json:"next_offset_message_thread_id"`
+}
+
+func (entity *ForumTopics) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub ForumTopics
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*ForumTopics) GetClass() string {
+    return ClassForumTopics
+}
+
+func (*ForumTopics) GetType() string {
+    return TypeForumTopics
 }
 
 // A plain text
@@ -16657,6 +16743,8 @@ type MessageChatSetTtl struct {
     meta
     // New message TTL
     Ttl int32 `json:"ttl"`
+    // If not 0, a user identifier, which default setting was automatically applied
+    FromUserId int64 `json:"from_user_id"`
 }
 
 func (entity *MessageChatSetTtl) MarshalJSON() ([]byte, error) {
@@ -16742,7 +16830,7 @@ func (*MessageForumTopicEdited) MessageContentType() string {
 // A forum topic has been closed or opened
 type MessageForumTopicIsClosedToggled struct {
     meta
-    // True if the topic was closed or reopened
+    // True, if the topic was closed, otherwise the topic was reopened
     IsClosed bool `json:"is_closed"`
 }
 
@@ -16764,6 +16852,33 @@ func (*MessageForumTopicIsClosedToggled) GetType() string {
 
 func (*MessageForumTopicIsClosedToggled) MessageContentType() string {
     return TypeMessageForumTopicIsClosedToggled
+}
+
+// A General forum topic has been hidden or unhidden
+type MessageForumTopicIsHiddenToggled struct {
+    meta
+    // True, if the topic was hidden, otherwise the topic was unhidden
+    IsHidden bool `json:"is_hidden"`
+}
+
+func (entity *MessageForumTopicIsHiddenToggled) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub MessageForumTopicIsHiddenToggled
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*MessageForumTopicIsHiddenToggled) GetClass() string {
+    return ClassMessageContent
+}
+
+func (*MessageForumTopicIsHiddenToggled) GetType() string {
+    return TypeMessageForumTopicIsHiddenToggled
+}
+
+func (*MessageForumTopicIsHiddenToggled) MessageContentType() string {
+    return TypeMessageForumTopicIsHiddenToggled
 }
 
 // A non-standard action has happened in the chat
@@ -17894,7 +18009,7 @@ func (*MessageCopyOptions) GetType() string {
 // A text message
 type InputMessageText struct {
     meta
-    // Formatted text to be sent; 1-GetOption("message_text_length_max") characters. Only Bold, Italic, Underline, Strikethrough, Spoiler, CustomEmoji, Code, Pre, PreCode, TextUrl and MentionName entities are allowed to be specified manually
+    // Formatted text to be sent; 1-getOption("message_text_length_max") characters. Only Bold, Italic, Underline, Strikethrough, Spoiler, CustomEmoji, Code, Pre, PreCode, TextUrl and MentionName entities are allowed to be specified manually
     Text *FormattedText `json:"text"`
     // True, if rich web page previews for URLs in the message text must be disabled
     DisableWebPagePreview bool `json:"disable_web_page_preview"`
@@ -17937,7 +18052,7 @@ type InputMessageAnimation struct {
     Width int32 `json:"width"`
     // Height of the animation; may be replaced by the server
     Height int32 `json:"height"`
-    // Animation caption; pass null to use an empty caption; 0-GetOption("message_caption_length_max") characters
+    // Animation caption; pass null to use an empty caption; 0-getOption("message_caption_length_max") characters
     Caption *FormattedText `json:"caption"`
 }
 
@@ -18003,7 +18118,7 @@ type InputMessageAudio struct {
     Title string `json:"title"`
     // Performer of the audio; 0-64 characters, may be replaced by the server
     Performer string `json:"performer"`
-    // Audio caption; pass null to use an empty caption; 0-GetOption("message_caption_length_max") characters
+    // Audio caption; pass null to use an empty caption; 0-getOption("message_caption_length_max") characters
     Caption *FormattedText `json:"caption"`
 }
 
@@ -18063,7 +18178,7 @@ type InputMessageDocument struct {
     Thumbnail *InputThumbnail `json:"thumbnail"`
     // If true, automatic file type detection will be disabled and the document will always be sent as file. Always true for files sent to secret chats
     DisableContentTypeDetection bool `json:"disable_content_type_detection"`
-    // Document caption; pass null to use an empty caption; 0-GetOption("message_caption_length_max") characters
+    // Document caption; pass null to use an empty caption; 0-getOption("message_caption_length_max") characters
     Caption *FormattedText `json:"caption"`
 }
 
@@ -18123,7 +18238,7 @@ type InputMessagePhoto struct {
     Width int32 `json:"width"`
     // Photo height
     Height int32 `json:"height"`
-    // Photo caption; pass null to use an empty caption; 0-GetOption("message_caption_length_max") characters
+    // Photo caption; pass null to use an empty caption; 0-getOption("message_caption_length_max") characters
     Caption *FormattedText `json:"caption"`
     // Photo TTL (Time To Live), in seconds (0-60). A non-zero TTL can be specified only in private chats
     Ttl int32 `json:"ttl"`
@@ -18255,7 +18370,7 @@ type InputMessageVideo struct {
     Height int32 `json:"height"`
     // True, if the video is supposed to be streamed
     SupportsStreaming bool `json:"supports_streaming"`
-    // Video caption; pass null to use an empty caption; 0-GetOption("message_caption_length_max") characters
+    // Video caption; pass null to use an empty caption; 0-getOption("message_caption_length_max") characters
     Caption *FormattedText `json:"caption"`
     // Video TTL (Time To Live), in seconds (0-60). A non-zero TTL can be specified only in private chats
     Ttl int32 `json:"ttl"`
@@ -18379,7 +18494,7 @@ type InputMessageVoiceNote struct {
     Duration int32 `json:"duration"`
     // Waveform representation of the voice note in 5-bit format
     Waveform []byte `json:"waveform"`
-    // Voice note caption; pass null to use an empty caption; 0-GetOption("message_caption_length_max") characters
+    // Voice note caption; pass null to use an empty caption; 0-getOption("message_caption_length_max") characters
     Caption *FormattedText `json:"caption"`
 }
 
@@ -20812,7 +20927,7 @@ type GroupCallParticipantVideoInfo struct {
     SourceGroups []*GroupCallVideoSourceGroup `json:"source_groups"`
     // Video channel endpoint identifier
     EndpointId string `json:"endpoint_id"`
-    // True if the video is paused. This flag needs to be ignored, if new video frames are received
+    // True, if the video is paused. This flag needs to be ignored, if new video frames are received
     IsPaused bool `json:"is_paused"`
 }
 
@@ -21523,7 +21638,7 @@ func (*DiceStickersSlotMachine) DiceStickersType() string {
     return TypeDiceStickersSlotMachine
 }
 
-// Represents the result of an ImportContacts request
+// Represents the result of an importContacts request
 type ImportedContacts struct {
     meta
     // User identifiers of the imported contacts in the same order as they were specified in the request; 0 if the contact is not yet a registered user
@@ -21751,6 +21866,31 @@ func (*HttpUrl) GetClass() string {
 
 func (*HttpUrl) GetType() string {
     return TypeHttpUrl
+}
+
+// Contains an HTTPS URL, which can be used to get information about a user
+type UserLink struct {
+    meta
+    // The URL
+    Url string `json:"url"`
+    // Left time for which the link is valid, in seconds; 0 if the link is a public username link
+    ExpiresIn int32 `json:"expires_in"`
+}
+
+func (entity *UserLink) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub UserLink
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*UserLink) GetClass() string {
+    return ClassUserLink
+}
+
+func (*UserLink) GetType() string {
+    return TypeUserLink
 }
 
 // Represents a link to an animated GIF or an animated (i.e., without sound) H.264/MPEG-4 AVC video
@@ -23296,6 +23436,8 @@ type ChatEventMessageDeleted struct {
     meta
     // Deleted message
     Message *Message `json:"message"`
+    // True, if the message deletion can be reported via reportSupergroupAntiSpamFalsePositive
+    CanReportAntiSpamFalsePositive bool `json:"can_report_anti_spam_false_positive"`
 }
 
 func (entity *ChatEventMessageDeleted) MarshalJSON() ([]byte, error) {
@@ -24111,6 +24253,33 @@ func (*ChatEventIsAllHistoryAvailableToggled) ChatEventActionType() string {
     return TypeChatEventIsAllHistoryAvailableToggled
 }
 
+// The is_aggressive_anti_spam_enabled setting of a supergroup was toggled
+type ChatEventIsAggressiveAntiSpamEnabledToggled struct {
+    meta
+    // New value of is_aggressive_anti_spam_enabled
+    IsAggressiveAntiSpamEnabled bool `json:"is_aggressive_anti_spam_enabled"`
+}
+
+func (entity *ChatEventIsAggressiveAntiSpamEnabledToggled) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub ChatEventIsAggressiveAntiSpamEnabledToggled
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*ChatEventIsAggressiveAntiSpamEnabledToggled) GetClass() string {
+    return ClassChatEventAction
+}
+
+func (*ChatEventIsAggressiveAntiSpamEnabledToggled) GetType() string {
+    return TypeChatEventIsAggressiveAntiSpamEnabledToggled
+}
+
+func (*ChatEventIsAggressiveAntiSpamEnabledToggled) ChatEventActionType() string {
+    return TypeChatEventIsAggressiveAntiSpamEnabledToggled
+}
+
 // The sign_messages setting of a channel was toggled
 type ChatEventSignMessagesToggled struct {
     meta
@@ -24506,6 +24675,33 @@ func (*ChatEventForumTopicToggleIsClosed) GetType() string {
 
 func (*ChatEventForumTopicToggleIsClosed) ChatEventActionType() string {
     return TypeChatEventForumTopicToggleIsClosed
+}
+
+// The General forum topic was hidden or unhidden
+type ChatEventForumTopicToggleIsHidden struct {
+    meta
+    // New information about the topic
+    TopicInfo *ForumTopicInfo `json:"topic_info"`
+}
+
+func (entity *ChatEventForumTopicToggleIsHidden) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub ChatEventForumTopicToggleIsHidden
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*ChatEventForumTopicToggleIsHidden) GetClass() string {
+    return ClassChatEventAction
+}
+
+func (*ChatEventForumTopicToggleIsHidden) GetType() string {
+    return TypeChatEventForumTopicToggleIsHidden
+}
+
+func (*ChatEventForumTopicToggleIsHidden) ChatEventActionType() string {
+    return TypeChatEventForumTopicToggleIsHidden
 }
 
 // A forum topic was deleted
@@ -26862,29 +27058,54 @@ func (*CheckChatUsernameResultUsernameOccupied) CheckChatUsernameResultType() st
     return TypeCheckChatUsernameResultUsernameOccupied
 }
 
-// The user has too many chats with username, one of them must be made private first
-type CheckChatUsernameResultPublicChatsTooMuch struct{
+// The username can be purchased at fragment.com
+type CheckChatUsernameResultUsernamePurchasable struct{
     meta
 }
 
-func (entity *CheckChatUsernameResultPublicChatsTooMuch) MarshalJSON() ([]byte, error) {
+func (entity *CheckChatUsernameResultUsernamePurchasable) MarshalJSON() ([]byte, error) {
     entity.meta.Type = entity.GetType()
 
-    type stub CheckChatUsernameResultPublicChatsTooMuch
+    type stub CheckChatUsernameResultUsernamePurchasable
 
     return json.Marshal((*stub)(entity))
 }
 
-func (*CheckChatUsernameResultPublicChatsTooMuch) GetClass() string {
+func (*CheckChatUsernameResultUsernamePurchasable) GetClass() string {
     return ClassCheckChatUsernameResult
 }
 
-func (*CheckChatUsernameResultPublicChatsTooMuch) GetType() string {
-    return TypeCheckChatUsernameResultPublicChatsTooMuch
+func (*CheckChatUsernameResultUsernamePurchasable) GetType() string {
+    return TypeCheckChatUsernameResultUsernamePurchasable
 }
 
-func (*CheckChatUsernameResultPublicChatsTooMuch) CheckChatUsernameResultType() string {
-    return TypeCheckChatUsernameResultPublicChatsTooMuch
+func (*CheckChatUsernameResultUsernamePurchasable) CheckChatUsernameResultType() string {
+    return TypeCheckChatUsernameResultUsernamePurchasable
+}
+
+// The user has too many chats with username, one of them must be made private first
+type CheckChatUsernameResultPublicChatsTooMany struct{
+    meta
+}
+
+func (entity *CheckChatUsernameResultPublicChatsTooMany) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub CheckChatUsernameResultPublicChatsTooMany
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*CheckChatUsernameResultPublicChatsTooMany) GetClass() string {
+    return ClassCheckChatUsernameResult
+}
+
+func (*CheckChatUsernameResultPublicChatsTooMany) GetType() string {
+    return TypeCheckChatUsernameResultPublicChatsTooMany
+}
+
+func (*CheckChatUsernameResultPublicChatsTooMany) CheckChatUsernameResultType() string {
+    return TypeCheckChatUsernameResultPublicChatsTooMany
 }
 
 // The user can't be a member of a public supergroup
@@ -29206,6 +29427,29 @@ func (*AccountTtl) GetType() string {
     return TypeAccountTtl
 }
 
+// Contains default message Time To Live setting (self-destruct timer) for new chats
+type MessageTtl struct {
+    meta
+    // Message TTL setting, in seconds. If 0, then messages aren't deleted automatically
+    Ttl int32 `json:"ttl"`
+}
+
+func (entity *MessageTtl) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub MessageTtl
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*MessageTtl) GetClass() string {
+    return ClassMessageTtl
+}
+
+func (*MessageTtl) GetType() string {
+    return TypeMessageTtl
+}
+
 // The session is running on an Android device
 type SessionTypeAndroid struct{
     meta
@@ -30613,7 +30857,7 @@ func (*InternalLinkTypeLanguageSettings) InternalLinkTypeType() string {
     return TypeInternalLinkTypeLanguageSettings
 }
 
-// The link is a link to a Telegram message. Call getMessageLinkInfo with the given URL to process the link
+// The link is a link to a Telegram message or a forum topic. Call getMessageLinkInfo with the given URL to process the link
 type InternalLinkTypeMessage struct {
     meta
     // URL to be passed to getMessageLinkInfo
@@ -31097,6 +31341,33 @@ func (*InternalLinkTypeUserPhoneNumber) InternalLinkTypeType() string {
     return TypeInternalLinkTypeUserPhoneNumber
 }
 
+// The link is a link to a user by a temporary token. Call searchUserByToken with the given token to process the link
+type InternalLinkTypeUserToken struct {
+    meta
+    // The token
+    Token string `json:"token"`
+}
+
+func (entity *InternalLinkTypeUserToken) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InternalLinkTypeUserToken
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InternalLinkTypeUserToken) GetClass() string {
+    return ClassInternalLinkType
+}
+
+func (*InternalLinkTypeUserToken) GetType() string {
+    return TypeInternalLinkTypeUserToken
+}
+
+func (*InternalLinkTypeUserToken) InternalLinkTypeType() string {
+    return TypeInternalLinkTypeUserToken
+}
+
 // The link is a link to a video chat. Call searchPublicChat with the given chat username, and then joinGroupCall with the given invite hash to process the link
 type InternalLinkTypeVideoChat struct {
     meta
@@ -31153,14 +31424,14 @@ func (*MessageLink) GetType() string {
     return TypeMessageLink
 }
 
-// Contains information about a link to a message in a chat
+// Contains information about a link to a message or a forum topic in a chat
 type MessageLinkInfo struct {
     meta
     // True, if the link is a public link for a message in a chat
     IsPublic bool `json:"is_public"`
     // If found, identifier of the chat to which the message belongs, 0 otherwise
     ChatId int64 `json:"chat_id"`
-    // If found, identifier of the message thread in which to open the message, or which to open in case of a missing message
+    // If found, identifier of the message thread in which to open the message, or a forum topic to open if the message is missing
     MessageThreadId int64 `json:"message_thread_id"`
     // If found, the linked message; may be null
     Message *Message `json:"message"`
@@ -36990,7 +37261,7 @@ func (*UpdateAnimatedEmojiMessageClicked) UpdateType() string {
     return TypeUpdateAnimatedEmojiMessageClicked
 }
 
-// The parameters of animation search through GetOption("animation_search_bot_username") bot has changed
+// The parameters of animation search through getOption("animation_search_bot_username") bot has changed
 type UpdateAnimationSearchParameters struct {
     meta
     // Name of the animation search provider

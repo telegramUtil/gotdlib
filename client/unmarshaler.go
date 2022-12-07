@@ -31,6 +31,9 @@ func UnmarshalAuthenticationCodeType(data json.RawMessage) (AuthenticationCodeTy
     case TypeAuthenticationCodeTypeMissedCall:
         return UnmarshalAuthenticationCodeTypeMissedCall(data)
 
+    case TypeAuthenticationCodeTypeFragment:
+        return UnmarshalAuthenticationCodeTypeFragment(data)
+
     default:
         return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
     }
@@ -2096,6 +2099,9 @@ func UnmarshalMessageContent(data json.RawMessage) (MessageContent, error) {
     case TypeMessageForumTopicIsClosedToggled:
         return UnmarshalMessageForumTopicIsClosedToggled(data)
 
+    case TypeMessageForumTopicIsHiddenToggled:
+        return UnmarshalMessageForumTopicIsHiddenToggled(data)
+
     case TypeMessageCustomServiceAction:
         return UnmarshalMessageCustomServiceAction(data)
 
@@ -3094,6 +3100,9 @@ func UnmarshalChatEventAction(data json.RawMessage) (ChatEventAction, error) {
     case TypeChatEventIsAllHistoryAvailableToggled:
         return UnmarshalChatEventIsAllHistoryAvailableToggled(data)
 
+    case TypeChatEventIsAggressiveAntiSpamEnabledToggled:
+        return UnmarshalChatEventIsAggressiveAntiSpamEnabledToggled(data)
+
     case TypeChatEventSignMessagesToggled:
         return UnmarshalChatEventSignMessagesToggled(data)
 
@@ -3132,6 +3141,9 @@ func UnmarshalChatEventAction(data json.RawMessage) (ChatEventAction, error) {
 
     case TypeChatEventForumTopicToggleIsClosed:
         return UnmarshalChatEventForumTopicToggleIsClosed(data)
+
+    case TypeChatEventForumTopicToggleIsHidden:
+        return UnmarshalChatEventForumTopicToggleIsHidden(data)
 
     case TypeChatEventForumTopicDeleted:
         return UnmarshalChatEventForumTopicDeleted(data)
@@ -3624,8 +3636,11 @@ func UnmarshalCheckChatUsernameResult(data json.RawMessage) (CheckChatUsernameRe
     case TypeCheckChatUsernameResultUsernameOccupied:
         return UnmarshalCheckChatUsernameResultUsernameOccupied(data)
 
-    case TypeCheckChatUsernameResultPublicChatsTooMuch:
-        return UnmarshalCheckChatUsernameResultPublicChatsTooMuch(data)
+    case TypeCheckChatUsernameResultUsernamePurchasable:
+        return UnmarshalCheckChatUsernameResultUsernamePurchasable(data)
+
+    case TypeCheckChatUsernameResultPublicChatsTooMany:
+        return UnmarshalCheckChatUsernameResultPublicChatsTooMany(data)
 
     case TypeCheckChatUsernameResultPublicGroupsUnavailable:
         return UnmarshalCheckChatUsernameResultPublicGroupsUnavailable(data)
@@ -4426,6 +4441,9 @@ func UnmarshalInternalLinkType(data json.RawMessage) (InternalLinkType, error) {
 
     case TypeInternalLinkTypeUserPhoneNumber:
         return UnmarshalInternalLinkTypeUserPhoneNumber(data)
+
+    case TypeInternalLinkTypeUserToken:
+        return UnmarshalInternalLinkTypeUserToken(data)
 
     case TypeInternalLinkTypeVideoChat:
         return UnmarshalInternalLinkTypeVideoChat(data)
@@ -5438,6 +5456,14 @@ func UnmarshalAuthenticationCodeTypeFlashCall(data json.RawMessage) (*Authentica
 
 func UnmarshalAuthenticationCodeTypeMissedCall(data json.RawMessage) (*AuthenticationCodeTypeMissedCall, error) {
     var resp AuthenticationCodeTypeMissedCall
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalAuthenticationCodeTypeFragment(data json.RawMessage) (*AuthenticationCodeTypeFragment, error) {
+    var resp AuthenticationCodeTypeFragment
 
     err := json.Unmarshal(data, &resp)
 
@@ -7316,6 +7342,14 @@ func UnmarshalForumTopic(data json.RawMessage) (*ForumTopic, error) {
     return &resp, err
 }
 
+func UnmarshalForumTopics(data json.RawMessage) (*ForumTopics, error) {
+    var resp ForumTopics
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalRichTextPlain(data json.RawMessage) (*RichTextPlain, error) {
     var resp RichTextPlain
 
@@ -8940,6 +8974,14 @@ func UnmarshalMessageForumTopicIsClosedToggled(data json.RawMessage) (*MessageFo
     return &resp, err
 }
 
+func UnmarshalMessageForumTopicIsHiddenToggled(data json.RawMessage) (*MessageForumTopicIsHiddenToggled, error) {
+    var resp MessageForumTopicIsHiddenToggled
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalMessageCustomServiceAction(data json.RawMessage) (*MessageCustomServiceAction, error) {
     var resp MessageCustomServiceAction
 
@@ -10172,6 +10214,14 @@ func UnmarshalHttpUrl(data json.RawMessage) (*HttpUrl, error) {
     return &resp, err
 }
 
+func UnmarshalUserLink(data json.RawMessage) (*UserLink, error) {
+    var resp UserLink
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalInputInlineQueryResultAnimation(data json.RawMessage) (*InputInlineQueryResultAnimation, error) {
     var resp InputInlineQueryResultAnimation
 
@@ -10644,6 +10694,14 @@ func UnmarshalChatEventIsAllHistoryAvailableToggled(data json.RawMessage) (*Chat
     return &resp, err
 }
 
+func UnmarshalChatEventIsAggressiveAntiSpamEnabledToggled(data json.RawMessage) (*ChatEventIsAggressiveAntiSpamEnabledToggled, error) {
+    var resp ChatEventIsAggressiveAntiSpamEnabledToggled
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalChatEventSignMessagesToggled(data json.RawMessage) (*ChatEventSignMessagesToggled, error) {
     var resp ChatEventSignMessagesToggled
 
@@ -10742,6 +10800,14 @@ func UnmarshalChatEventForumTopicEdited(data json.RawMessage) (*ChatEventForumTo
 
 func UnmarshalChatEventForumTopicToggleIsClosed(data json.RawMessage) (*ChatEventForumTopicToggleIsClosed, error) {
     var resp ChatEventForumTopicToggleIsClosed
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalChatEventForumTopicToggleIsHidden(data json.RawMessage) (*ChatEventForumTopicToggleIsHidden, error) {
+    var resp ChatEventForumTopicToggleIsHidden
 
     err := json.Unmarshal(data, &resp)
 
@@ -11372,8 +11438,16 @@ func UnmarshalCheckChatUsernameResultUsernameOccupied(data json.RawMessage) (*Ch
     return &resp, err
 }
 
-func UnmarshalCheckChatUsernameResultPublicChatsTooMuch(data json.RawMessage) (*CheckChatUsernameResultPublicChatsTooMuch, error) {
-    var resp CheckChatUsernameResultPublicChatsTooMuch
+func UnmarshalCheckChatUsernameResultUsernamePurchasable(data json.RawMessage) (*CheckChatUsernameResultUsernamePurchasable, error) {
+    var resp CheckChatUsernameResultUsernamePurchasable
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalCheckChatUsernameResultPublicChatsTooMany(data json.RawMessage) (*CheckChatUsernameResultPublicChatsTooMany, error) {
+    var resp CheckChatUsernameResultPublicChatsTooMany
 
     err := json.Unmarshal(data, &resp)
 
@@ -12028,6 +12102,14 @@ func UnmarshalAccountTtl(data json.RawMessage) (*AccountTtl, error) {
     return &resp, err
 }
 
+func UnmarshalMessageTtl(data json.RawMessage) (*MessageTtl, error) {
+    var resp MessageTtl
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalSessionTypeAndroid(data json.RawMessage) (*SessionTypeAndroid, error) {
     var resp SessionTypeAndroid
 
@@ -12550,6 +12632,14 @@ func UnmarshalInternalLinkTypeUnsupportedProxy(data json.RawMessage) (*InternalL
 
 func UnmarshalInternalLinkTypeUserPhoneNumber(data json.RawMessage) (*InternalLinkTypeUserPhoneNumber, error) {
     var resp InternalLinkTypeUserPhoneNumber
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInternalLinkTypeUserToken(data json.RawMessage) (*InternalLinkTypeUserToken, error) {
+    var resp InternalLinkTypeUserToken
 
     err := json.Unmarshal(data, &resp)
 
@@ -14298,6 +14388,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeAuthenticationCodeTypeMissedCall:
         return UnmarshalAuthenticationCodeTypeMissedCall(data)
 
+    case TypeAuthenticationCodeTypeFragment:
+        return UnmarshalAuthenticationCodeTypeFragment(data)
+
     case TypeAuthenticationCodeInfo:
         return UnmarshalAuthenticationCodeInfo(data)
 
@@ -15000,6 +15093,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeForumTopic:
         return UnmarshalForumTopic(data)
 
+    case TypeForumTopics:
+        return UnmarshalForumTopics(data)
+
     case TypeRichTextPlain:
         return UnmarshalRichTextPlain(data)
 
@@ -15609,6 +15705,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeMessageForumTopicIsClosedToggled:
         return UnmarshalMessageForumTopicIsClosedToggled(data)
 
+    case TypeMessageForumTopicIsHiddenToggled:
+        return UnmarshalMessageForumTopicIsHiddenToggled(data)
+
     case TypeMessageCustomServiceAction:
         return UnmarshalMessageCustomServiceAction(data)
 
@@ -16071,6 +16170,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeHttpUrl:
         return UnmarshalHttpUrl(data)
 
+    case TypeUserLink:
+        return UnmarshalUserLink(data)
+
     case TypeInputInlineQueryResultAnimation:
         return UnmarshalInputInlineQueryResultAnimation(data)
 
@@ -16248,6 +16350,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeChatEventIsAllHistoryAvailableToggled:
         return UnmarshalChatEventIsAllHistoryAvailableToggled(data)
 
+    case TypeChatEventIsAggressiveAntiSpamEnabledToggled:
+        return UnmarshalChatEventIsAggressiveAntiSpamEnabledToggled(data)
+
     case TypeChatEventSignMessagesToggled:
         return UnmarshalChatEventSignMessagesToggled(data)
 
@@ -16286,6 +16391,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeChatEventForumTopicToggleIsClosed:
         return UnmarshalChatEventForumTopicToggleIsClosed(data)
+
+    case TypeChatEventForumTopicToggleIsHidden:
+        return UnmarshalChatEventForumTopicToggleIsHidden(data)
 
     case TypeChatEventForumTopicDeleted:
         return UnmarshalChatEventForumTopicDeleted(data)
@@ -16521,8 +16629,11 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeCheckChatUsernameResultUsernameOccupied:
         return UnmarshalCheckChatUsernameResultUsernameOccupied(data)
 
-    case TypeCheckChatUsernameResultPublicChatsTooMuch:
-        return UnmarshalCheckChatUsernameResultPublicChatsTooMuch(data)
+    case TypeCheckChatUsernameResultUsernamePurchasable:
+        return UnmarshalCheckChatUsernameResultUsernamePurchasable(data)
+
+    case TypeCheckChatUsernameResultPublicChatsTooMany:
+        return UnmarshalCheckChatUsernameResultPublicChatsTooMany(data)
 
     case TypeCheckChatUsernameResultPublicGroupsUnavailable:
         return UnmarshalCheckChatUsernameResultPublicGroupsUnavailable(data)
@@ -16767,6 +16878,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeAccountTtl:
         return UnmarshalAccountTtl(data)
 
+    case TypeMessageTtl:
+        return UnmarshalMessageTtl(data)
+
     case TypeSessionTypeAndroid:
         return UnmarshalSessionTypeAndroid(data)
 
@@ -16964,6 +17078,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeInternalLinkTypeUserPhoneNumber:
         return UnmarshalInternalLinkTypeUserPhoneNumber(data)
+
+    case TypeInternalLinkTypeUserToken:
+        return UnmarshalInternalLinkTypeUserToken(data)
 
     case TypeInternalLinkTypeVideoChat:
         return UnmarshalInternalLinkTypeVideoChat(data)
