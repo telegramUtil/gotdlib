@@ -635,7 +635,7 @@ type SetLoginEmailAddressRequest struct {
     NewLoginEmailAddress string `json:"new_login_email_address"`
 }
 
-// Changes the login email address of the user. The change will not be applied until the new login email address is confirmed with `checkLoginEmailAddressCode`. To use Apple ID/Google ID instead of a email address, call `checkLoginEmailAddressCode` directly
+// Changes the login email address of the user. The change will not be applied until the new login email address is confirmed with checkLoginEmailAddressCode. To use Apple ID/Google ID instead of a email address, call checkLoginEmailAddressCode directly
 func (client *Client) SetLoginEmailAddress(req *SetLoginEmailAddressRequest) (*EmailAddressAuthenticationCodeInfo, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -2165,7 +2165,7 @@ type SearchChatMessagesRequest struct {
 }
 
 // Searches for messages with given words in the chat. Returns the results in reverse chronological order, i.e. in order of decreasing message_id. Cannot be used in secret chats with a non-empty query (searchSecretMessages must be used instead), or without an enabled message database. For optimal performance, the number of returned messages is chosen by TDLib and can be smaller than the specified limit. A combination of query, sender_id, filter and message_thread_id search criteria is expected to be supported, only if it is required for Telegram official application implementation
-func (client *Client) SearchChatMessages(req *SearchChatMessagesRequest) (*Messages, error) {
+func (client *Client) SearchChatMessages(req *SearchChatMessagesRequest) (*FoundChatMessages, error) {
     result, err := client.Send(Request{
         meta: meta{
             Type: "searchChatMessages",
@@ -2189,7 +2189,7 @@ func (client *Client) SearchChatMessages(req *SearchChatMessagesRequest) (*Messa
         return nil, buildResponseError(result.Data)
     }
 
-    return UnmarshalMessages(result.Data)
+    return UnmarshalFoundChatMessages(result.Data)
 }
 
 type SearchMessagesRequest struct { 
@@ -2197,12 +2197,8 @@ type SearchMessagesRequest struct {
     ChatList ChatList `json:"chat_list"`
     // Query to search for
     Query string `json:"query"`
-    // The date of the message starting from which the results need to be fetched. Use 0 or any date in the future to get results from the last message
-    OffsetDate int32 `json:"offset_date"`
-    // The chat identifier of the last found message, or 0 for the first request
-    OffsetChatId int64 `json:"offset_chat_id"`
-    // The message identifier of the last found message, or 0 for the first request
-    OffsetMessageId int64 `json:"offset_message_id"`
+    // Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results
+    Offset string `json:"offset"`
     // The maximum number of messages to be returned; up to 100. For optimal performance, the number of returned messages is chosen by TDLib and can be smaller than the specified limit
     Limit int32 `json:"limit"`
     // Additional filter for messages to search; pass null to search for all messages. Filters searchMessagesFilterMention, searchMessagesFilterUnreadMention, searchMessagesFilterUnreadReaction, searchMessagesFilterFailedToSend, and searchMessagesFilterPinned are unsupported in this function
@@ -2214,7 +2210,7 @@ type SearchMessagesRequest struct {
 }
 
 // Searches for messages in all chats except secret chats. Returns the results in reverse chronological order (i.e., in order of decreasing (date, chat_id, message_id)). For optimal performance, the number of returned messages is chosen by TDLib and can be smaller than the specified limit
-func (client *Client) SearchMessages(req *SearchMessagesRequest) (*Messages, error) {
+func (client *Client) SearchMessages(req *SearchMessagesRequest) (*FoundMessages, error) {
     result, err := client.Send(Request{
         meta: meta{
             Type: "searchMessages",
@@ -2222,9 +2218,7 @@ func (client *Client) SearchMessages(req *SearchMessagesRequest) (*Messages, err
         Data: map[string]interface{}{
             "chat_list": req.ChatList,
             "query": req.Query,
-            "offset_date": req.OffsetDate,
-            "offset_chat_id": req.OffsetChatId,
-            "offset_message_id": req.OffsetMessageId,
+            "offset": req.Offset,
             "limit": req.Limit,
             "filter": req.Filter,
             "min_date": req.MinDate,
@@ -2239,7 +2233,7 @@ func (client *Client) SearchMessages(req *SearchMessagesRequest) (*Messages, err
         return nil, buildResponseError(result.Data)
     }
 
-    return UnmarshalMessages(result.Data)
+    return UnmarshalFoundMessages(result.Data)
 }
 
 type SearchSecretMessagesRequest struct { 
@@ -2281,8 +2275,8 @@ func (client *Client) SearchSecretMessages(req *SearchSecretMessagesRequest) (*F
 }
 
 type SearchCallMessagesRequest struct { 
-    // Identifier of the message from which to search; use 0 to get results from the last message
-    FromMessageId int64 `json:"from_message_id"`
+    // Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results
+    Offset string `json:"offset"`
     // The maximum number of messages to be returned; up to 100. For optimal performance, the number of returned messages is chosen by TDLib and can be smaller than the specified limit
     Limit int32 `json:"limit"`
     // Pass true to search only for messages with missed/declined calls
@@ -2290,13 +2284,13 @@ type SearchCallMessagesRequest struct {
 }
 
 // Searches for call messages. Returns the results in reverse chronological order (i.e., in order of decreasing message_id). For optimal performance, the number of returned messages is chosen by TDLib
-func (client *Client) SearchCallMessages(req *SearchCallMessagesRequest) (*Messages, error) {
+func (client *Client) SearchCallMessages(req *SearchCallMessagesRequest) (*FoundMessages, error) {
     result, err := client.Send(Request{
         meta: meta{
             Type: "searchCallMessages",
         },
         Data: map[string]interface{}{
-            "from_message_id": req.FromMessageId,
+            "offset": req.Offset,
             "limit": req.Limit,
             "only_missed": req.OnlyMissed,
         },
@@ -2309,7 +2303,7 @@ func (client *Client) SearchCallMessages(req *SearchCallMessagesRequest) (*Messa
         return nil, buildResponseError(result.Data)
     }
 
-    return UnmarshalMessages(result.Data)
+    return UnmarshalFoundMessages(result.Data)
 }
 
 type SearchOutgoingDocumentMessagesRequest struct { 
@@ -3798,7 +3792,7 @@ type EditForumTopicRequest struct {
     IconCustomEmojiId JsonInt64 `json:"icon_custom_emoji_id"`
 }
 
-// Edits title and icon of a topic in a forum supergroup chat; requires can_manage_topics administrator rights in the supergroup unless the user is creator of the topic
+// Edits title and icon of a topic in a forum supergroup chat; requires can_manage_topics administrator right in the supergroup unless the user is creator of the topic
 func (client *Client) EditForumTopic(req *EditForumTopicRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -3860,7 +3854,7 @@ type GetForumTopicLinkRequest struct {
 }
 
 // Returns an HTTPS link to a topic in a forum chat. This is an offline request
-func (client *Client) GetForumTopicLink(req *GetForumTopicLinkRequest) (*HttpUrl, error) {
+func (client *Client) GetForumTopicLink(req *GetForumTopicLinkRequest) (*MessageLink, error) {
     result, err := client.Send(Request{
         meta: meta{
             Type: "getForumTopicLink",
@@ -3878,7 +3872,7 @@ func (client *Client) GetForumTopicLink(req *GetForumTopicLinkRequest) (*HttpUrl
         return nil, buildResponseError(result.Data)
     }
 
-    return UnmarshalHttpUrl(result.Data)
+    return UnmarshalMessageLink(result.Data)
 }
 
 type GetForumTopicsRequest struct { 
@@ -3963,7 +3957,7 @@ type ToggleForumTopicIsClosedRequest struct {
     IsClosed bool `json:"is_closed"`
 }
 
-// Toggles whether a topic is closed in a forum supergroup chat; requires can_manage_topics administrator rights in the supergroup unless the user is creator of the topic
+// Toggles whether a topic is closed in a forum supergroup chat; requires can_manage_topics administrator right in the supergroup unless the user is creator of the topic
 func (client *Client) ToggleForumTopicIsClosed(req *ToggleForumTopicIsClosedRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -3993,7 +3987,7 @@ type ToggleGeneralForumTopicIsHiddenRequest struct {
     IsHidden bool `json:"is_hidden"`
 }
 
-// Toggles whether a General topic is hidden in a forum supergroup chat; requires can_manage_topics administrator rights in the supergroup
+// Toggles whether a General topic is hidden in a forum supergroup chat; requires can_manage_topics administrator right in the supergroup
 func (client *Client) ToggleGeneralForumTopicIsHidden(req *ToggleGeneralForumTopicIsHiddenRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -4015,6 +4009,67 @@ func (client *Client) ToggleGeneralForumTopicIsHidden(req *ToggleGeneralForumTop
     return UnmarshalOk(result.Data)
 }
 
+type ToggleForumTopicIsPinnedRequest struct { 
+    // Chat identifier
+    ChatId int64 `json:"chat_id"`
+    // Message thread identifier of the forum topic
+    MessageThreadId int64 `json:"message_thread_id"`
+    // Pass true to pin the topic; pass false to unpin it
+    IsPinned bool `json:"is_pinned"`
+}
+
+// Changes the pinned state of a forum topic; requires can_manage_topics administrator right in the supergroup. There can be up to getOption("pinned_forum_topic_count_max") pinned forum topics
+func (client *Client) ToggleForumTopicIsPinned(req *ToggleForumTopicIsPinnedRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "toggleForumTopicIsPinned",
+        },
+        Data: map[string]interface{}{
+            "chat_id": req.ChatId,
+            "message_thread_id": req.MessageThreadId,
+            "is_pinned": req.IsPinned,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type SetPinnedForumTopicsRequest struct { 
+    // Chat identifier
+    ChatId int64 `json:"chat_id"`
+    // The new list of pinned forum topics
+    MessageThreadIds []int64 `json:"message_thread_ids"`
+}
+
+// Changes the order of pinned forum topics
+func (client *Client) SetPinnedForumTopics(req *SetPinnedForumTopicsRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setPinnedForumTopics",
+        },
+        Data: map[string]interface{}{
+            "chat_id": req.ChatId,
+            "message_thread_ids": req.MessageThreadIds,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
 type DeleteForumTopicRequest struct { 
     // Identifier of the chat
     ChatId int64 `json:"chat_id"`
@@ -4022,7 +4077,7 @@ type DeleteForumTopicRequest struct {
     MessageThreadId int64 `json:"message_thread_id"`
 }
 
-// Deletes all messages in a forum topic; requires can_delete_messages administrator rights in the supergroup unless the user is creator of the topic, the topic has no messages from other users and has at most 11 messages
+// Deletes all messages in a forum topic; requires can_delete_messages administrator right in the supergroup unless the user is creator of the topic, the topic has no messages from other users and has at most 11 messages
 func (client *Client) DeleteForumTopic(req *DeleteForumTopicRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -5640,6 +5695,12 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
     case TypeInternalLinkTypeChatInvite:
         return UnmarshalInternalLinkTypeChatInvite(result.Data)
 
+    case TypeInternalLinkTypeDefaultMessageAutoDeleteTimerSettings:
+        return UnmarshalInternalLinkTypeDefaultMessageAutoDeleteTimerSettings(result.Data)
+
+    case TypeInternalLinkTypeEditProfileSettings:
+        return UnmarshalInternalLinkTypeEditProfileSettings(result.Data)
+
     case TypeInternalLinkTypeFilterSettings:
         return UnmarshalInternalLinkTypeFilterSettings(result.Data)
 
@@ -6012,8 +6073,8 @@ type CreateNewBasicGroupChatRequest struct {
     UserIds []int64 `json:"user_ids"`
     // Title of the new basic group; 1-128 characters
     Title string `json:"title"`
-    // Message TTL value, in seconds; must be from 0 up to 365 * 86400 and be divisible by 86400. If 0, then messages aren't deleted automatically
-    MessageTtl int32 `json:"message_ttl"`
+    // Message auto-delete time value, in seconds; must be from 0 up to 365 * 86400 and be divisible by 86400. If 0, then messages aren't deleted automatically
+    MessageAutoDeleteTime int32 `json:"message_auto_delete_time"`
 }
 
 // Creates a new basic group and sends a corresponding messageBasicGroupChatCreate. Returns the newly created chat
@@ -6025,7 +6086,7 @@ func (client *Client) CreateNewBasicGroupChat(req *CreateNewBasicGroupChatReques
         Data: map[string]interface{}{
             "user_ids": req.UserIds,
             "title": req.Title,
-            "message_ttl": req.MessageTtl,
+            "message_auto_delete_time": req.MessageAutoDeleteTime,
         },
     })
     if err != nil {
@@ -6048,8 +6109,8 @@ type CreateNewSupergroupChatRequest struct {
     Description string `json:"description"`
     // Chat location if a location-based supergroup is being created; pass null to create an ordinary supergroup chat
     Location *ChatLocation `json:"location"`
-    // Message TTL value, in seconds; must be from 0 up to 365 * 86400 and be divisible by 86400. If 0, then messages aren't deleted automatically
-    MessageTtl int32 `json:"message_ttl"`
+    // Message auto-delete time value, in seconds; must be from 0 up to 365 * 86400 and be divisible by 86400. If 0, then messages aren't deleted automatically
+    MessageAutoDeleteTime int32 `json:"message_auto_delete_time"`
     // Pass true to create a supergroup for importing messages using importMessage
     ForImport bool `json:"for_import"`
 }
@@ -6065,7 +6126,7 @@ func (client *Client) CreateNewSupergroupChat(req *CreateNewSupergroupChatReques
             "is_channel": req.IsChannel,
             "description": req.Description,
             "location": req.Location,
-            "message_ttl": req.MessageTtl,
+            "message_auto_delete_time": req.MessageAutoDeleteTime,
             "for_import": req.ForImport,
         },
     })
@@ -6431,22 +6492,22 @@ func (client *Client) SetChatPhoto(req *SetChatPhotoRequest) (*Ok, error) {
     return UnmarshalOk(result.Data)
 }
 
-type SetChatMessageTtlRequest struct { 
+type SetChatMessageAutoDeleteTimeRequest struct { 
     // Chat identifier
     ChatId int64 `json:"chat_id"`
-    // New TTL value, in seconds; unless the chat is secret, it must be from 0 up to 365 * 86400 and be divisible by 86400. If 0, then messages aren't deleted automatically
-    Ttl int32 `json:"ttl"`
+    // New time value, in seconds; unless the chat is secret, it must be from 0 up to 365 * 86400 and be divisible by 86400. If 0, then messages aren't deleted automatically
+    MessageAutoDeleteTime int32 `json:"message_auto_delete_time"`
 }
 
-// Changes the message TTL in a chat. Requires change_info administrator right in basic groups, supergroups and channels Message TTL can't be changed in a chat with the current user (Saved Messages) and the chat 777000 (Telegram).
-func (client *Client) SetChatMessageTtl(req *SetChatMessageTtlRequest) (*Ok, error) {
+// Changes the message auto-delete or self-destruct (for secret chats) time in a chat. Requires change_info administrator right in basic groups, supergroups and channels Message auto-delete time can't be changed in a chat with the current user (Saved Messages) and the chat 777000 (Telegram).
+func (client *Client) SetChatMessageAutoDeleteTime(req *SetChatMessageAutoDeleteTimeRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
-            Type: "setChatMessageTtl",
+            Type: "setChatMessageAutoDeleteTime",
         },
         Data: map[string]interface{}{
             "chat_id": req.ChatId,
-            "ttl": req.Ttl,
+            "message_auto_delete_time": req.MessageAutoDeleteTime,
         },
     })
     if err != nil {
@@ -7613,6 +7674,8 @@ type ToggleBotIsAddedToAttachmentMenuRequest struct {
     BotUserId int64 `json:"bot_user_id"`
     // Pass true to add the bot to attachment menu; pass false to remove the bot from attachment menu
     IsAdded bool `json:"is_added"`
+    // Pass true if the current user allowed the bot to send them messages. Ignored if is_added is false
+    AllowWriteAccess bool `json:"allow_write_access"`
 }
 
 // Adds or removes a bot to attachment menu. Bot can be added to attachment menu, only if userTypeBot.can_be_added_to_attachment_menu == true
@@ -7624,6 +7687,7 @@ func (client *Client) ToggleBotIsAddedToAttachmentMenu(req *ToggleBotIsAddedToAt
         Data: map[string]interface{}{
             "bot_user_id": req.BotUserId,
             "is_added": req.IsAdded,
+            "allow_write_access": req.AllowWriteAccess,
         },
     })
     if err != nil {
@@ -7637,7 +7701,7 @@ func (client *Client) ToggleBotIsAddedToAttachmentMenu(req *ToggleBotIsAddedToAt
     return UnmarshalOk(result.Data)
 }
 
-// Returns up to 8 themed emoji statuses, which color must be changed to the color of the Telegram Premium badge
+// Returns up to 8 emoji statuses, which must be shown right after the default Premium Badge in the emoji status list
 func (client *Client) GetThemedEmojiStatuses() (*EmojiStatuses, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -9332,7 +9396,7 @@ func (client *Client) StartGroupCallScreenSharing(req *StartGroupCallScreenShari
 type ToggleGroupCallScreenSharingIsPausedRequest struct { 
     // Group call identifier
     GroupCallId int32 `json:"group_call_id"`
-    // True, if screen sharing is paused
+    // Pass true to pause screen sharing; pass false to unpause it
     IsPaused bool `json:"is_paused"`
 }
 
@@ -10204,6 +10268,64 @@ func (client *Client) ClearImportedContacts() (*Ok, error) {
     return UnmarshalOk(result.Data)
 }
 
+type SetUserPersonalProfilePhotoRequest struct { 
+    // User identifier
+    UserId int64 `json:"user_id"`
+    // Profile photo to set; pass null to delete the photo; inputChatPhotoPrevious isn't supported in this function
+    Photo InputChatPhoto `json:"photo"`
+}
+
+// Changes a personal profile photo of a contact user
+func (client *Client) SetUserPersonalProfilePhoto(req *SetUserPersonalProfilePhotoRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setUserPersonalProfilePhoto",
+        },
+        Data: map[string]interface{}{
+            "user_id": req.UserId,
+            "photo": req.Photo,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type SuggestUserProfilePhotoRequest struct { 
+    // User identifier
+    UserId int64 `json:"user_id"`
+    // Profile photo to suggest; inputChatPhotoPrevious isn't supported in this function
+    Photo InputChatPhoto `json:"photo"`
+}
+
+// Suggests a profile photo to another regular user with common messages
+func (client *Client) SuggestUserProfilePhoto(req *SuggestUserProfilePhotoRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "suggestUserProfilePhoto",
+        },
+        Data: map[string]interface{}{
+            "user_id": req.UserId,
+            "photo": req.Photo,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
 type SearchUserByPhoneNumberRequest struct { 
     // Phone number to search for
     PhoneNumber string `json:"phone_number"`
@@ -10265,7 +10387,7 @@ type GetUserProfilePhotosRequest struct {
     Limit int32 `json:"limit"`
 }
 
-// Returns the profile photos of a user. The result of this query may be outdated: some photos might have been deleted already
+// Returns the profile photos of a user. Personal and public photo aren't returned
 func (client *Client) GetUserProfilePhotos(req *GetUserProfilePhotosRequest) (*ChatPhotos, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -10473,7 +10595,7 @@ type GetAttachedStickerSetsRequest struct {
     FileId int32 `json:"file_id"`
 }
 
-// Returns a list of sticker sets attached to a file. Currently, only photos and videos can have attached sticker sets
+// Returns a list of sticker sets attached to a file, including regular, mask, and emoji sticker sets. Currently, only animations, photos, and videos can have attached sticker sets
 func (client *Client) GetAttachedStickerSets(req *GetAttachedStickerSetsRequest) (*StickerSets, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -11211,6 +11333,8 @@ func (client *Client) GetWebPageInstantView(req *GetWebPageInstantViewRequest) (
 type SetProfilePhotoRequest struct { 
     // Profile photo to set
     Photo InputChatPhoto `json:"photo"`
+    // Pass true to set a public photo, which will be visible even the main photo is hidden by privacy settings
+    IsPublic bool `json:"is_public"`
 }
 
 // Changes a profile photo for the current user
@@ -11221,6 +11345,7 @@ func (client *Client) SetProfilePhoto(req *SetProfilePhotoRequest) (*Ok, error) 
         },
         Data: map[string]interface{}{
             "photo": req.Photo,
+            "is_public": req.IsPublic,
         },
     })
     if err != nil {
@@ -12240,22 +12365,51 @@ func (client *Client) ToggleSupergroupIsAllHistoryAvailable(req *ToggleSupergrou
     return UnmarshalOk(result.Data)
 }
 
-type ToggleSupergroupIsAggressiveAntiSpamEnabledRequest struct { 
-    // The identifier of the supergroup, which isn't a broadcast group
+type ToggleSupergroupHasHiddenMembersRequest struct { 
+    // Identifier of the supergroup
     SupergroupId int64 `json:"supergroup_id"`
-    // The new value of is_aggressive_anti_spam_enabled
-    IsAggressiveAntiSpamEnabled bool `json:"is_aggressive_anti_spam_enabled"`
+    // New value of has_hidden_members
+    HasHiddenMembers bool `json:"has_hidden_members"`
 }
 
-// Toggles whether aggressive anti-spam checks are enabled in the supergroup; requires can_delete_messages administrator right. Can be called only if the supergroup has at least getOption("aggressive_anti_spam_supergroup_member_count_min") members
-func (client *Client) ToggleSupergroupIsAggressiveAntiSpamEnabled(req *ToggleSupergroupIsAggressiveAntiSpamEnabledRequest) (*Ok, error) {
+// Toggles whether non-administrators can receive only administrators and bots using getSupergroupMembers or searchChatMembers. Can be called only if supergroupFullInfo.can_hide_members == true
+func (client *Client) ToggleSupergroupHasHiddenMembers(req *ToggleSupergroupHasHiddenMembersRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
-            Type: "toggleSupergroupIsAggressiveAntiSpamEnabled",
+            Type: "toggleSupergroupHasHiddenMembers",
         },
         Data: map[string]interface{}{
             "supergroup_id": req.SupergroupId,
-            "is_aggressive_anti_spam_enabled": req.IsAggressiveAntiSpamEnabled,
+            "has_hidden_members": req.HasHiddenMembers,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type ToggleSupergroupHasAggressiveAntiSpamEnabledRequest struct { 
+    // The identifier of the supergroup, which isn't a broadcast group
+    SupergroupId int64 `json:"supergroup_id"`
+    // The new value of has_aggressive_anti_spam_enabled
+    HasAggressiveAntiSpamEnabled bool `json:"has_aggressive_anti_spam_enabled"`
+}
+
+// Toggles whether aggressive anti-spam checks are enabled in the supergroup. Can be called only if supergroupFullInfo.can_toggle_aggressive_anti_spam == true
+func (client *Client) ToggleSupergroupHasAggressiveAntiSpamEnabled(req *ToggleSupergroupHasAggressiveAntiSpamEnabledRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "toggleSupergroupHasAggressiveAntiSpamEnabled",
+        },
+        Data: map[string]interface{}{
+            "supergroup_id": req.SupergroupId,
+            "has_aggressive_anti_spam_enabled": req.HasAggressiveAntiSpamEnabled,
         },
     })
     if err != nil {
@@ -13434,19 +13588,19 @@ func (client *Client) DeleteAccount(req *DeleteAccountRequest) (*Ok, error) {
     return UnmarshalOk(result.Data)
 }
 
-type SetDefaultMessageTtlRequest struct { 
-    // New message TTL; must be from 0 up to 365 * 86400 and be divisible by 86400. If 0, then messages aren't deleted automatically
-    Ttl *MessageTtl `json:"ttl"`
+type SetDefaultMessageAutoDeleteTimeRequest struct { 
+    // New default message auto-delete time; must be from 0 up to 365 * 86400 and be divisible by 86400. If 0, then messages aren't deleted automatically
+    MessageAutoDeleteTime *MessageAutoDeleteTime `json:"message_auto_delete_time"`
 }
 
-// Changes the default message Time To Live setting (self-destruct timer) for new chats
-func (client *Client) SetDefaultMessageTtl(req *SetDefaultMessageTtlRequest) (*Ok, error) {
+// Changes the default message auto-delete time for new chats
+func (client *Client) SetDefaultMessageAutoDeleteTime(req *SetDefaultMessageAutoDeleteTimeRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
-            Type: "setDefaultMessageTtl",
+            Type: "setDefaultMessageAutoDeleteTime",
         },
         Data: map[string]interface{}{
-            "ttl": req.Ttl,
+            "message_auto_delete_time": req.MessageAutoDeleteTime,
         },
     })
     if err != nil {
@@ -13460,11 +13614,11 @@ func (client *Client) SetDefaultMessageTtl(req *SetDefaultMessageTtlRequest) (*O
     return UnmarshalOk(result.Data)
 }
 
-// Returns default message Time To Live setting (self-destruct timer) for new chats
-func (client *Client) GetDefaultMessageTtl() (*MessageTtl, error) {
+// Returns default message auto-delete time setting for new chats
+func (client *Client) GetDefaultMessageAutoDeleteTime() (*MessageAutoDeleteTime, error) {
     result, err := client.Send(Request{
         meta: meta{
-            Type: "getDefaultMessageTtl",
+            Type: "getDefaultMessageAutoDeleteTime",
         },
         Data: map[string]interface{}{},
     })
@@ -13476,7 +13630,7 @@ func (client *Client) GetDefaultMessageTtl() (*MessageTtl, error) {
         return nil, buildResponseError(result.Data)
     }
 
-    return UnmarshalMessageTtl(result.Data)
+    return UnmarshalMessageAutoDeleteTime(result.Data)
 }
 
 type RemoveChatActionBarRequest struct { 
@@ -14437,7 +14591,7 @@ func (client *Client) GetPassportAuthorizationForm(req *GetPassportAuthorization
 
 type GetPassportAuthorizationFormAvailableElementsRequest struct { 
     // Authorization form identifier
-    AutorizationFormId int32 `json:"autorization_form_id"`
+    AuthorizationFormId int32 `json:"authorization_form_id"`
     // The 2-step verification password of the current user
     Password string `json:"password"`
 }
@@ -14449,7 +14603,7 @@ func (client *Client) GetPassportAuthorizationFormAvailableElements(req *GetPass
             Type: "getPassportAuthorizationFormAvailableElements",
         },
         Data: map[string]interface{}{
-            "autorization_form_id": req.AutorizationFormId,
+            "authorization_form_id": req.AuthorizationFormId,
             "password": req.Password,
         },
     })
@@ -14466,7 +14620,7 @@ func (client *Client) GetPassportAuthorizationFormAvailableElements(req *GetPass
 
 type SendPassportAuthorizationFormRequest struct { 
     // Authorization form identifier
-    AutorizationFormId int32 `json:"autorization_form_id"`
+    AuthorizationFormId int32 `json:"authorization_form_id"`
     // Types of Telegram Passport elements chosen by user to complete the authorization form
     Types []PassportElementType `json:"types"`
 }
@@ -14478,7 +14632,7 @@ func (client *Client) SendPassportAuthorizationForm(req *SendPassportAuthorizati
             Type: "sendPassportAuthorizationForm",
         },
         Data: map[string]interface{}{
-            "autorization_form_id": req.AutorizationFormId,
+            "authorization_form_id": req.AuthorizationFormId,
             "types": req.Types,
         },
     })
@@ -16327,8 +16481,8 @@ func (client *Client) TestUseUpdate() (Update, error) {
     case TypeUpdateChatMessageSender:
         return UnmarshalUpdateChatMessageSender(result.Data)
 
-    case TypeUpdateChatMessageTtl:
-        return UnmarshalUpdateChatMessageTtl(result.Data)
+    case TypeUpdateChatMessageAutoDeleteTime:
+        return UnmarshalUpdateChatMessageAutoDeleteTime(result.Data)
 
     case TypeUpdateChatNotificationSettings:
         return UnmarshalUpdateChatNotificationSettings(result.Data)
