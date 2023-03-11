@@ -65,7 +65,7 @@ func main() {
 		log.Fatalf("GetMe error: %s", err)
 	}
 
-	log.Printf("%s connected", me.Username)
+	log.Printf("%v connected", me.Usernames)
 
 	listener := client.AddEventReceiver(&tdlib.UpdateNewMessage{}, 1000)
 
