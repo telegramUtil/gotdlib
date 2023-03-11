@@ -1440,7 +1440,7 @@ type GetMessageViewersRequest struct {
 }
 
 // Returns viewers of a recent outgoing message in a basic group or a supergroup chat. For video notes and voice notes only users, opened content of the message, are returned. The method can be called if message.can_get_viewers == true
-func (client *Client) GetMessageViewers(req *GetMessageViewersRequest) (*Users, error) {
+func (client *Client) GetMessageViewers(req *GetMessageViewersRequest) (*MessageViewers, error) {
 	result, err := client.Send(Request{
 		meta: meta{
 			Type: "getMessageViewers",
@@ -1458,7 +1458,7 @@ func (client *Client) GetMessageViewers(req *GetMessageViewersRequest) (*Users, 
 		return nil, buildResponseError(result.Data)
 	}
 
-	return UnmarshalUsers(result.Data)
+	return UnmarshalMessageViewers(result.Data)
 }
 
 type GetFileRequest struct {
@@ -2842,7 +2842,7 @@ func (client *Client) GetMessageLinkInfo(req *GetMessageLinkInfoRequest) (*Messa
 type TranslateTextRequest struct {
 	// Text to translate
 	Text *FormattedText `json:"text"`
-	// ISO language code of the language to which the message is translated. Must be one of "af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "zh", "zh-Hans", "zh-TW", "zh-Hant", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "iw", "hi", "hmn", "hu", "is", "ig", "id", "in", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "la", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "ji", "yo", "zu"
+	// Language code of the language to which the message is translated. Must be one of "af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "zh", "zh-Hans", "zh-TW", "zh-Hant", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "iw", "hi", "hmn", "hu", "is", "ig", "id", "in", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "la", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "ji", "yo", "zu"
 	ToLanguageCode string `json:"to_language_code"`
 }
 
@@ -2873,7 +2873,7 @@ type TranslateMessageTextRequest struct {
 	ChatId int64 `json:"chat_id"`
 	// Identifier of the message
 	MessageId int64 `json:"message_id"`
-	// ISO language code of the language to which the message is translated. Must be one of "af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "zh", "zh-Hans", "zh-TW", "zh-Hant", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "iw", "hi", "hmn", "hu", "is", "ig", "id", "in", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "la", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "ji", "yo", "zu"
+	// Language code of the language to which the message is translated. Must be one of "af", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "zh", "zh-Hans", "zh-TW", "zh-Hant", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "fi", "fr", "fy", "gl", "ka", "de", "el", "gu", "ht", "ha", "haw", "he", "iw", "hi", "hmn", "hu", "is", "ig", "id", "in", "ga", "it", "ja", "jv", "kn", "kk", "km", "rw", "ko", "ku", "ky", "lo", "la", "lv", "lt", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne", "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "ro", "ru", "sm", "gd", "sr", "st", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi", "cy", "xh", "yi", "ji", "yo", "zu"
 	ToLanguageCode string `json:"to_language_code"`
 }
 
@@ -5104,16 +5104,14 @@ type AnswerInlineQueryRequest struct {
 	InlineQueryId JsonInt64 `json:"inline_query_id"`
 	// Pass true if results may be cached and returned only for the user that sent the query. By default, results may be returned to any user who sends the same query
 	IsPersonal bool `json:"is_personal"`
+	// Button to be shown above inline query results; pass null if none
+	Button *InlineQueryResultsButton `json:"button"`
 	// The results of the query
 	Results []InputInlineQueryResult `json:"results"`
 	// Allowed time to cache the results of the query, in seconds
 	CacheTime int32 `json:"cache_time"`
 	// Offset for the next inline query; pass an empty string if there are no more results
 	NextOffset string `json:"next_offset"`
-	// If non-empty, this text must be shown on the button that opens a private chat with the bot and sends a start message to the bot with the parameter switch_pm_parameter
-	SwitchPmText string `json:"switch_pm_text"`
-	// The parameter for the bot start message
-	SwitchPmParameter string `json:"switch_pm_parameter"`
 }
 
 // Sets the result of an inline query; for bots only
@@ -5123,13 +5121,12 @@ func (client *Client) AnswerInlineQuery(req *AnswerInlineQueryRequest) (*Ok, err
 			Type: "answerInlineQuery",
 		},
 		Data: map[string]interface{}{
-			"inline_query_id":     req.InlineQueryId,
-			"is_personal":         req.IsPersonal,
-			"results":             req.Results,
-			"cache_time":          req.CacheTime,
-			"next_offset":         req.NextOffset,
-			"switch_pm_text":      req.SwitchPmText,
-			"switch_pm_parameter": req.SwitchPmParameter,
+			"inline_query_id": req.InlineQueryId,
+			"is_personal":     req.IsPersonal,
+			"button":          req.Button,
+			"results":         req.Results,
+			"cache_time":      req.CacheTime,
+			"next_offset":     req.NextOffset,
 		},
 	})
 	if err != nil {
@@ -5143,10 +5140,83 @@ func (client *Client) AnswerInlineQuery(req *AnswerInlineQueryRequest) (*Ok, err
 	return UnmarshalOk(result.Data)
 }
 
+type SearchWebAppRequest struct {
+	// Identifier of the target bot
+	BotUserId int64 `json:"bot_user_id"`
+	// Short name of the Web App
+	WebAppShortName string `json:"web_app_short_name"`
+}
+
+// Returns information about a Web App by its short name. Returns a 404 error if the Web App is not found
+func (client *Client) SearchWebApp(req *SearchWebAppRequest) (*FoundWebApp, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "searchWebApp",
+		},
+		Data: map[string]interface{}{
+			"bot_user_id":        req.BotUserId,
+			"web_app_short_name": req.WebAppShortName,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalFoundWebApp(result.Data)
+}
+
+type GetWebAppLinkUrlRequest struct {
+	// Identifier of the chat in which the link was clicked; pass 0 if none
+	ChatId int64 `json:"chat_id"`
+	// Identifier of the target bot
+	BotUserId int64 `json:"bot_user_id"`
+	// Short name of the Web App
+	WebAppShortName string `json:"web_app_short_name"`
+	// Start parameter from internalLinkTypeWebApp
+	StartParameter string `json:"start_parameter"`
+	// Preferred Web App theme; pass null to use the default theme
+	Theme *ThemeParameters `json:"theme"`
+	// Short name of the application; 0-64 English letters, digits, and underscores
+	ApplicationName string `json:"application_name"`
+	// Pass true if the current user allowed the bot to send them messages
+	AllowWriteAccess bool `json:"allow_write_access"`
+}
+
+// Returns an HTTPS URL of a Web App to open after a link of the type internalLinkTypeWebApp is clicked
+func (client *Client) GetWebAppLinkUrl(req *GetWebAppLinkUrlRequest) (*HttpUrl, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "getWebAppLinkUrl",
+		},
+		Data: map[string]interface{}{
+			"chat_id":            req.ChatId,
+			"bot_user_id":        req.BotUserId,
+			"web_app_short_name": req.WebAppShortName,
+			"start_parameter":    req.StartParameter,
+			"theme":              req.Theme,
+			"application_name":   req.ApplicationName,
+			"allow_write_access": req.AllowWriteAccess,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalHttpUrl(result.Data)
+}
+
 type GetWebAppUrlRequest struct {
 	// Identifier of the target bot
 	BotUserId int64 `json:"bot_user_id"`
-	// The URL from the keyboardButtonTypeWebApp button
+	// The URL from the keyboardButtonTypeWebApp or inlineQueryResultsButtonTypeWebApp button
 	Url string `json:"url"`
 	// Preferred Web App theme; pass null to use the default theme
 	Theme *ThemeParameters `json:"theme"`
@@ -5154,7 +5224,7 @@ type GetWebAppUrlRequest struct {
 	ApplicationName string `json:"application_name"`
 }
 
-// Returns an HTTPS URL of a Web App to open after keyboardButtonTypeWebApp button is pressed
+// Returns an HTTPS URL of a Web App to open after keyboardButtonTypeWebApp or inlineQueryResultsButtonTypeWebApp button is pressed
 func (client *Client) GetWebAppUrl(req *GetWebAppUrlRequest) (*HttpUrl, error) {
 	result, err := client.Send(Request{
 		meta: meta{
@@ -5696,11 +5766,11 @@ func (client *Client) CloseChat(req *CloseChatRequest) (*Ok, error) {
 type ViewMessagesRequest struct {
 	// Chat identifier
 	ChatId int64 `json:"chat_id"`
-	// If not 0, a message thread identifier in which the messages are being viewed
-	MessageThreadId int64 `json:"message_thread_id"`
 	// The identifiers of the messages being viewed
 	MessageIds []int64 `json:"message_ids"`
-	// Pass true to mark as read the specified messages even the chat is closed
+	// Source of the message view
+	Source MessageSource `json:"source"`
+	// Pass true to mark as read the specified messages even the chat is closed; pass null to guess the source based on chat open state
 	ForceRead bool `json:"force_read"`
 }
 
@@ -5711,10 +5781,10 @@ func (client *Client) ViewMessages(req *ViewMessagesRequest) (*Ok, error) {
 			Type: "viewMessages",
 		},
 		Data: map[string]interface{}{
-			"chat_id":           req.ChatId,
-			"message_thread_id": req.MessageThreadId,
-			"message_ids":       req.MessageIds,
-			"force_read":        req.ForceRead,
+			"chat_id":     req.ChatId,
+			"message_ids": req.MessageIds,
+			"source":      req.Source,
+			"force_read":  req.ForceRead,
 		},
 	})
 	if err != nil {
@@ -5786,6 +5856,35 @@ func (client *Client) ClickAnimatedEmojiMessage(req *ClickAnimatedEmojiMessageRe
 	return UnmarshalSticker(result.Data)
 }
 
+type GetInternalLinkRequest struct {
+	// Expected type of the link
+	Type InternalLinkType `json:"type"`
+	// Pass true to create an HTTPS link (only available for some link types); pass false to create a tg: link
+	IsHttp bool `json:"is_http"`
+}
+
+// Returns an HTTPS or a tg: link with the given type. Can be called before authorization
+func (client *Client) GetInternalLink(req *GetInternalLinkRequest) (*HttpUrl, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "getInternalLink",
+		},
+		Data: map[string]interface{}{
+			"type":    req.Type,
+			"is_http": req.IsHttp,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalHttpUrl(result.Data)
+}
+
 type GetInternalLinkTypeRequest struct {
 	// The link
 	Link string `json:"link"`
@@ -5822,14 +5921,14 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
 	case TypeInternalLinkTypeBackground:
 		return UnmarshalInternalLinkTypeBackground(result.Data)
 
+	case TypeInternalLinkTypeBotAddToChannel:
+		return UnmarshalInternalLinkTypeBotAddToChannel(result.Data)
+
 	case TypeInternalLinkTypeBotStart:
 		return UnmarshalInternalLinkTypeBotStart(result.Data)
 
 	case TypeInternalLinkTypeBotStartInGroup:
 		return UnmarshalInternalLinkTypeBotStartInGroup(result.Data)
-
-	case TypeInternalLinkTypeBotAddToChannel:
-		return UnmarshalInternalLinkTypeBotAddToChannel(result.Data)
 
 	case TypeInternalLinkTypeChangePhoneNumber:
 		return UnmarshalInternalLinkTypeChangePhoneNumber(result.Data)
@@ -5917,6 +6016,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
 
 	case TypeInternalLinkTypeVideoChat:
 		return UnmarshalInternalLinkTypeVideoChat(result.Data)
+
+	case TypeInternalLinkTypeWebApp:
+		return UnmarshalInternalLinkTypeWebApp(result.Data)
 
 	default:
 		return nil, errors.New("invalid type")
@@ -6211,7 +6313,7 @@ func (client *Client) CreateSecretChat(req *CreateSecretChatRequest) (*Chat, err
 }
 
 type CreateNewBasicGroupChatRequest struct {
-	// Identifiers of users to be added to the basic group
+	// Identifiers of users to be added to the basic group; may be empty to create a basic group without other members
 	UserIds []int64 `json:"user_ids"`
 	// Title of the new basic group; 1-128 characters
 	Title string `json:"title"`
@@ -12134,6 +12236,116 @@ func (client *Client) SetDefaultChannelAdministratorRights(req *SetDefaultChanne
 	return UnmarshalOk(result.Data)
 }
 
+type SetBotInfoDescriptionRequest struct {
+	// A two-letter ISO 639-1 language code. If empty, the description will be shown to all users, for which language there are no dedicated description
+	LanguageCode string `json:"language_code"`
+	// New bot's description on the specified language
+	Description string `json:"description"`
+}
+
+// Sets the text shown in the chat with the bot if the chat is empty; bots only
+func (client *Client) SetBotInfoDescription(req *SetBotInfoDescriptionRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "setBotInfoDescription",
+		},
+		Data: map[string]interface{}{
+			"language_code": req.LanguageCode,
+			"description":   req.Description,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
+type GetBotInfoDescriptionRequest struct {
+	// A two-letter ISO 639-1 language code or an empty string
+	LanguageCode string `json:"language_code"`
+}
+
+// Returns the text shown in the chat with the bot if the chat is empty in the given language; bots only
+func (client *Client) GetBotInfoDescription(req *GetBotInfoDescriptionRequest) (*Text, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "getBotInfoDescription",
+		},
+		Data: map[string]interface{}{
+			"language_code": req.LanguageCode,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalText(result.Data)
+}
+
+type SetBotInfoShortDescriptionRequest struct {
+	// A two-letter ISO 639-1 language code. If empty, the short description will be shown to all users, for which language there are no dedicated description
+	LanguageCode string `json:"language_code"`
+	// New bot's short description on the specified language
+	ShortDescription string `json:"short_description"`
+}
+
+// Sets the text shown on the bot's profile page and sent together with the link when users share the bot; bots only
+func (client *Client) SetBotInfoShortDescription(req *SetBotInfoShortDescriptionRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "setBotInfoShortDescription",
+		},
+		Data: map[string]interface{}{
+			"language_code":     req.LanguageCode,
+			"short_description": req.ShortDescription,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
+type GetBotInfoShortDescriptionRequest struct {
+	// A two-letter ISO 639-1 language code or an empty string
+	LanguageCode string `json:"language_code"`
+}
+
+// Returns the text shown on the bot's profile page and sent together with the link when users share the bot in the given language; bots only
+func (client *Client) GetBotInfoShortDescription(req *GetBotInfoShortDescriptionRequest) (*Text, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "getBotInfoShortDescription",
+		},
+		Data: map[string]interface{}{
+			"language_code": req.LanguageCode,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalText(result.Data)
+}
+
 // Returns all active sessions of the current user
 func (client *Client) GetActiveSessions() (*Sessions, error) {
 	result, err := client.Send(Request{
@@ -13379,7 +13591,7 @@ func (client *Client) SynchronizeLanguagePack(req *SynchronizeLanguagePackReques
 }
 
 type AddCustomServerLanguagePackRequest struct {
-	// Identifier of a language pack to be added; may be different from a name that is used in an "https://t.me/setlanguage/" link
+	// Identifier of a language pack to be added
 	LanguagePackId string `json:"language_pack_id"`
 }
 
@@ -14404,7 +14616,7 @@ type SetAutosaveSettingsRequest struct {
 	Settings *ScopeAutosaveSettings `json:"settings"`
 }
 
-// Sets autosave settings for the given scope
+// Sets autosave settings for the given scope. The method is guaranteed to work only after at least one call to getAutosaveSettings
 func (client *Client) SetAutosaveSettings(req *SetAutosaveSettingsRequest) (*Ok, error) {
 	result, err := client.Send(Request{
 		meta: meta{
@@ -14426,7 +14638,7 @@ func (client *Client) SetAutosaveSettings(req *SetAutosaveSettingsRequest) (*Ok,
 	return UnmarshalOk(result.Data)
 }
 
-// Clears the list of all autosave settings exceptions
+// Clears the list of all autosave settings exceptions. The method is guaranteed to work only after at least one call to getAutosaveSettings
 func (client *Client) ClearAutosaveSettingsExceptions() (*Ok, error) {
 	result, err := client.Send(Request{
 		meta: meta{
@@ -15067,8 +15279,10 @@ func (client *Client) SetBotUpdatesStatus(req *SetBotUpdatesStatusRequest) (*Ok,
 type UploadStickerFileRequest struct {
 	// Sticker file owner; ignored for regular users
 	UserId int64 `json:"user_id"`
-	// Sticker file to upload
-	Sticker *InputSticker `json:"sticker"`
+	// Sticker format
+	StickerFormat StickerFormat `json:"sticker_format"`
+	// File file to upload; must fit in a 512x512 square. For WEBP stickers the file must be in WEBP or PNG format, which will be converted to WEBP server-side. See https://core.telegram.org/animated_stickers#technical-requirements for technical requirements
+	Sticker InputFile `json:"sticker"`
 }
 
 // Uploads a file with a sticker; returns the uploaded file
@@ -15078,8 +15292,9 @@ func (client *Client) UploadStickerFile(req *UploadStickerFileRequest) (*File, e
 			Type: "uploadStickerFile",
 		},
 		Data: map[string]interface{}{
-			"user_id": req.UserId,
-			"sticker": req.Sticker,
+			"user_id":        req.UserId,
+			"sticker_format": req.StickerFormat,
+			"sticker":        req.Sticker,
 		},
 	})
 	if err != nil {
@@ -15164,8 +15379,12 @@ type CreateNewStickerSetRequest struct {
 	Title string `json:"title"`
 	// Sticker set name. Can contain only English letters, digits and underscores. Must end with *"_by_<bot username>"* (*<bot_username>* is case insensitive) for bots; 1-64 characters
 	Name string `json:"name"`
+	// Format of the stickers in the set
+	StickerFormat StickerFormat `json:"sticker_format"`
 	// Type of the stickers in the set
 	StickerType StickerType `json:"sticker_type"`
+	// Pass true if stickers in the sticker set must be repainted; for custom emoji sticker sets only
+	NeedsRepainting bool `json:"needs_repainting"`
 	// List of stickers to be added to the set; must be non-empty. All stickers must have the same format. For TGS stickers, uploadStickerFile must be used before the sticker is shown
 	Stickers []*InputSticker `json:"stickers"`
 	// Source of the sticker set; may be empty if unknown
@@ -15179,12 +15398,14 @@ func (client *Client) CreateNewStickerSet(req *CreateNewStickerSetRequest) (*Sti
 			Type: "createNewStickerSet",
 		},
 		Data: map[string]interface{}{
-			"user_id":      req.UserId,
-			"title":        req.Title,
-			"name":         req.Name,
-			"sticker_type": req.StickerType,
-			"stickers":     req.Stickers,
-			"source":       req.Source,
+			"user_id":          req.UserId,
+			"title":            req.Title,
+			"name":             req.Name,
+			"sticker_format":   req.StickerFormat,
+			"sticker_type":     req.StickerType,
+			"needs_repainting": req.NeedsRepainting,
+			"stickers":         req.Stickers,
+			"source":           req.Source,
 		},
 	})
 	if err != nil {
@@ -15207,8 +15428,8 @@ type AddStickerToSetRequest struct {
 	Sticker *InputSticker `json:"sticker"`
 }
 
-// Adds a new sticker to a set; for bots only. Returns the sticker set
-func (client *Client) AddStickerToSet(req *AddStickerToSetRequest) (*StickerSet, error) {
+// Adds a new sticker to a set; for bots only
+func (client *Client) AddStickerToSet(req *AddStickerToSetRequest) (*Ok, error) {
 	result, err := client.Send(Request{
 		meta: meta{
 			Type: "addStickerToSet",
@@ -15227,7 +15448,7 @@ func (client *Client) AddStickerToSet(req *AddStickerToSetRequest) (*StickerSet,
 		return nil, buildResponseError(result.Data)
 	}
 
-	return UnmarshalStickerSet(result.Data)
+	return UnmarshalOk(result.Data)
 }
 
 type SetStickerSetThumbnailRequest struct {
@@ -15239,8 +15460,8 @@ type SetStickerSetThumbnailRequest struct {
 	Thumbnail InputFile `json:"thumbnail"`
 }
 
-// Sets a sticker set thumbnail; for bots only. Returns the sticker set
-func (client *Client) SetStickerSetThumbnail(req *SetStickerSetThumbnailRequest) (*StickerSet, error) {
+// Sets a sticker set thumbnail; for bots only
+func (client *Client) SetStickerSetThumbnail(req *SetStickerSetThumbnailRequest) (*Ok, error) {
 	result, err := client.Send(Request{
 		meta: meta{
 			Type: "setStickerSetThumbnail",
@@ -15259,7 +15480,91 @@ func (client *Client) SetStickerSetThumbnail(req *SetStickerSetThumbnailRequest)
 		return nil, buildResponseError(result.Data)
 	}
 
-	return UnmarshalStickerSet(result.Data)
+	return UnmarshalOk(result.Data)
+}
+
+type SetCustomEmojiStickerSetThumbnailRequest struct {
+	// Sticker set name
+	Name string `json:"name"`
+	// Identifier of the custom emoji from the sticker set, which will be set as sticker set thumbnail; pass 0 to remove the sticker set thumbnail
+	CustomEmojiId JsonInt64 `json:"custom_emoji_id"`
+}
+
+// Sets a custom emoji sticker set thumbnail; for bots only
+func (client *Client) SetCustomEmojiStickerSetThumbnail(req *SetCustomEmojiStickerSetThumbnailRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "setCustomEmojiStickerSetThumbnail",
+		},
+		Data: map[string]interface{}{
+			"name":            req.Name,
+			"custom_emoji_id": req.CustomEmojiId,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
+type SetStickerSetTitleRequest struct {
+	// Sticker set name
+	Name string `json:"name"`
+	// New sticker set title
+	Title string `json:"title"`
+}
+
+// Sets a sticker set title; for bots only
+func (client *Client) SetStickerSetTitle(req *SetStickerSetTitleRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "setStickerSetTitle",
+		},
+		Data: map[string]interface{}{
+			"name":  req.Name,
+			"title": req.Title,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
+type DeleteStickerSetRequest struct {
+	// Sticker set name
+	Name string `json:"name"`
+}
+
+// Deleted a sticker set; for bots only
+func (client *Client) DeleteStickerSet(req *DeleteStickerSetRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "deleteStickerSet",
+		},
+		Data: map[string]interface{}{
+			"name": req.Name,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
 }
 
 type SetStickerPositionInSetRequest struct {
@@ -15304,6 +15609,93 @@ func (client *Client) RemoveStickerFromSet(req *RemoveStickerFromSetRequest) (*O
 		},
 		Data: map[string]interface{}{
 			"sticker": req.Sticker,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
+type SetStickerEmojisRequest struct {
+	// Sticker
+	Sticker InputFile `json:"sticker"`
+	// New string with 1-20 emoji corresponding to the sticker
+	Emojis string `json:"emojis"`
+}
+
+// Changes the list of emoji corresponding to a sticker; for bots only. The sticker must belong to a regular or custom emoji sticker set created by the bot
+func (client *Client) SetStickerEmojis(req *SetStickerEmojisRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "setStickerEmojis",
+		},
+		Data: map[string]interface{}{
+			"sticker": req.Sticker,
+			"emojis":  req.Emojis,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
+type SetStickerKeywordsRequest struct {
+	// Sticker
+	Sticker InputFile `json:"sticker"`
+	// List of up to 20 keywords with total length up to 64 characters, which can be used to find the sticker
+	Keywords []string `json:"keywords"`
+}
+
+// Changes the list of keywords of a sticker; for bots only. The sticker must belong to a regular or custom emoji sticker set created by the bot
+func (client *Client) SetStickerKeywords(req *SetStickerKeywordsRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "setStickerKeywords",
+		},
+		Data: map[string]interface{}{
+			"sticker":  req.Sticker,
+			"keywords": req.Keywords,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
+type SetStickerMaskPositionRequest struct {
+	// Sticker
+	Sticker InputFile `json:"sticker"`
+	// Position where the mask is placed; pass null to remove mask position
+	MaskPosition *MaskPosition `json:"mask_position"`
+}
+
+// Changes the mask position of a mask sticker; for bots only. The sticker must belong to a mask sticker set created by the bot
+func (client *Client) SetStickerMaskPosition(req *SetStickerMaskPositionRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "setStickerMaskPosition",
+		},
+		Data: map[string]interface{}{
+			"sticker":       req.Sticker,
+			"mask_position": req.MaskPosition,
 		},
 	})
 	if err != nil {
@@ -15792,25 +16184,6 @@ func (client *Client) GetPhoneNumberInfoSync(req *GetPhoneNumberInfoSyncRequest)
 	return GetPhoneNumberInfoSync(req)
 }
 
-// Returns the link for downloading official Telegram application to be used when the current user invites friends to Telegram
-func (client *Client) GetApplicationDownloadLink() (*HttpUrl, error) {
-	result, err := client.Send(Request{
-		meta: meta{
-			Type: "getApplicationDownloadLink",
-		},
-		Data: map[string]interface{}{},
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	if result.Type == "error" {
-		return nil, buildResponseError(result.Data)
-	}
-
-	return UnmarshalHttpUrl(result.Data)
-}
-
 type GetDeepLinkInfoRequest struct {
 	// The link
 	Link string `json:"link"`
@@ -15877,6 +16250,32 @@ func (client *Client) GetApplicationConfig() (JsonValue, error) {
 	}
 }
 
+type AddApplicationChangelogRequest struct {
+	// The previous application version
+	PreviousApplicationVersion string `json:"previous_application_version"`
+}
+
+// Adds server-provided application changelog as messages to the chat 777000 (Telegram); for official applications only
+func (client *Client) AddApplicationChangelog(req *AddApplicationChangelogRequest) (*Ok, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "addApplicationChangelog",
+		},
+		Data: map[string]interface{}{
+			"previous_application_version": req.PreviousApplicationVersion,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalOk(result.Data)
+}
+
 type SaveApplicationLogEventRequest struct {
 	// Event type
 	Type string `json:"type"`
@@ -15907,6 +16306,25 @@ func (client *Client) SaveApplicationLogEvent(req *SaveApplicationLogEventReques
 	}
 
 	return UnmarshalOk(result.Data)
+}
+
+// Returns the link for downloading official Telegram application to be used when the current user invites friends to Telegram
+func (client *Client) GetApplicationDownloadLink() (*HttpUrl, error) {
+	result, err := client.Send(Request{
+		meta: meta{
+			Type: "getApplicationDownloadLink",
+		},
+		Data: map[string]interface{}{},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Type == "error" {
+		return nil, buildResponseError(result.Data)
+	}
+
+	return UnmarshalHttpUrl(result.Data)
 }
 
 type AddProxyRequest struct {
@@ -17007,6 +17425,9 @@ func (client *Client) TestUseUpdate() (Update, error) {
 
 	case TypeUpdateSuggestedActions:
 		return UnmarshalUpdateSuggestedActions(result.Data)
+
+	case TypeUpdateAddChatMembersPrivacyForbidden:
+		return UnmarshalUpdateAddChatMembersPrivacyForbidden(result.Data)
 
 	case TypeUpdateAutosaveSettings:
 		return UnmarshalUpdateAutosaveSettings(result.Data)
