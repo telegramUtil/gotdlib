@@ -91,8 +91,11 @@ func main() {
 					ParseMode: &tdlib.TextParseModeHTML{},
 				})
 				m, err := client.SendMessage(&tdlib.SendMessageRequest{
-					ChatId:           chatId,
-					ReplyToMessageId: msgId,
+					ChatId: chatId,
+					ReplyTo: &tdlib.MessageReplyToMessage{
+						ChatId:    chatId,
+						MessageId: msgId,
+					},
 					InputMessageContent: &tdlib.InputMessageText{
 						Text: text,
 					},

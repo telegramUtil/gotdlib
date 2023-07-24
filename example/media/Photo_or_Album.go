@@ -97,8 +97,11 @@ func main() {
 					ParseMode: &tdlib.TextParseModeHTML{},
 				})
 				m, err := client.SendMessage(&tdlib.SendMessageRequest{
-					ChatId:           chatId,
-					ReplyToMessageId: msgId,
+					ChatId: chatId,
+					ReplyTo: &tdlib.MessageReplyToMessage{
+						ChatId:    chatId,
+						MessageId: msgId,
+					},
 					InputMessageContent: &tdlib.InputMessagePhoto{
 						Photo: &tdlib.InputFileLocal{
 							Path: "./myht9-1486821485193084928.jpg",
@@ -116,8 +119,11 @@ func main() {
 					ParseMode: &tdlib.TextParseModeHTML{},
 				})
 				m, err := client.SendMessageAlbum(&tdlib.SendMessageAlbumRequest{
-					ChatId:           chatId,
-					ReplyToMessageId: msgId,
+					ChatId: chatId,
+					ReplyTo: &tdlib.MessageReplyToMessage{
+						ChatId:    chatId,
+						MessageId: msgId,
+					},
 					InputMessageContents: []tdlib.InputMessageContent{
 						&tdlib.InputMessagePhoto{
 							Photo: &tdlib.InputFileLocal{
