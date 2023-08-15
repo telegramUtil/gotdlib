@@ -3218,7 +3218,7 @@ type SendInlineQueryResultMessageRequest struct {
     Options *MessageSendOptions `json:"options"`
     // Identifier of the inline query
     QueryId JsonInt64 `json:"query_id"`
-    // Identifier of the inline result
+    // Identifier of the inline query result
     ResultId string `json:"result_id"`
     // Pass true to hide the bot, via which the message is sent. Can be used only for bots getOption("animation_search_bot_username"), getOption("photo_search_bot_username"), and getOption("venue_search_bot_username")
     HideViaBot bool `json:"hide_via_bot"`
@@ -5110,7 +5110,7 @@ type GetInlineQueryResultsRequest struct {
     UserLocation *Location `json:"user_location"`
     // Text of the query
     Query string `json:"query"`
-    // Offset of the first entry to return
+    // Offset of the first entry to return; use empty string to get the first chunk of results
     Offset string `json:"offset"`
 }
 
@@ -8416,14 +8416,53 @@ func (client *Client) GetStory(req *GetStoryRequest) (*Story, error) {
     return UnmarshalStory(result.Data)
 }
 
+// Checks whether the current user can send a story
+func (client *Client) CanSendStory() (CanSendStoryResult, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "canSendStory",
+        },
+        Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    switch result.Type {
+    case TypeCanSendStoryResultOk:
+        return UnmarshalCanSendStoryResultOk(result.Data)
+
+    case TypeCanSendStoryResultPremiumNeeded:
+        return UnmarshalCanSendStoryResultPremiumNeeded(result.Data)
+
+    case TypeCanSendStoryResultActiveStoryLimitExceeded:
+        return UnmarshalCanSendStoryResultActiveStoryLimitExceeded(result.Data)
+
+    case TypeCanSendStoryResultWeeklyLimitExceeded:
+        return UnmarshalCanSendStoryResultWeeklyLimitExceeded(result.Data)
+
+    case TypeCanSendStoryResultMonthlyLimitExceeded:
+        return UnmarshalCanSendStoryResultMonthlyLimitExceeded(result.Data)
+
+    default:
+        return nil, errors.New("invalid type")
+   }
+}
+
 type SendStoryRequest struct { 
     // Content of the story
     Content InputStoryContent `json:"content"`
+    // Clickable rectangle areas to be shown on the story media; pass null if none
+    Areas *InputStoryAreas `json:"areas"`
     // Story caption; pass null to use an empty caption; 0-getOption("story_caption_length_max") characters
     Caption *FormattedText `json:"caption"`
     // The privacy settings for the story
     PrivacySettings StoryPrivacySettings `json:"privacy_settings"`
-    // Period after which the story is moved to archive, in seconds; must be one of 6 * 3600, 12 * 3600, 86400, 2 * 86400, 3 * 86400, or 7 * 86400 for Telegram Premium users, and 86400 otherwise
+    // Period after which the story is moved to archive, in seconds; must be one of 6 * 3600, 12 * 3600, 86400, or 2 * 86400 for Telegram Premium users, and 86400 otherwise
     ActivePeriod int32 `json:"active_period"`
     // Pass true to keep the story accessible after expiration
     IsPinned bool `json:"is_pinned"`
@@ -8431,7 +8470,7 @@ type SendStoryRequest struct {
     ProtectContent bool `json:"protect_content"`
 }
 
-// Sends a new story. Returns a temporary story with identifier 0
+// Sends a new story. Returns a temporary story
 func (client *Client) SendStory(req *SendStoryRequest) (*Story, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -8439,6 +8478,7 @@ func (client *Client) SendStory(req *SendStoryRequest) (*Story, error) {
         },
         Data: map[string]interface{}{
             "content": req.Content,
+            "areas": req.Areas,
             "caption": req.Caption,
             "privacy_settings": req.PrivacySettings,
             "active_period": req.ActivePeriod,
@@ -8462,6 +8502,8 @@ type EditStoryRequest struct {
     StoryId int32 `json:"story_id"`
     // New content of the story; pass null to keep the current content
     Content InputStoryContent `json:"content"`
+    // New clickable rectangle areas to be shown on the story media; pass null to keep the current areas. Areas can't be edited if story content isn't changed
+    Areas *InputStoryAreas `json:"areas"`
     // New story caption; pass null to keep the current caption
     Caption *FormattedText `json:"caption"`
 }
@@ -8475,6 +8517,7 @@ func (client *Client) EditStory(req *EditStoryRequest) (*Ok, error) {
         Data: map[string]interface{}{
             "story_id": req.StoryId,
             "content": req.Content,
+            "areas": req.Areas,
             "caption": req.Caption,
         },
     })
@@ -8792,24 +8835,94 @@ func (client *Client) CloseStory(req *CloseStoryRequest) (*Ok, error) {
     return UnmarshalOk(result.Data)
 }
 
+type GetStoryAvailableReactionsRequest struct { 
+    // Number of reaction per row, 5-25
+    RowSize int32 `json:"row_size"`
+}
+
+// Returns reactions, which can be chosen for a story
+func (client *Client) GetStoryAvailableReactions(req *GetStoryAvailableReactionsRequest) (*AvailableReactions, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getStoryAvailableReactions",
+        },
+        Data: map[string]interface{}{
+            "row_size": req.RowSize,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalAvailableReactions(result.Data)
+}
+
+type SetStoryReactionRequest struct { 
+    // The identifier of the sender of the story
+    StorySenderChatId int64 `json:"story_sender_chat_id"`
+    // The identifier of the story
+    StoryId int32 `json:"story_id"`
+    // Type of the reaction to set; pass null to remove the reaction. `reactionTypeCustomEmoji` reactions can be used only by Telegram Premium users
+    ReactionType ReactionType `json:"reaction_type"`
+    // Pass true if the reaction needs to be added to recent reactions
+    UpdateRecentReactions bool `json:"update_recent_reactions"`
+}
+
+// Changes chosen reaction on a story
+func (client *Client) SetStoryReaction(req *SetStoryReactionRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "setStoryReaction",
+        },
+        Data: map[string]interface{}{
+            "story_sender_chat_id": req.StorySenderChatId,
+            "story_id": req.StoryId,
+            "reaction_type": req.ReactionType,
+            "update_recent_reactions": req.UpdateRecentReactions,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
 type GetStoryViewersRequest struct { 
     // Story identifier
     StoryId int32 `json:"story_id"`
-    // A viewer from which to return next viewers; pass null to get results from the beginning
-    OffsetViewer *MessageViewer `json:"offset_viewer"`
-    // The maximum number of story viewers to return For optimal performance, the number of returned stories is chosen by TDLib and can be smaller than the specified limit
+    // Query to search for in names and usernames of the viewers; may be empty to get all relevant viewers
+    Query string `json:"query"`
+    // Pass true to get only contacts; pass false to get all relevant viewers
+    OnlyContacts bool `json:"only_contacts"`
+    // Pass true to get viewers with reaction first; pass false to get viewers sorted just by view_date
+    PreferWithReaction bool `json:"prefer_with_reaction"`
+    // Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results
+    Offset string `json:"offset"`
+    // The maximum number of story viewers to return
     Limit int32 `json:"limit"`
 }
 
-// Returns viewers of a recent outgoing story. The method can be called if story.can_get_viewers == true. The views are returned in a reverse chronological order (i.e., in order of decreasing view_date) For optimal performance, the number of returned stories is chosen by TDLib
-func (client *Client) GetStoryViewers(req *GetStoryViewersRequest) (*MessageViewers, error) {
+// Returns viewers of a story. The method can be called if story.can_get_viewers == true
+func (client *Client) GetStoryViewers(req *GetStoryViewersRequest) (*StoryViewers, error) {
     result, err := client.Send(Request{
         meta: meta{
             Type: "getStoryViewers",
         },
         Data: map[string]interface{}{
             "story_id": req.StoryId,
-            "offset_viewer": req.OffsetViewer,
+            "query": req.Query,
+            "only_contacts": req.OnlyContacts,
+            "prefer_with_reaction": req.PreferWithReaction,
+            "offset": req.Offset,
             "limit": req.Limit,
         },
     })
@@ -8821,7 +8934,7 @@ func (client *Client) GetStoryViewers(req *GetStoryViewersRequest) (*MessageView
         return nil, buildResponseError(result.Data)
     }
 
-    return UnmarshalMessageViewers(result.Data)
+    return UnmarshalStoryViewers(result.Data)
 }
 
 type ReportStoryRequest struct { 
@@ -8847,6 +8960,25 @@ func (client *Client) ReportStory(req *ReportStoryRequest) (*Ok, error) {
             "reason": req.Reason,
             "text": req.Text,
         },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+// Activates stealth mode for stories, which hides all views of stories from the current user in the last "story_stealth_mode_past_period" seconds and for the next "story_stealth_mode_future_period" seconds; for Telegram Premium users only
+func (client *Client) ActivateStoryStealthMode() (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "activateStoryStealthMode",
+        },
+        Data: map[string]interface{}{},
     })
     if err != nil {
         return nil, err
@@ -11198,22 +11330,22 @@ func (client *Client) GetGroupCallStreamSegment(req *GetGroupCallStreamSegmentRe
     return UnmarshalFilePart(result.Data)
 }
 
-type ToggleMessageSenderIsBlockedRequest struct { 
+type SetMessageSenderBlockListRequest struct { 
     // Identifier of a message sender to block/unblock
     SenderId MessageSender `json:"sender_id"`
-    // New value of is_blocked
-    IsBlocked bool `json:"is_blocked"`
+    // New block list for the message sender; pass null to unblock the message sender
+    BlockList BlockList `json:"block_list"`
 }
 
-// Changes the block state of a message sender. Currently, only users and supergroup chats can be blocked
-func (client *Client) ToggleMessageSenderIsBlocked(req *ToggleMessageSenderIsBlockedRequest) (*Ok, error) {
+// Changes the block list of a message sender. Currently, only users and supergroup chats can be blocked
+func (client *Client) SetMessageSenderBlockList(req *SetMessageSenderBlockListRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
-            Type: "toggleMessageSenderIsBlocked",
+            Type: "setMessageSenderBlockList",
         },
         Data: map[string]interface{}{
             "sender_id": req.SenderId,
-            "is_blocked": req.IsBlocked,
+            "block_list": req.BlockList,
         },
     })
     if err != nil {
@@ -11263,6 +11395,8 @@ func (client *Client) BlockMessageSenderFromReplies(req *BlockMessageSenderFromR
 }
 
 type GetBlockedMessageSendersRequest struct { 
+    // Block list from which to return users
+    BlockList BlockList `json:"block_list"`
     // Number of users and chats to skip in the result; must be non-negative
     Offset int32 `json:"offset"`
     // The maximum number of users and chats to return; up to 100
@@ -11276,6 +11410,7 @@ func (client *Client) GetBlockedMessageSenders(req *GetBlockedMessageSendersRequ
             Type: "getBlockedMessageSenders",
         },
         Data: map[string]interface{}{
+            "block_list": req.BlockList,
             "offset": req.Offset,
             "limit": req.Limit,
         },
@@ -13166,7 +13301,7 @@ func (client *Client) GetMenuButton(req *GetMenuButtonRequest) (*BotMenuButton, 
 }
 
 type SetDefaultGroupAdministratorRightsRequest struct { 
-    // Default administrator rights for adding the bot to basic group and supergroup chats; may be null
+    // Default administrator rights for adding the bot to basic group and supergroup chats; pass null to remove default rights
     DefaultGroupAdministratorRights *ChatAdministratorRights `json:"default_group_administrator_rights"`
 }
 
@@ -13192,7 +13327,7 @@ func (client *Client) SetDefaultGroupAdministratorRights(req *SetDefaultGroupAdm
 }
 
 type SetDefaultChannelAdministratorRightsRequest struct { 
-    // Default administrator rights for adding the bot to channels; may be null
+    // Default administrator rights for adding the bot to channels; pass null to remove default rights
     DefaultChannelAdministratorRights *ChatAdministratorRights `json:"default_channel_administrator_rights"`
 }
 
@@ -18410,8 +18545,8 @@ func (client *Client) TestUseUpdate() (Update, error) {
     case TypeUpdateChatIsMarkedAsUnread:
         return UnmarshalUpdateChatIsMarkedAsUnread(result.Data)
 
-    case TypeUpdateChatIsBlocked:
-        return UnmarshalUpdateChatIsBlocked(result.Data)
+    case TypeUpdateChatBlockList:
+        return UnmarshalUpdateChatBlockList(result.Data)
 
     case TypeUpdateChatHasScheduledMessages:
         return UnmarshalUpdateChatHasScheduledMessages(result.Data)
@@ -18521,11 +18656,20 @@ func (client *Client) TestUseUpdate() (Update, error) {
     case TypeUpdateStoryDeleted:
         return UnmarshalUpdateStoryDeleted(result.Data)
 
+    case TypeUpdateStorySendSucceeded:
+        return UnmarshalUpdateStorySendSucceeded(result.Data)
+
+    case TypeUpdateStorySendFailed:
+        return UnmarshalUpdateStorySendFailed(result.Data)
+
     case TypeUpdateChatActiveStories:
         return UnmarshalUpdateChatActiveStories(result.Data)
 
     case TypeUpdateStoryListChatCount:
         return UnmarshalUpdateStoryListChatCount(result.Data)
+
+    case TypeUpdateStoryStealthMode:
+        return UnmarshalUpdateStoryStealthMode(result.Data)
 
     case TypeUpdateOption:
         return UnmarshalUpdateOption(result.Data)
