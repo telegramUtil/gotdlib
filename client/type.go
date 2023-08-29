@@ -64,6 +64,11 @@ const (
     ClassChatAction = "ChatAction"
     ClassUserStatus = "UserStatus"
     ClassEmojiCategoryType = "EmojiCategoryType"
+    ClassStoryAreaType = "StoryAreaType"
+    ClassInputStoryAreaType = "InputStoryAreaType"
+    ClassStoryContent = "StoryContent"
+    ClassInputStoryContent = "InputStoryContent"
+    ClassStoryList = "StoryList"
     ClassCallDiscardReason = "CallDiscardReason"
     ClassCallServerType = "CallServerType"
     ClassCallState = "CallState"
@@ -105,11 +110,6 @@ const (
     ClassReportReason = "ReportReason"
     ClassTargetChat = "TargetChat"
     ClassInternalLinkType = "InternalLinkType"
-    ClassStoryAreaType = "StoryAreaType"
-    ClassInputStoryAreaType = "InputStoryAreaType"
-    ClassStoryContent = "StoryContent"
-    ClassInputStoryContent = "InputStoryContent"
-    ClassStoryList = "StoryList"
     ClassBlockList = "BlockList"
     ClassFileType = "FileType"
     ClassNetworkType = "NetworkType"
@@ -307,6 +307,18 @@ const (
     ClassTrendingStickerSets = "TrendingStickerSets"
     ClassEmojiCategory = "EmojiCategory"
     ClassEmojiCategories = "EmojiCategories"
+    ClassStoryViewer = "StoryViewer"
+    ClassStoryViewers = "StoryViewers"
+    ClassStoryAreaPosition = "StoryAreaPosition"
+    ClassStoryArea = "StoryArea"
+    ClassInputStoryArea = "InputStoryArea"
+    ClassInputStoryAreas = "InputStoryAreas"
+    ClassStoryVideo = "StoryVideo"
+    ClassStoryInteractionInfo = "StoryInteractionInfo"
+    ClassStory = "Story"
+    ClassStories = "Stories"
+    ClassStoryInfo = "StoryInfo"
+    ClassChatActiveStories = "ChatActiveStories"
     ClassCallProtocol = "CallProtocol"
     ClassCallServer = "CallServer"
     ClassCallId = "CallId"
@@ -368,18 +380,6 @@ const (
     ClassConnectedWebsites = "ConnectedWebsites"
     ClassMessageLink = "MessageLink"
     ClassMessageLinkInfo = "MessageLinkInfo"
-    ClassStoryViewer = "StoryViewer"
-    ClassStoryViewers = "StoryViewers"
-    ClassStoryAreaPosition = "StoryAreaPosition"
-    ClassStoryArea = "StoryArea"
-    ClassInputStoryArea = "InputStoryArea"
-    ClassInputStoryAreas = "InputStoryAreas"
-    ClassStoryVideo = "StoryVideo"
-    ClassStoryInteractionInfo = "StoryInteractionInfo"
-    ClassStory = "Story"
-    ClassStories = "Stories"
-    ClassStoryInfo = "StoryInfo"
-    ClassChatActiveStories = "ChatActiveStories"
     ClassFilePart = "FilePart"
     ClassStorageStatisticsByFileType = "StorageStatisticsByFileType"
     ClassStorageStatisticsByChat = "StorageStatisticsByChat"
@@ -1026,6 +1026,30 @@ const (
     TypeEmojiCategoryTypeDefault = "emojiCategoryTypeDefault"
     TypeEmojiCategoryTypeEmojiStatus = "emojiCategoryTypeEmojiStatus"
     TypeEmojiCategoryTypeChatPhoto = "emojiCategoryTypeChatPhoto"
+    TypeStoryViewer = "storyViewer"
+    TypeStoryViewers = "storyViewers"
+    TypeStoryAreaPosition = "storyAreaPosition"
+    TypeStoryAreaTypeLocation = "storyAreaTypeLocation"
+    TypeStoryAreaTypeVenue = "storyAreaTypeVenue"
+    TypeStoryArea = "storyArea"
+    TypeInputStoryAreaTypeLocation = "inputStoryAreaTypeLocation"
+    TypeInputStoryAreaTypeFoundVenue = "inputStoryAreaTypeFoundVenue"
+    TypeInputStoryAreaTypePreviousVenue = "inputStoryAreaTypePreviousVenue"
+    TypeInputStoryArea = "inputStoryArea"
+    TypeInputStoryAreas = "inputStoryAreas"
+    TypeStoryVideo = "storyVideo"
+    TypeStoryContentPhoto = "storyContentPhoto"
+    TypeStoryContentVideo = "storyContentVideo"
+    TypeStoryContentUnsupported = "storyContentUnsupported"
+    TypeInputStoryContentPhoto = "inputStoryContentPhoto"
+    TypeInputStoryContentVideo = "inputStoryContentVideo"
+    TypeStoryListMain = "storyListMain"
+    TypeStoryListArchive = "storyListArchive"
+    TypeStoryInteractionInfo = "storyInteractionInfo"
+    TypeStory = "story"
+    TypeStories = "stories"
+    TypeStoryInfo = "storyInfo"
+    TypeChatActiveStories = "chatActiveStories"
     TypeCallDiscardReasonEmpty = "callDiscardReasonEmpty"
     TypeCallDiscardReasonMissed = "callDiscardReasonMissed"
     TypeCallDiscardReasonDeclined = "callDiscardReasonDeclined"
@@ -1426,30 +1450,6 @@ const (
     TypeInternalLinkTypeWebApp = "internalLinkTypeWebApp"
     TypeMessageLink = "messageLink"
     TypeMessageLinkInfo = "messageLinkInfo"
-    TypeStoryViewer = "storyViewer"
-    TypeStoryViewers = "storyViewers"
-    TypeStoryAreaPosition = "storyAreaPosition"
-    TypeStoryAreaTypeLocation = "storyAreaTypeLocation"
-    TypeStoryAreaTypeVenue = "storyAreaTypeVenue"
-    TypeStoryArea = "storyArea"
-    TypeInputStoryAreaTypeLocation = "inputStoryAreaTypeLocation"
-    TypeInputStoryAreaTypeFoundVenue = "inputStoryAreaTypeFoundVenue"
-    TypeInputStoryAreaTypePreviousVenue = "inputStoryAreaTypePreviousVenue"
-    TypeInputStoryArea = "inputStoryArea"
-    TypeInputStoryAreas = "inputStoryAreas"
-    TypeStoryVideo = "storyVideo"
-    TypeStoryContentPhoto = "storyContentPhoto"
-    TypeStoryContentVideo = "storyContentVideo"
-    TypeStoryContentUnsupported = "storyContentUnsupported"
-    TypeInputStoryContentPhoto = "inputStoryContentPhoto"
-    TypeInputStoryContentVideo = "inputStoryContentVideo"
-    TypeStoryListMain = "storyListMain"
-    TypeStoryListArchive = "storyListArchive"
-    TypeStoryInteractionInfo = "storyInteractionInfo"
-    TypeStory = "story"
-    TypeStories = "stories"
-    TypeStoryInfo = "storyInfo"
-    TypeChatActiveStories = "chatActiveStories"
     TypeBlockListMain = "blockListMain"
     TypeBlockListStories = "blockListStories"
     TypeFilePart = "filePart"
@@ -1973,6 +1973,31 @@ type EmojiCategoryType interface {
     EmojiCategoryTypeType() string
 }
 
+// Describes type of a clickable rectangle area on a story media
+type StoryAreaType interface {
+    StoryAreaTypeType() string
+}
+
+// Describes type of a clickable rectangle area on a story media to be added
+type InputStoryAreaType interface {
+    InputStoryAreaTypeType() string
+}
+
+// Contains the content of a story
+type StoryContent interface {
+    StoryContentType() string
+}
+
+// The content of a story to send
+type InputStoryContent interface {
+    InputStoryContentType() string
+}
+
+// Describes a list of stories
+type StoryList interface {
+    StoryListType() string
+}
+
 // Describes the reason why a call was discarded
 type CallDiscardReason interface {
     CallDiscardReasonType() string
@@ -2176,31 +2201,6 @@ type TargetChat interface {
 // Describes an internal https://t.me or tg: link, which must be processed by the application in a special way
 type InternalLinkType interface {
     InternalLinkTypeType() string
-}
-
-// Describes type of a clickable rectangle area on a story media
-type StoryAreaType interface {
-    StoryAreaTypeType() string
-}
-
-// Describes type of a clickable rectangle area on a story media to be added
-type InputStoryAreaType interface {
-    InputStoryAreaTypeType() string
-}
-
-// Contains the content of a story
-type StoryContent interface {
-    StoryContentType() string
-}
-
-// The content of a story to send
-type InputStoryContent interface {
-    InputStoryContentType() string
-}
-
-// Describes a list of stories
-type StoryList interface {
-    StoryListType() string
 }
 
 // Describes a type of a block list
@@ -9597,7 +9597,7 @@ type ChatNotificationSettings struct {
     ShowPreview bool `json:"show_preview"`
     // If true, mute_stories is ignored and the value for the relevant type of chat is used instead
     UseDefaultMuteStories bool `json:"use_default_mute_stories"`
-    // True, if story notifications are received without sound
+    // True, if story notifications are disabled for the chat
     MuteStories bool `json:"mute_stories"`
     // If true, the value for the relevant type of chat is used instead of story_sound_id
     UseDefaultStorySound bool `json:"use_default_story_sound"`
@@ -9642,9 +9642,9 @@ type ScopeNotificationSettings struct {
     SoundId JsonInt64 `json:"sound_id"`
     // True, if message content must be displayed in notifications
     ShowPreview bool `json:"show_preview"`
-    // If true, mute_stories is ignored and stories are unmuted only for the first 5 chats from topChatCategoryUsers
+    // If true, mute_stories is ignored and story notifications are received only for the first 5 chats from topChatCategoryUsers
     UseDefaultMuteStories bool `json:"use_default_mute_stories"`
-    // True, if story notifications are received without sound
+    // True, if story notifications are disabled for the chat
     MuteStories bool `json:"mute_stories"`
     // Identifier of the notification sound to be played for stories; 0 if sound is disabled
     StorySoundId JsonInt64 `json:"story_sound_id"`
@@ -22288,6 +22288,889 @@ func (*EmojiCategoryTypeChatPhoto) EmojiCategoryTypeType() string {
     return TypeEmojiCategoryTypeChatPhoto
 }
 
+// Represents a viewer of a story
+type StoryViewer struct {
+    meta
+    // User identifier of the viewer
+    UserId int64 `json:"user_id"`
+    // Approximate point in time (Unix timestamp) when the story was viewed
+    ViewDate int32 `json:"view_date"`
+    // Block list to which the user is added; may be null if none
+    BlockList BlockList `json:"block_list"`
+    // Type of the reaction that was chosen by the user; may be null if none
+    ChosenReactionType ReactionType `json:"chosen_reaction_type"`
+}
+
+func (entity *StoryViewer) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryViewer
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryViewer) GetClass() string {
+    return ClassStoryViewer
+}
+
+func (*StoryViewer) GetType() string {
+    return TypeStoryViewer
+}
+
+func (storyViewer *StoryViewer) UnmarshalJSON(data []byte) error {
+    var tmp struct {
+        UserId int64 `json:"user_id"`
+        ViewDate int32 `json:"view_date"`
+        BlockList json.RawMessage `json:"block_list"`
+        ChosenReactionType json.RawMessage `json:"chosen_reaction_type"`
+    }
+
+    err := json.Unmarshal(data, &tmp)
+    if err != nil {
+        return err
+    }
+
+    storyViewer.UserId = tmp.UserId
+    storyViewer.ViewDate = tmp.ViewDate
+
+    fieldBlockList, _ := UnmarshalBlockList(tmp.BlockList)
+    storyViewer.BlockList = fieldBlockList
+
+    fieldChosenReactionType, _ := UnmarshalReactionType(tmp.ChosenReactionType)
+    storyViewer.ChosenReactionType = fieldChosenReactionType
+
+    return nil
+}
+
+// Represents a list of story viewers
+type StoryViewers struct {
+    meta
+    // Approximate total number of story viewers found
+    TotalCount int32 `json:"total_count"`
+    // List of story viewers
+    Viewers []*StoryViewer `json:"viewers"`
+    // The offset for the next request. If empty, there are no more results
+    NextOffset string `json:"next_offset"`
+}
+
+func (entity *StoryViewers) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryViewers
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryViewers) GetClass() string {
+    return ClassStoryViewers
+}
+
+func (*StoryViewers) GetType() string {
+    return TypeStoryViewers
+}
+
+// Describes position of a clickable rectangle area on a story media
+type StoryAreaPosition struct {
+    meta
+    // The abscissa of the rectangle's center, as a percentage of the media width
+    XPercentage float64 `json:"x_percentage"`
+    // The ordinate of the rectangle's center, as a percentage of the media height
+    YPercentage float64 `json:"y_percentage"`
+    // The width of the rectangle, as a percentage of the media width
+    WidthPercentage float64 `json:"width_percentage"`
+    // The ordinate of the rectangle's center, as a percentage of the media height
+    HeightPercentage float64 `json:"height_percentage"`
+    // Clockwise rotation angle of the rectangle, in degrees; 0-360
+    RotationAngle float64 `json:"rotation_angle"`
+}
+
+func (entity *StoryAreaPosition) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryAreaPosition
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryAreaPosition) GetClass() string {
+    return ClassStoryAreaPosition
+}
+
+func (*StoryAreaPosition) GetType() string {
+    return TypeStoryAreaPosition
+}
+
+// An area pointing to a location
+type StoryAreaTypeLocation struct {
+    meta
+    // The location
+    Location *Location `json:"location"`
+}
+
+func (entity *StoryAreaTypeLocation) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryAreaTypeLocation
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryAreaTypeLocation) GetClass() string {
+    return ClassStoryAreaType
+}
+
+func (*StoryAreaTypeLocation) GetType() string {
+    return TypeStoryAreaTypeLocation
+}
+
+func (*StoryAreaTypeLocation) StoryAreaTypeType() string {
+    return TypeStoryAreaTypeLocation
+}
+
+// An area pointing to a venue
+type StoryAreaTypeVenue struct {
+    meta
+    // Information about the venue
+    Venue *Venue `json:"venue"`
+}
+
+func (entity *StoryAreaTypeVenue) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryAreaTypeVenue
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryAreaTypeVenue) GetClass() string {
+    return ClassStoryAreaType
+}
+
+func (*StoryAreaTypeVenue) GetType() string {
+    return TypeStoryAreaTypeVenue
+}
+
+func (*StoryAreaTypeVenue) StoryAreaTypeType() string {
+    return TypeStoryAreaTypeVenue
+}
+
+// Describes a clickable rectangle area on a story media
+type StoryArea struct {
+    meta
+    // Position of the area
+    Position *StoryAreaPosition `json:"position"`
+    // Type of the area
+    Type StoryAreaType `json:"type"`
+}
+
+func (entity *StoryArea) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryArea
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryArea) GetClass() string {
+    return ClassStoryArea
+}
+
+func (*StoryArea) GetType() string {
+    return TypeStoryArea
+}
+
+func (storyArea *StoryArea) UnmarshalJSON(data []byte) error {
+    var tmp struct {
+        Position *StoryAreaPosition `json:"position"`
+        Type json.RawMessage `json:"type"`
+    }
+
+    err := json.Unmarshal(data, &tmp)
+    if err != nil {
+        return err
+    }
+
+    storyArea.Position = tmp.Position
+
+    fieldType, _ := UnmarshalStoryAreaType(tmp.Type)
+    storyArea.Type = fieldType
+
+    return nil
+}
+
+// An area pointing to a location
+type InputStoryAreaTypeLocation struct {
+    meta
+    // The location
+    Location *Location `json:"location"`
+}
+
+func (entity *InputStoryAreaTypeLocation) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InputStoryAreaTypeLocation
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InputStoryAreaTypeLocation) GetClass() string {
+    return ClassInputStoryAreaType
+}
+
+func (*InputStoryAreaTypeLocation) GetType() string {
+    return TypeInputStoryAreaTypeLocation
+}
+
+func (*InputStoryAreaTypeLocation) InputStoryAreaTypeType() string {
+    return TypeInputStoryAreaTypeLocation
+}
+
+// An area pointing to a venue found by the bot getOption("venue_search_bot_username")
+type InputStoryAreaTypeFoundVenue struct {
+    meta
+    // Identifier of the inline query, used to found the venue
+    QueryId JsonInt64 `json:"query_id"`
+    // Identifier of the inline query result
+    ResultId string `json:"result_id"`
+}
+
+func (entity *InputStoryAreaTypeFoundVenue) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InputStoryAreaTypeFoundVenue
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InputStoryAreaTypeFoundVenue) GetClass() string {
+    return ClassInputStoryAreaType
+}
+
+func (*InputStoryAreaTypeFoundVenue) GetType() string {
+    return TypeInputStoryAreaTypeFoundVenue
+}
+
+func (*InputStoryAreaTypeFoundVenue) InputStoryAreaTypeType() string {
+    return TypeInputStoryAreaTypeFoundVenue
+}
+
+// An area pointing to a venue already added to the story
+type InputStoryAreaTypePreviousVenue struct {
+    meta
+    // Provider of the venue
+    VenueProvider string `json:"venue_provider"`
+    // Identifier of the venue in the provider database
+    VenueId string `json:"venue_id"`
+}
+
+func (entity *InputStoryAreaTypePreviousVenue) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InputStoryAreaTypePreviousVenue
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InputStoryAreaTypePreviousVenue) GetClass() string {
+    return ClassInputStoryAreaType
+}
+
+func (*InputStoryAreaTypePreviousVenue) GetType() string {
+    return TypeInputStoryAreaTypePreviousVenue
+}
+
+func (*InputStoryAreaTypePreviousVenue) InputStoryAreaTypeType() string {
+    return TypeInputStoryAreaTypePreviousVenue
+}
+
+// Describes a clickable rectangle area on a story media to be added
+type InputStoryArea struct {
+    meta
+    // Position of the area
+    Position *StoryAreaPosition `json:"position"`
+    // Type of the area
+    Type InputStoryAreaType `json:"type"`
+}
+
+func (entity *InputStoryArea) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InputStoryArea
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InputStoryArea) GetClass() string {
+    return ClassInputStoryArea
+}
+
+func (*InputStoryArea) GetType() string {
+    return TypeInputStoryArea
+}
+
+func (inputStoryArea *InputStoryArea) UnmarshalJSON(data []byte) error {
+    var tmp struct {
+        Position *StoryAreaPosition `json:"position"`
+        Type json.RawMessage `json:"type"`
+    }
+
+    err := json.Unmarshal(data, &tmp)
+    if err != nil {
+        return err
+    }
+
+    inputStoryArea.Position = tmp.Position
+
+    fieldType, _ := UnmarshalInputStoryAreaType(tmp.Type)
+    inputStoryArea.Type = fieldType
+
+    return nil
+}
+
+// Contains a list of story areas to be added
+type InputStoryAreas struct {
+    meta
+    // List of 0-10 input story areas
+    Areas []*InputStoryArea `json:"areas"`
+}
+
+func (entity *InputStoryAreas) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InputStoryAreas
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InputStoryAreas) GetClass() string {
+    return ClassInputStoryAreas
+}
+
+func (*InputStoryAreas) GetType() string {
+    return TypeInputStoryAreas
+}
+
+// Describes a video file sent in a story
+type StoryVideo struct {
+    meta
+    // Duration of the video, in seconds
+    Duration float64 `json:"duration"`
+    // Video width
+    Width int32 `json:"width"`
+    // Video height
+    Height int32 `json:"height"`
+    // True, if stickers were added to the video. The list of corresponding sticker sets can be received using getAttachedStickerSets
+    HasStickers bool `json:"has_stickers"`
+    // True, if the video has no sound
+    IsAnimation bool `json:"is_animation"`
+    // Video minithumbnail; may be null
+    Minithumbnail *Minithumbnail `json:"minithumbnail"`
+    // Video thumbnail in JPEG or MPEG4 format; may be null
+    Thumbnail *Thumbnail `json:"thumbnail"`
+    // Size of file prefix, which is supposed to be preloaded, in bytes
+    PreloadPrefixSize int32 `json:"preload_prefix_size"`
+    // File containing the video
+    Video *File `json:"video"`
+}
+
+func (entity *StoryVideo) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryVideo
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryVideo) GetClass() string {
+    return ClassStoryVideo
+}
+
+func (*StoryVideo) GetType() string {
+    return TypeStoryVideo
+}
+
+// A photo story
+type StoryContentPhoto struct {
+    meta
+    // The photo
+    Photo *Photo `json:"photo"`
+}
+
+func (entity *StoryContentPhoto) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryContentPhoto
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryContentPhoto) GetClass() string {
+    return ClassStoryContent
+}
+
+func (*StoryContentPhoto) GetType() string {
+    return TypeStoryContentPhoto
+}
+
+func (*StoryContentPhoto) StoryContentType() string {
+    return TypeStoryContentPhoto
+}
+
+// A video story
+type StoryContentVideo struct {
+    meta
+    // The video in MPEG4 format
+    Video *StoryVideo `json:"video"`
+    // Alternative version of the video in MPEG4 format, encoded by x264 codec; may be null
+    AlternativeVideo *StoryVideo `json:"alternative_video"`
+}
+
+func (entity *StoryContentVideo) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryContentVideo
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryContentVideo) GetClass() string {
+    return ClassStoryContent
+}
+
+func (*StoryContentVideo) GetType() string {
+    return TypeStoryContentVideo
+}
+
+func (*StoryContentVideo) StoryContentType() string {
+    return TypeStoryContentVideo
+}
+
+// A story content that is not supported in the current TDLib version
+type StoryContentUnsupported struct{
+    meta
+}
+
+func (entity *StoryContentUnsupported) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryContentUnsupported
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryContentUnsupported) GetClass() string {
+    return ClassStoryContent
+}
+
+func (*StoryContentUnsupported) GetType() string {
+    return TypeStoryContentUnsupported
+}
+
+func (*StoryContentUnsupported) StoryContentType() string {
+    return TypeStoryContentUnsupported
+}
+
+// A photo story
+type InputStoryContentPhoto struct {
+    meta
+    // Photo to send. The photo must be at most 10 MB in size. The photo size must be 1080x1920
+    Photo InputFile `json:"photo"`
+    // File identifiers of the stickers added to the photo, if applicable
+    AddedStickerFileIds []int32 `json:"added_sticker_file_ids"`
+}
+
+func (entity *InputStoryContentPhoto) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InputStoryContentPhoto
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InputStoryContentPhoto) GetClass() string {
+    return ClassInputStoryContent
+}
+
+func (*InputStoryContentPhoto) GetType() string {
+    return TypeInputStoryContentPhoto
+}
+
+func (*InputStoryContentPhoto) InputStoryContentType() string {
+    return TypeInputStoryContentPhoto
+}
+
+func (inputStoryContentPhoto *InputStoryContentPhoto) UnmarshalJSON(data []byte) error {
+    var tmp struct {
+        Photo json.RawMessage `json:"photo"`
+        AddedStickerFileIds []int32 `json:"added_sticker_file_ids"`
+    }
+
+    err := json.Unmarshal(data, &tmp)
+    if err != nil {
+        return err
+    }
+
+    inputStoryContentPhoto.AddedStickerFileIds = tmp.AddedStickerFileIds
+
+    fieldPhoto, _ := UnmarshalInputFile(tmp.Photo)
+    inputStoryContentPhoto.Photo = fieldPhoto
+
+    return nil
+}
+
+// A video story
+type InputStoryContentVideo struct {
+    meta
+    // Video to be sent. The video size must be 720x1280. The video must be streamable and stored in MPEG4 format, after encoding with x265 codec and key frames added each second
+    Video InputFile `json:"video"`
+    // File identifiers of the stickers added to the video, if applicable
+    AddedStickerFileIds []int32 `json:"added_sticker_file_ids"`
+    // Precise duration of the video, in seconds; 0-60
+    Duration float64 `json:"duration"`
+    // True, if the video has no sound
+    IsAnimation bool `json:"is_animation"`
+}
+
+func (entity *InputStoryContentVideo) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InputStoryContentVideo
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InputStoryContentVideo) GetClass() string {
+    return ClassInputStoryContent
+}
+
+func (*InputStoryContentVideo) GetType() string {
+    return TypeInputStoryContentVideo
+}
+
+func (*InputStoryContentVideo) InputStoryContentType() string {
+    return TypeInputStoryContentVideo
+}
+
+func (inputStoryContentVideo *InputStoryContentVideo) UnmarshalJSON(data []byte) error {
+    var tmp struct {
+        Video json.RawMessage `json:"video"`
+        AddedStickerFileIds []int32 `json:"added_sticker_file_ids"`
+        Duration float64 `json:"duration"`
+        IsAnimation bool `json:"is_animation"`
+    }
+
+    err := json.Unmarshal(data, &tmp)
+    if err != nil {
+        return err
+    }
+
+    inputStoryContentVideo.AddedStickerFileIds = tmp.AddedStickerFileIds
+    inputStoryContentVideo.Duration = tmp.Duration
+    inputStoryContentVideo.IsAnimation = tmp.IsAnimation
+
+    fieldVideo, _ := UnmarshalInputFile(tmp.Video)
+    inputStoryContentVideo.Video = fieldVideo
+
+    return nil
+}
+
+// The list of stories, shown in the main chat list and folder chat lists
+type StoryListMain struct{
+    meta
+}
+
+func (entity *StoryListMain) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryListMain
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryListMain) GetClass() string {
+    return ClassStoryList
+}
+
+func (*StoryListMain) GetType() string {
+    return TypeStoryListMain
+}
+
+func (*StoryListMain) StoryListType() string {
+    return TypeStoryListMain
+}
+
+// The list of stories, shown in the Arvhive chat list
+type StoryListArchive struct{
+    meta
+}
+
+func (entity *StoryListArchive) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryListArchive
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryListArchive) GetClass() string {
+    return ClassStoryList
+}
+
+func (*StoryListArchive) GetType() string {
+    return TypeStoryListArchive
+}
+
+func (*StoryListArchive) StoryListType() string {
+    return TypeStoryListArchive
+}
+
+// Contains information about interactions with a story
+type StoryInteractionInfo struct {
+    meta
+    // Number of times the story was viewed
+    ViewCount int32 `json:"view_count"`
+    // Number of reactions added to the story
+    ReactionCount int32 `json:"reaction_count"`
+    // Identifiers of at most 3 recent viewers of the story
+    RecentViewerUserIds []int64 `json:"recent_viewer_user_ids"`
+}
+
+func (entity *StoryInteractionInfo) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryInteractionInfo
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryInteractionInfo) GetClass() string {
+    return ClassStoryInteractionInfo
+}
+
+func (*StoryInteractionInfo) GetType() string {
+    return TypeStoryInteractionInfo
+}
+
+// Represents a story
+type Story struct {
+    meta
+    // Unique story identifier among stories of the given sender
+    Id int32 `json:"id"`
+    // Identifier of the chat that posted the story
+    SenderChatId int64 `json:"sender_chat_id"`
+    // Point in time (Unix timestamp) when the story was published
+    Date int32 `json:"date"`
+    // True, if the story is being sent by the current user
+    IsBeingSent bool `json:"is_being_sent"`
+    // True, if the story is being edited by the current user
+    IsBeingEdited bool `json:"is_being_edited"`
+    // True, if the story was edited
+    IsEdited bool `json:"is_edited"`
+    // True, if the story is saved in the sender's profile and will be available there after expiration
+    IsPinned bool `json:"is_pinned"`
+    // True, if the story is visible only for the current user
+    IsVisibleOnlyForSelf bool `json:"is_visible_only_for_self"`
+    // True, if the story can be forwarded as a message. Otherwise, screenshots and saving of the story content must be also forbidden
+    CanBeForwarded bool `json:"can_be_forwarded"`
+    // True, if the story can be replied in the chat with the story sender
+    CanBeReplied bool `json:"can_be_replied"`
+    // True, if users viewed the story can be received through getStoryViewers
+    CanGetViewers bool `json:"can_get_viewers"`
+    // True, if users viewed the story can't be received, because the story has expired more than getOption("story_viewers_expiration_delay") seconds ago
+    HasExpiredViewers bool `json:"has_expired_viewers"`
+    // Information about interactions with the story; may be null if the story isn't owned or there were no interactions
+    InteractionInfo *StoryInteractionInfo `json:"interaction_info"`
+    // Type of the chosen reaction; may be null if none
+    ChosenReactionType ReactionType `json:"chosen_reaction_type"`
+    // Privacy rules affecting story visibility; may be approximate for non-owned stories
+    PrivacySettings StoryPrivacySettings `json:"privacy_settings"`
+    // Content of the story
+    Content StoryContent `json:"content"`
+    // Clickable areas to be shown on the story content
+    Areas []*StoryArea `json:"areas"`
+    // Caption of the story
+    Caption *FormattedText `json:"caption"`
+}
+
+func (entity *Story) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub Story
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*Story) GetClass() string {
+    return ClassStory
+}
+
+func (*Story) GetType() string {
+    return TypeStory
+}
+
+func (story *Story) UnmarshalJSON(data []byte) error {
+    var tmp struct {
+        Id int32 `json:"id"`
+        SenderChatId int64 `json:"sender_chat_id"`
+        Date int32 `json:"date"`
+        IsBeingSent bool `json:"is_being_sent"`
+        IsBeingEdited bool `json:"is_being_edited"`
+        IsEdited bool `json:"is_edited"`
+        IsPinned bool `json:"is_pinned"`
+        IsVisibleOnlyForSelf bool `json:"is_visible_only_for_self"`
+        CanBeForwarded bool `json:"can_be_forwarded"`
+        CanBeReplied bool `json:"can_be_replied"`
+        CanGetViewers bool `json:"can_get_viewers"`
+        HasExpiredViewers bool `json:"has_expired_viewers"`
+        InteractionInfo *StoryInteractionInfo `json:"interaction_info"`
+        ChosenReactionType json.RawMessage `json:"chosen_reaction_type"`
+        PrivacySettings json.RawMessage `json:"privacy_settings"`
+        Content json.RawMessage `json:"content"`
+        Areas []*StoryArea `json:"areas"`
+        Caption *FormattedText `json:"caption"`
+    }
+
+    err := json.Unmarshal(data, &tmp)
+    if err != nil {
+        return err
+    }
+
+    story.Id = tmp.Id
+    story.SenderChatId = tmp.SenderChatId
+    story.Date = tmp.Date
+    story.IsBeingSent = tmp.IsBeingSent
+    story.IsBeingEdited = tmp.IsBeingEdited
+    story.IsEdited = tmp.IsEdited
+    story.IsPinned = tmp.IsPinned
+    story.IsVisibleOnlyForSelf = tmp.IsVisibleOnlyForSelf
+    story.CanBeForwarded = tmp.CanBeForwarded
+    story.CanBeReplied = tmp.CanBeReplied
+    story.CanGetViewers = tmp.CanGetViewers
+    story.HasExpiredViewers = tmp.HasExpiredViewers
+    story.InteractionInfo = tmp.InteractionInfo
+    story.Areas = tmp.Areas
+    story.Caption = tmp.Caption
+
+    fieldChosenReactionType, _ := UnmarshalReactionType(tmp.ChosenReactionType)
+    story.ChosenReactionType = fieldChosenReactionType
+
+    fieldPrivacySettings, _ := UnmarshalStoryPrivacySettings(tmp.PrivacySettings)
+    story.PrivacySettings = fieldPrivacySettings
+
+    fieldContent, _ := UnmarshalStoryContent(tmp.Content)
+    story.Content = fieldContent
+
+    return nil
+}
+
+// Represents a list of stories
+type Stories struct {
+    meta
+    // Approximate total number of stories found
+    TotalCount int32 `json:"total_count"`
+    // The list of stories
+    Stories []*Story `json:"stories"`
+}
+
+func (entity *Stories) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub Stories
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*Stories) GetClass() string {
+    return ClassStories
+}
+
+func (*Stories) GetType() string {
+    return TypeStories
+}
+
+// Contains basic information about a story
+type StoryInfo struct {
+    meta
+    // Unique story identifier among stories of the given sender
+    StoryId int32 `json:"story_id"`
+    // Point in time (Unix timestamp) when the story was published
+    Date int32 `json:"date"`
+    // True, if the story is available only to close friends
+    IsForCloseFriends bool `json:"is_for_close_friends"`
+}
+
+func (entity *StoryInfo) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub StoryInfo
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*StoryInfo) GetClass() string {
+    return ClassStoryInfo
+}
+
+func (*StoryInfo) GetType() string {
+    return TypeStoryInfo
+}
+
+// Describes active stories posted by a chat
+type ChatActiveStories struct {
+    meta
+    // Identifier of the chat that posted the stories
+    ChatId int64 `json:"chat_id"`
+    // Identifier of the story list in which the stories are shown; may be null if the stories aren't shown in a story list
+    List StoryList `json:"list"`
+    // A parameter used to determine order of the stories in the story list; 0 if the stories doesn't need to be shown in the story list. Stories must be sorted by the pair (order, story_sender_chat_id) in descending order
+    Order int64 `json:"order"`
+    // Identifier of the last read active story
+    MaxReadStoryId int32 `json:"max_read_story_id"`
+    // Basic information about the stories; use getStory to get full information about the stories. The stories are in a chronological order (i.e., in order of increasing story identifiers)
+    Stories []*StoryInfo `json:"stories"`
+}
+
+func (entity *ChatActiveStories) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub ChatActiveStories
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*ChatActiveStories) GetClass() string {
+    return ClassChatActiveStories
+}
+
+func (*ChatActiveStories) GetType() string {
+    return TypeChatActiveStories
+}
+
+func (chatActiveStories *ChatActiveStories) UnmarshalJSON(data []byte) error {
+    var tmp struct {
+        ChatId int64 `json:"chat_id"`
+        List json.RawMessage `json:"list"`
+        Order int64 `json:"order"`
+        MaxReadStoryId int32 `json:"max_read_story_id"`
+        Stories []*StoryInfo `json:"stories"`
+    }
+
+    err := json.Unmarshal(data, &tmp)
+    if err != nil {
+        return err
+    }
+
+    chatActiveStories.ChatId = tmp.ChatId
+    chatActiveStories.Order = tmp.Order
+    chatActiveStories.MaxReadStoryId = tmp.MaxReadStoryId
+    chatActiveStories.Stories = tmp.Stories
+
+    fieldList, _ := UnmarshalStoryList(tmp.List)
+    chatActiveStories.List = fieldList
+
+    return nil
+}
+
 // The call wasn't discarded, or the reason is unknown
 type CallDiscardReasonEmpty struct{
     meta
@@ -34656,889 +35539,6 @@ func (*MessageLinkInfo) GetClass() string {
 
 func (*MessageLinkInfo) GetType() string {
     return TypeMessageLinkInfo
-}
-
-// Represents a viewer of a story
-type StoryViewer struct {
-    meta
-    // User identifier of the viewer
-    UserId int64 `json:"user_id"`
-    // Approximate point in time (Unix timestamp) when the story was viewed
-    ViewDate int32 `json:"view_date"`
-    // Block list to which the user is added; may be null if none
-    BlockList BlockList `json:"block_list"`
-    // Type of the reaction that was chosen by the user; may be null if none
-    ChosenReactionType ReactionType `json:"chosen_reaction_type"`
-}
-
-func (entity *StoryViewer) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryViewer
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryViewer) GetClass() string {
-    return ClassStoryViewer
-}
-
-func (*StoryViewer) GetType() string {
-    return TypeStoryViewer
-}
-
-func (storyViewer *StoryViewer) UnmarshalJSON(data []byte) error {
-    var tmp struct {
-        UserId int64 `json:"user_id"`
-        ViewDate int32 `json:"view_date"`
-        BlockList json.RawMessage `json:"block_list"`
-        ChosenReactionType json.RawMessage `json:"chosen_reaction_type"`
-    }
-
-    err := json.Unmarshal(data, &tmp)
-    if err != nil {
-        return err
-    }
-
-    storyViewer.UserId = tmp.UserId
-    storyViewer.ViewDate = tmp.ViewDate
-
-    fieldBlockList, _ := UnmarshalBlockList(tmp.BlockList)
-    storyViewer.BlockList = fieldBlockList
-
-    fieldChosenReactionType, _ := UnmarshalReactionType(tmp.ChosenReactionType)
-    storyViewer.ChosenReactionType = fieldChosenReactionType
-
-    return nil
-}
-
-// Represents a list of story viewers
-type StoryViewers struct {
-    meta
-    // Approximate total number of story viewers found
-    TotalCount int32 `json:"total_count"`
-    // List of story viewers
-    Viewers []*StoryViewer `json:"viewers"`
-    // The offset for the next request. If empty, there are no more results
-    NextOffset string `json:"next_offset"`
-}
-
-func (entity *StoryViewers) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryViewers
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryViewers) GetClass() string {
-    return ClassStoryViewers
-}
-
-func (*StoryViewers) GetType() string {
-    return TypeStoryViewers
-}
-
-// Describes position of a clickable rectangle area on a story media
-type StoryAreaPosition struct {
-    meta
-    // The abscissa of the rectangle's center, as a percentage of the media width
-    XPercentage float64 `json:"x_percentage"`
-    // The ordinate of the rectangle's center, as a percentage of the media height
-    YPercentage float64 `json:"y_percentage"`
-    // The width of the rectangle, as a percentage of the media width
-    WidthPercentage float64 `json:"width_percentage"`
-    // The ordinate of the rectangle's center, as a percentage of the media height
-    HeightPercentage float64 `json:"height_percentage"`
-    // Clockwise rotation angle of the rectangle, in degrees; 0-360
-    RotationAngle float64 `json:"rotation_angle"`
-}
-
-func (entity *StoryAreaPosition) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryAreaPosition
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryAreaPosition) GetClass() string {
-    return ClassStoryAreaPosition
-}
-
-func (*StoryAreaPosition) GetType() string {
-    return TypeStoryAreaPosition
-}
-
-// An area pointing to a location
-type StoryAreaTypeLocation struct {
-    meta
-    // The location
-    Location *Location `json:"location"`
-}
-
-func (entity *StoryAreaTypeLocation) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryAreaTypeLocation
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryAreaTypeLocation) GetClass() string {
-    return ClassStoryAreaType
-}
-
-func (*StoryAreaTypeLocation) GetType() string {
-    return TypeStoryAreaTypeLocation
-}
-
-func (*StoryAreaTypeLocation) StoryAreaTypeType() string {
-    return TypeStoryAreaTypeLocation
-}
-
-// An area pointing to a venue
-type StoryAreaTypeVenue struct {
-    meta
-    // Information about the venue
-    Venue *Venue `json:"venue"`
-}
-
-func (entity *StoryAreaTypeVenue) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryAreaTypeVenue
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryAreaTypeVenue) GetClass() string {
-    return ClassStoryAreaType
-}
-
-func (*StoryAreaTypeVenue) GetType() string {
-    return TypeStoryAreaTypeVenue
-}
-
-func (*StoryAreaTypeVenue) StoryAreaTypeType() string {
-    return TypeStoryAreaTypeVenue
-}
-
-// Describes a clickable rectangle area on a story media
-type StoryArea struct {
-    meta
-    // Position of the area
-    Position *StoryAreaPosition `json:"position"`
-    // Type of the area
-    Type StoryAreaType `json:"type"`
-}
-
-func (entity *StoryArea) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryArea
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryArea) GetClass() string {
-    return ClassStoryArea
-}
-
-func (*StoryArea) GetType() string {
-    return TypeStoryArea
-}
-
-func (storyArea *StoryArea) UnmarshalJSON(data []byte) error {
-    var tmp struct {
-        Position *StoryAreaPosition `json:"position"`
-        Type json.RawMessage `json:"type"`
-    }
-
-    err := json.Unmarshal(data, &tmp)
-    if err != nil {
-        return err
-    }
-
-    storyArea.Position = tmp.Position
-
-    fieldType, _ := UnmarshalStoryAreaType(tmp.Type)
-    storyArea.Type = fieldType
-
-    return nil
-}
-
-// An area pointing to a location
-type InputStoryAreaTypeLocation struct {
-    meta
-    // The location
-    Location *Location `json:"location"`
-}
-
-func (entity *InputStoryAreaTypeLocation) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub InputStoryAreaTypeLocation
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*InputStoryAreaTypeLocation) GetClass() string {
-    return ClassInputStoryAreaType
-}
-
-func (*InputStoryAreaTypeLocation) GetType() string {
-    return TypeInputStoryAreaTypeLocation
-}
-
-func (*InputStoryAreaTypeLocation) InputStoryAreaTypeType() string {
-    return TypeInputStoryAreaTypeLocation
-}
-
-// An area pointing to a venue found by the bot getOption("venue_search_bot_username")
-type InputStoryAreaTypeFoundVenue struct {
-    meta
-    // Identifier of the inline query, used to found the venue
-    QueryId JsonInt64 `json:"query_id"`
-    // Identifier of the inline query result
-    ResultId string `json:"result_id"`
-}
-
-func (entity *InputStoryAreaTypeFoundVenue) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub InputStoryAreaTypeFoundVenue
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*InputStoryAreaTypeFoundVenue) GetClass() string {
-    return ClassInputStoryAreaType
-}
-
-func (*InputStoryAreaTypeFoundVenue) GetType() string {
-    return TypeInputStoryAreaTypeFoundVenue
-}
-
-func (*InputStoryAreaTypeFoundVenue) InputStoryAreaTypeType() string {
-    return TypeInputStoryAreaTypeFoundVenue
-}
-
-// An area pointing to a venue already added to the story
-type InputStoryAreaTypePreviousVenue struct {
-    meta
-    // Provider of the venue
-    VenueProvider string `json:"venue_provider"`
-    // Identifier of the venue in the provider database
-    VenueId string `json:"venue_id"`
-}
-
-func (entity *InputStoryAreaTypePreviousVenue) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub InputStoryAreaTypePreviousVenue
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*InputStoryAreaTypePreviousVenue) GetClass() string {
-    return ClassInputStoryAreaType
-}
-
-func (*InputStoryAreaTypePreviousVenue) GetType() string {
-    return TypeInputStoryAreaTypePreviousVenue
-}
-
-func (*InputStoryAreaTypePreviousVenue) InputStoryAreaTypeType() string {
-    return TypeInputStoryAreaTypePreviousVenue
-}
-
-// Describes a clickable rectangle area on a story media to be added
-type InputStoryArea struct {
-    meta
-    // Position of the area
-    Position *StoryAreaPosition `json:"position"`
-    // Type of the area
-    Type InputStoryAreaType `json:"type"`
-}
-
-func (entity *InputStoryArea) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub InputStoryArea
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*InputStoryArea) GetClass() string {
-    return ClassInputStoryArea
-}
-
-func (*InputStoryArea) GetType() string {
-    return TypeInputStoryArea
-}
-
-func (inputStoryArea *InputStoryArea) UnmarshalJSON(data []byte) error {
-    var tmp struct {
-        Position *StoryAreaPosition `json:"position"`
-        Type json.RawMessage `json:"type"`
-    }
-
-    err := json.Unmarshal(data, &tmp)
-    if err != nil {
-        return err
-    }
-
-    inputStoryArea.Position = tmp.Position
-
-    fieldType, _ := UnmarshalInputStoryAreaType(tmp.Type)
-    inputStoryArea.Type = fieldType
-
-    return nil
-}
-
-// Contains a list of story areas to be added
-type InputStoryAreas struct {
-    meta
-    // List of 0-10 input story areas
-    Areas []*InputStoryArea `json:"areas"`
-}
-
-func (entity *InputStoryAreas) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub InputStoryAreas
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*InputStoryAreas) GetClass() string {
-    return ClassInputStoryAreas
-}
-
-func (*InputStoryAreas) GetType() string {
-    return TypeInputStoryAreas
-}
-
-// Describes a video file sent in a story
-type StoryVideo struct {
-    meta
-    // Duration of the video, in seconds
-    Duration float64 `json:"duration"`
-    // Video width
-    Width int32 `json:"width"`
-    // Video height
-    Height int32 `json:"height"`
-    // True, if stickers were added to the video. The list of corresponding sticker sets can be received using getAttachedStickerSets
-    HasStickers bool `json:"has_stickers"`
-    // True, if the video has no sound
-    IsAnimation bool `json:"is_animation"`
-    // Video minithumbnail; may be null
-    Minithumbnail *Minithumbnail `json:"minithumbnail"`
-    // Video thumbnail in JPEG or MPEG4 format; may be null
-    Thumbnail *Thumbnail `json:"thumbnail"`
-    // Size of file prefix, which is supposed to be preloaded, in bytes
-    PreloadPrefixSize int32 `json:"preload_prefix_size"`
-    // File containing the video
-    Video *File `json:"video"`
-}
-
-func (entity *StoryVideo) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryVideo
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryVideo) GetClass() string {
-    return ClassStoryVideo
-}
-
-func (*StoryVideo) GetType() string {
-    return TypeStoryVideo
-}
-
-// A photo story
-type StoryContentPhoto struct {
-    meta
-    // The photo
-    Photo *Photo `json:"photo"`
-}
-
-func (entity *StoryContentPhoto) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryContentPhoto
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryContentPhoto) GetClass() string {
-    return ClassStoryContent
-}
-
-func (*StoryContentPhoto) GetType() string {
-    return TypeStoryContentPhoto
-}
-
-func (*StoryContentPhoto) StoryContentType() string {
-    return TypeStoryContentPhoto
-}
-
-// A video story
-type StoryContentVideo struct {
-    meta
-    // The video in MPEG4 format
-    Video *StoryVideo `json:"video"`
-    // Alternative version of the video in MPEG4 format, encoded by x264 codec; may be null
-    AlternativeVideo *StoryVideo `json:"alternative_video"`
-}
-
-func (entity *StoryContentVideo) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryContentVideo
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryContentVideo) GetClass() string {
-    return ClassStoryContent
-}
-
-func (*StoryContentVideo) GetType() string {
-    return TypeStoryContentVideo
-}
-
-func (*StoryContentVideo) StoryContentType() string {
-    return TypeStoryContentVideo
-}
-
-// A story content that is not supported in the current TDLib version
-type StoryContentUnsupported struct{
-    meta
-}
-
-func (entity *StoryContentUnsupported) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryContentUnsupported
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryContentUnsupported) GetClass() string {
-    return ClassStoryContent
-}
-
-func (*StoryContentUnsupported) GetType() string {
-    return TypeStoryContentUnsupported
-}
-
-func (*StoryContentUnsupported) StoryContentType() string {
-    return TypeStoryContentUnsupported
-}
-
-// A photo story
-type InputStoryContentPhoto struct {
-    meta
-    // Photo to send. The photo must be at most 10 MB in size. The photo size must be 1080x1920
-    Photo InputFile `json:"photo"`
-    // File identifiers of the stickers added to the photo, if applicable
-    AddedStickerFileIds []int32 `json:"added_sticker_file_ids"`
-}
-
-func (entity *InputStoryContentPhoto) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub InputStoryContentPhoto
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*InputStoryContentPhoto) GetClass() string {
-    return ClassInputStoryContent
-}
-
-func (*InputStoryContentPhoto) GetType() string {
-    return TypeInputStoryContentPhoto
-}
-
-func (*InputStoryContentPhoto) InputStoryContentType() string {
-    return TypeInputStoryContentPhoto
-}
-
-func (inputStoryContentPhoto *InputStoryContentPhoto) UnmarshalJSON(data []byte) error {
-    var tmp struct {
-        Photo json.RawMessage `json:"photo"`
-        AddedStickerFileIds []int32 `json:"added_sticker_file_ids"`
-    }
-
-    err := json.Unmarshal(data, &tmp)
-    if err != nil {
-        return err
-    }
-
-    inputStoryContentPhoto.AddedStickerFileIds = tmp.AddedStickerFileIds
-
-    fieldPhoto, _ := UnmarshalInputFile(tmp.Photo)
-    inputStoryContentPhoto.Photo = fieldPhoto
-
-    return nil
-}
-
-// A video story
-type InputStoryContentVideo struct {
-    meta
-    // Video to be sent. The video size must be 720x1280. The video must be streamable and stored in MPEG4 format, after encoding with x265 codec and key frames added each second
-    Video InputFile `json:"video"`
-    // File identifiers of the stickers added to the video, if applicable
-    AddedStickerFileIds []int32 `json:"added_sticker_file_ids"`
-    // Precise duration of the video, in seconds; 0-60
-    Duration float64 `json:"duration"`
-    // True, if the video has no sound
-    IsAnimation bool `json:"is_animation"`
-}
-
-func (entity *InputStoryContentVideo) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub InputStoryContentVideo
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*InputStoryContentVideo) GetClass() string {
-    return ClassInputStoryContent
-}
-
-func (*InputStoryContentVideo) GetType() string {
-    return TypeInputStoryContentVideo
-}
-
-func (*InputStoryContentVideo) InputStoryContentType() string {
-    return TypeInputStoryContentVideo
-}
-
-func (inputStoryContentVideo *InputStoryContentVideo) UnmarshalJSON(data []byte) error {
-    var tmp struct {
-        Video json.RawMessage `json:"video"`
-        AddedStickerFileIds []int32 `json:"added_sticker_file_ids"`
-        Duration float64 `json:"duration"`
-        IsAnimation bool `json:"is_animation"`
-    }
-
-    err := json.Unmarshal(data, &tmp)
-    if err != nil {
-        return err
-    }
-
-    inputStoryContentVideo.AddedStickerFileIds = tmp.AddedStickerFileIds
-    inputStoryContentVideo.Duration = tmp.Duration
-    inputStoryContentVideo.IsAnimation = tmp.IsAnimation
-
-    fieldVideo, _ := UnmarshalInputFile(tmp.Video)
-    inputStoryContentVideo.Video = fieldVideo
-
-    return nil
-}
-
-// The list of stories, shown in the main chat list and folder chat lists
-type StoryListMain struct{
-    meta
-}
-
-func (entity *StoryListMain) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryListMain
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryListMain) GetClass() string {
-    return ClassStoryList
-}
-
-func (*StoryListMain) GetType() string {
-    return TypeStoryListMain
-}
-
-func (*StoryListMain) StoryListType() string {
-    return TypeStoryListMain
-}
-
-// The list of stories, shown in the Arvhive chat list
-type StoryListArchive struct{
-    meta
-}
-
-func (entity *StoryListArchive) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryListArchive
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryListArchive) GetClass() string {
-    return ClassStoryList
-}
-
-func (*StoryListArchive) GetType() string {
-    return TypeStoryListArchive
-}
-
-func (*StoryListArchive) StoryListType() string {
-    return TypeStoryListArchive
-}
-
-// Contains information about interactions with a story
-type StoryInteractionInfo struct {
-    meta
-    // Number of times the story was viewed
-    ViewCount int32 `json:"view_count"`
-    // Number of reactions added to the story
-    ReactionCount int32 `json:"reaction_count"`
-    // Identifiers of at most 3 recent viewers of the story
-    RecentViewerUserIds []int64 `json:"recent_viewer_user_ids"`
-}
-
-func (entity *StoryInteractionInfo) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryInteractionInfo
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryInteractionInfo) GetClass() string {
-    return ClassStoryInteractionInfo
-}
-
-func (*StoryInteractionInfo) GetType() string {
-    return TypeStoryInteractionInfo
-}
-
-// Represents a story
-type Story struct {
-    meta
-    // Unique story identifier among stories of the given sender
-    Id int32 `json:"id"`
-    // Identifier of the chat that posted the story
-    SenderChatId int64 `json:"sender_chat_id"`
-    // Point in time (Unix timestamp) when the story was published
-    Date int32 `json:"date"`
-    // True, if the story is being sent by the current user
-    IsBeingSent bool `json:"is_being_sent"`
-    // True, if the story is being edited by the current user
-    IsBeingEdited bool `json:"is_being_edited"`
-    // True, if the story was edited
-    IsEdited bool `json:"is_edited"`
-    // True, if the story is saved in the sender's profile and will be available there after expiration
-    IsPinned bool `json:"is_pinned"`
-    // True, if the story is visible only for the current user
-    IsVisibleOnlyForSelf bool `json:"is_visible_only_for_self"`
-    // True, if the story can be forwarded as a message. Otherwise, screenshots and saving of the story content must be also forbidden
-    CanBeForwarded bool `json:"can_be_forwarded"`
-    // True, if the story can be replied in the chat with the story sender
-    CanBeReplied bool `json:"can_be_replied"`
-    // True, if users viewed the story can be received through getStoryViewers
-    CanGetViewers bool `json:"can_get_viewers"`
-    // True, if users viewed the story can't be received, because the story has expired more than getOption("story_viewers_expiration_delay") seconds ago
-    HasExpiredViewers bool `json:"has_expired_viewers"`
-    // Information about interactions with the story; may be null if the story isn't owned or there were no interactions
-    InteractionInfo *StoryInteractionInfo `json:"interaction_info"`
-    // Type of the chosen reaction; may be null if none
-    ChosenReactionType ReactionType `json:"chosen_reaction_type"`
-    // Privacy rules affecting story visibility; may be approximate for non-owned stories
-    PrivacySettings StoryPrivacySettings `json:"privacy_settings"`
-    // Content of the story
-    Content StoryContent `json:"content"`
-    // Clickable areas to be shown on the story content
-    Areas []*StoryArea `json:"areas"`
-    // Caption of the story
-    Caption *FormattedText `json:"caption"`
-}
-
-func (entity *Story) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub Story
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*Story) GetClass() string {
-    return ClassStory
-}
-
-func (*Story) GetType() string {
-    return TypeStory
-}
-
-func (story *Story) UnmarshalJSON(data []byte) error {
-    var tmp struct {
-        Id int32 `json:"id"`
-        SenderChatId int64 `json:"sender_chat_id"`
-        Date int32 `json:"date"`
-        IsBeingSent bool `json:"is_being_sent"`
-        IsBeingEdited bool `json:"is_being_edited"`
-        IsEdited bool `json:"is_edited"`
-        IsPinned bool `json:"is_pinned"`
-        IsVisibleOnlyForSelf bool `json:"is_visible_only_for_self"`
-        CanBeForwarded bool `json:"can_be_forwarded"`
-        CanBeReplied bool `json:"can_be_replied"`
-        CanGetViewers bool `json:"can_get_viewers"`
-        HasExpiredViewers bool `json:"has_expired_viewers"`
-        InteractionInfo *StoryInteractionInfo `json:"interaction_info"`
-        ChosenReactionType json.RawMessage `json:"chosen_reaction_type"`
-        PrivacySettings json.RawMessage `json:"privacy_settings"`
-        Content json.RawMessage `json:"content"`
-        Areas []*StoryArea `json:"areas"`
-        Caption *FormattedText `json:"caption"`
-    }
-
-    err := json.Unmarshal(data, &tmp)
-    if err != nil {
-        return err
-    }
-
-    story.Id = tmp.Id
-    story.SenderChatId = tmp.SenderChatId
-    story.Date = tmp.Date
-    story.IsBeingSent = tmp.IsBeingSent
-    story.IsBeingEdited = tmp.IsBeingEdited
-    story.IsEdited = tmp.IsEdited
-    story.IsPinned = tmp.IsPinned
-    story.IsVisibleOnlyForSelf = tmp.IsVisibleOnlyForSelf
-    story.CanBeForwarded = tmp.CanBeForwarded
-    story.CanBeReplied = tmp.CanBeReplied
-    story.CanGetViewers = tmp.CanGetViewers
-    story.HasExpiredViewers = tmp.HasExpiredViewers
-    story.InteractionInfo = tmp.InteractionInfo
-    story.Areas = tmp.Areas
-    story.Caption = tmp.Caption
-
-    fieldChosenReactionType, _ := UnmarshalReactionType(tmp.ChosenReactionType)
-    story.ChosenReactionType = fieldChosenReactionType
-
-    fieldPrivacySettings, _ := UnmarshalStoryPrivacySettings(tmp.PrivacySettings)
-    story.PrivacySettings = fieldPrivacySettings
-
-    fieldContent, _ := UnmarshalStoryContent(tmp.Content)
-    story.Content = fieldContent
-
-    return nil
-}
-
-// Represents a list of stories
-type Stories struct {
-    meta
-    // Approximate total number of stories found
-    TotalCount int32 `json:"total_count"`
-    // The list of stories
-    Stories []*Story `json:"stories"`
-}
-
-func (entity *Stories) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub Stories
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*Stories) GetClass() string {
-    return ClassStories
-}
-
-func (*Stories) GetType() string {
-    return TypeStories
-}
-
-// Contains basic information about a story
-type StoryInfo struct {
-    meta
-    // Unique story identifier among stories of the given sender
-    StoryId int32 `json:"story_id"`
-    // Point in time (Unix timestamp) when the story was published
-    Date int32 `json:"date"`
-    // True, if the story is available only to close friends
-    IsForCloseFriends bool `json:"is_for_close_friends"`
-}
-
-func (entity *StoryInfo) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub StoryInfo
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*StoryInfo) GetClass() string {
-    return ClassStoryInfo
-}
-
-func (*StoryInfo) GetType() string {
-    return TypeStoryInfo
-}
-
-// Describes active stories posted by a chat
-type ChatActiveStories struct {
-    meta
-    // Identifier of the chat that posted the stories
-    ChatId int64 `json:"chat_id"`
-    // Identifier of the story list in which the stories are shown; may be null if the stories aren't shown in a story list
-    List StoryList `json:"list"`
-    // A parameter used to determine order of the stories in the story list; 0 if the stories doesn't need to be shown in the story list. Stories must be sorted by the pair (order, story_sender_chat_id) in descending order
-    Order int64 `json:"order"`
-    // Identifier of the last read active story
-    MaxReadStoryId int32 `json:"max_read_story_id"`
-    // Basic information about the stories; use getStory to get full information about the stories. The stories are in a chronological order (i.e., in order of increasing story identifiers)
-    Stories []*StoryInfo `json:"stories"`
-}
-
-func (entity *ChatActiveStories) MarshalJSON() ([]byte, error) {
-    entity.meta.Type = entity.GetType()
-
-    type stub ChatActiveStories
-
-    return json.Marshal((*stub)(entity))
-}
-
-func (*ChatActiveStories) GetClass() string {
-    return ClassChatActiveStories
-}
-
-func (*ChatActiveStories) GetType() string {
-    return TypeChatActiveStories
-}
-
-func (chatActiveStories *ChatActiveStories) UnmarshalJSON(data []byte) error {
-    var tmp struct {
-        ChatId int64 `json:"chat_id"`
-        List json.RawMessage `json:"list"`
-        Order int64 `json:"order"`
-        MaxReadStoryId int32 `json:"max_read_story_id"`
-        Stories []*StoryInfo `json:"stories"`
-    }
-
-    err := json.Unmarshal(data, &tmp)
-    if err != nil {
-        return err
-    }
-
-    chatActiveStories.ChatId = tmp.ChatId
-    chatActiveStories.Order = tmp.Order
-    chatActiveStories.MaxReadStoryId = tmp.MaxReadStoryId
-    chatActiveStories.Stories = tmp.Stories
-
-    fieldList, _ := UnmarshalStoryList(tmp.List)
-    chatActiveStories.List = fieldList
-
-    return nil
 }
 
 // The main block list that disallows writing messages to the current user, receiving their status and photo, viewing of stories, and some other actions

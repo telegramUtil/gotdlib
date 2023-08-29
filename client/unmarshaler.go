@@ -2869,6 +2869,182 @@ func UnmarshalListOfEmojiCategoryType(dataList []json.RawMessage) ([]EmojiCatego
     return list, nil
 }
 
+func UnmarshalStoryAreaType(data json.RawMessage) (StoryAreaType, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeStoryAreaTypeLocation:
+        return UnmarshalStoryAreaTypeLocation(data)
+
+    case TypeStoryAreaTypeVenue:
+        return UnmarshalStoryAreaTypeVenue(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfStoryAreaType(dataList []json.RawMessage) ([]StoryAreaType, error) {
+    list := []StoryAreaType{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalStoryAreaType(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
+func UnmarshalInputStoryAreaType(data json.RawMessage) (InputStoryAreaType, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeInputStoryAreaTypeLocation:
+        return UnmarshalInputStoryAreaTypeLocation(data)
+
+    case TypeInputStoryAreaTypeFoundVenue:
+        return UnmarshalInputStoryAreaTypeFoundVenue(data)
+
+    case TypeInputStoryAreaTypePreviousVenue:
+        return UnmarshalInputStoryAreaTypePreviousVenue(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfInputStoryAreaType(dataList []json.RawMessage) ([]InputStoryAreaType, error) {
+    list := []InputStoryAreaType{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalInputStoryAreaType(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
+func UnmarshalStoryContent(data json.RawMessage) (StoryContent, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeStoryContentPhoto:
+        return UnmarshalStoryContentPhoto(data)
+
+    case TypeStoryContentVideo:
+        return UnmarshalStoryContentVideo(data)
+
+    case TypeStoryContentUnsupported:
+        return UnmarshalStoryContentUnsupported(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfStoryContent(dataList []json.RawMessage) ([]StoryContent, error) {
+    list := []StoryContent{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalStoryContent(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
+func UnmarshalInputStoryContent(data json.RawMessage) (InputStoryContent, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeInputStoryContentPhoto:
+        return UnmarshalInputStoryContentPhoto(data)
+
+    case TypeInputStoryContentVideo:
+        return UnmarshalInputStoryContentVideo(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfInputStoryContent(dataList []json.RawMessage) ([]InputStoryContent, error) {
+    list := []InputStoryContent{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalInputStoryContent(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
+func UnmarshalStoryList(data json.RawMessage) (StoryList, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeStoryListMain:
+        return UnmarshalStoryListMain(data)
+
+    case TypeStoryListArchive:
+        return UnmarshalStoryListArchive(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfStoryList(dataList []json.RawMessage) ([]StoryList, error) {
+    list := []StoryList{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalStoryList(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
 func UnmarshalCallDiscardReason(data json.RawMessage) (CallDiscardReason, error) {
     var meta meta
 
@@ -5025,182 +5201,6 @@ func UnmarshalListOfInternalLinkType(dataList []json.RawMessage) ([]InternalLink
 
     for _, data := range dataList {
         entity, err := UnmarshalInternalLinkType(data)
-        if err != nil {
-            return nil, err
-        }
-        list = append(list, entity)
-    }
-
-    return list, nil
-}
-
-func UnmarshalStoryAreaType(data json.RawMessage) (StoryAreaType, error) {
-    var meta meta
-
-    err := json.Unmarshal(data, &meta)
-    if err != nil {
-        return nil, err
-    }
-
-    switch meta.Type {
-    case TypeStoryAreaTypeLocation:
-        return UnmarshalStoryAreaTypeLocation(data)
-
-    case TypeStoryAreaTypeVenue:
-        return UnmarshalStoryAreaTypeVenue(data)
-
-    default:
-        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
-    }
-}
-
-func UnmarshalListOfStoryAreaType(dataList []json.RawMessage) ([]StoryAreaType, error) {
-    list := []StoryAreaType{}
-
-    for _, data := range dataList {
-        entity, err := UnmarshalStoryAreaType(data)
-        if err != nil {
-            return nil, err
-        }
-        list = append(list, entity)
-    }
-
-    return list, nil
-}
-
-func UnmarshalInputStoryAreaType(data json.RawMessage) (InputStoryAreaType, error) {
-    var meta meta
-
-    err := json.Unmarshal(data, &meta)
-    if err != nil {
-        return nil, err
-    }
-
-    switch meta.Type {
-    case TypeInputStoryAreaTypeLocation:
-        return UnmarshalInputStoryAreaTypeLocation(data)
-
-    case TypeInputStoryAreaTypeFoundVenue:
-        return UnmarshalInputStoryAreaTypeFoundVenue(data)
-
-    case TypeInputStoryAreaTypePreviousVenue:
-        return UnmarshalInputStoryAreaTypePreviousVenue(data)
-
-    default:
-        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
-    }
-}
-
-func UnmarshalListOfInputStoryAreaType(dataList []json.RawMessage) ([]InputStoryAreaType, error) {
-    list := []InputStoryAreaType{}
-
-    for _, data := range dataList {
-        entity, err := UnmarshalInputStoryAreaType(data)
-        if err != nil {
-            return nil, err
-        }
-        list = append(list, entity)
-    }
-
-    return list, nil
-}
-
-func UnmarshalStoryContent(data json.RawMessage) (StoryContent, error) {
-    var meta meta
-
-    err := json.Unmarshal(data, &meta)
-    if err != nil {
-        return nil, err
-    }
-
-    switch meta.Type {
-    case TypeStoryContentPhoto:
-        return UnmarshalStoryContentPhoto(data)
-
-    case TypeStoryContentVideo:
-        return UnmarshalStoryContentVideo(data)
-
-    case TypeStoryContentUnsupported:
-        return UnmarshalStoryContentUnsupported(data)
-
-    default:
-        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
-    }
-}
-
-func UnmarshalListOfStoryContent(dataList []json.RawMessage) ([]StoryContent, error) {
-    list := []StoryContent{}
-
-    for _, data := range dataList {
-        entity, err := UnmarshalStoryContent(data)
-        if err != nil {
-            return nil, err
-        }
-        list = append(list, entity)
-    }
-
-    return list, nil
-}
-
-func UnmarshalInputStoryContent(data json.RawMessage) (InputStoryContent, error) {
-    var meta meta
-
-    err := json.Unmarshal(data, &meta)
-    if err != nil {
-        return nil, err
-    }
-
-    switch meta.Type {
-    case TypeInputStoryContentPhoto:
-        return UnmarshalInputStoryContentPhoto(data)
-
-    case TypeInputStoryContentVideo:
-        return UnmarshalInputStoryContentVideo(data)
-
-    default:
-        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
-    }
-}
-
-func UnmarshalListOfInputStoryContent(dataList []json.RawMessage) ([]InputStoryContent, error) {
-    list := []InputStoryContent{}
-
-    for _, data := range dataList {
-        entity, err := UnmarshalInputStoryContent(data)
-        if err != nil {
-            return nil, err
-        }
-        list = append(list, entity)
-    }
-
-    return list, nil
-}
-
-func UnmarshalStoryList(data json.RawMessage) (StoryList, error) {
-    var meta meta
-
-    err := json.Unmarshal(data, &meta)
-    if err != nil {
-        return nil, err
-    }
-
-    switch meta.Type {
-    case TypeStoryListMain:
-        return UnmarshalStoryListMain(data)
-
-    case TypeStoryListArchive:
-        return UnmarshalStoryListArchive(data)
-
-    default:
-        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
-    }
-}
-
-func UnmarshalListOfStoryList(dataList []json.RawMessage) ([]StoryList, error) {
-    list := []StoryList{}
-
-    for _, data := range dataList {
-        entity, err := UnmarshalStoryList(data)
         if err != nil {
             return nil, err
         }
@@ -11087,6 +11087,198 @@ func UnmarshalEmojiCategoryTypeChatPhoto(data json.RawMessage) (*EmojiCategoryTy
     return &resp, err
 }
 
+func UnmarshalStoryViewer(data json.RawMessage) (*StoryViewer, error) {
+    var resp StoryViewer
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryViewers(data json.RawMessage) (*StoryViewers, error) {
+    var resp StoryViewers
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryAreaPosition(data json.RawMessage) (*StoryAreaPosition, error) {
+    var resp StoryAreaPosition
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryAreaTypeLocation(data json.RawMessage) (*StoryAreaTypeLocation, error) {
+    var resp StoryAreaTypeLocation
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryAreaTypeVenue(data json.RawMessage) (*StoryAreaTypeVenue, error) {
+    var resp StoryAreaTypeVenue
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryArea(data json.RawMessage) (*StoryArea, error) {
+    var resp StoryArea
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInputStoryAreaTypeLocation(data json.RawMessage) (*InputStoryAreaTypeLocation, error) {
+    var resp InputStoryAreaTypeLocation
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInputStoryAreaTypeFoundVenue(data json.RawMessage) (*InputStoryAreaTypeFoundVenue, error) {
+    var resp InputStoryAreaTypeFoundVenue
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInputStoryAreaTypePreviousVenue(data json.RawMessage) (*InputStoryAreaTypePreviousVenue, error) {
+    var resp InputStoryAreaTypePreviousVenue
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInputStoryArea(data json.RawMessage) (*InputStoryArea, error) {
+    var resp InputStoryArea
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInputStoryAreas(data json.RawMessage) (*InputStoryAreas, error) {
+    var resp InputStoryAreas
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryVideo(data json.RawMessage) (*StoryVideo, error) {
+    var resp StoryVideo
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryContentPhoto(data json.RawMessage) (*StoryContentPhoto, error) {
+    var resp StoryContentPhoto
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryContentVideo(data json.RawMessage) (*StoryContentVideo, error) {
+    var resp StoryContentVideo
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryContentUnsupported(data json.RawMessage) (*StoryContentUnsupported, error) {
+    var resp StoryContentUnsupported
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInputStoryContentPhoto(data json.RawMessage) (*InputStoryContentPhoto, error) {
+    var resp InputStoryContentPhoto
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInputStoryContentVideo(data json.RawMessage) (*InputStoryContentVideo, error) {
+    var resp InputStoryContentVideo
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryListMain(data json.RawMessage) (*StoryListMain, error) {
+    var resp StoryListMain
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryListArchive(data json.RawMessage) (*StoryListArchive, error) {
+    var resp StoryListArchive
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryInteractionInfo(data json.RawMessage) (*StoryInteractionInfo, error) {
+    var resp StoryInteractionInfo
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStory(data json.RawMessage) (*Story, error) {
+    var resp Story
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStories(data json.RawMessage) (*Stories, error) {
+    var resp Stories
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalStoryInfo(data json.RawMessage) (*StoryInfo, error) {
+    var resp StoryInfo
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalChatActiveStories(data json.RawMessage) (*ChatActiveStories, error) {
+    var resp ChatActiveStories
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalCallDiscardReasonEmpty(data json.RawMessage) (*CallDiscardReasonEmpty, error) {
     var resp CallDiscardReasonEmpty
 
@@ -14281,198 +14473,6 @@ func UnmarshalMessageLink(data json.RawMessage) (*MessageLink, error) {
 
 func UnmarshalMessageLinkInfo(data json.RawMessage) (*MessageLinkInfo, error) {
     var resp MessageLinkInfo
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryViewer(data json.RawMessage) (*StoryViewer, error) {
-    var resp StoryViewer
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryViewers(data json.RawMessage) (*StoryViewers, error) {
-    var resp StoryViewers
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryAreaPosition(data json.RawMessage) (*StoryAreaPosition, error) {
-    var resp StoryAreaPosition
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryAreaTypeLocation(data json.RawMessage) (*StoryAreaTypeLocation, error) {
-    var resp StoryAreaTypeLocation
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryAreaTypeVenue(data json.RawMessage) (*StoryAreaTypeVenue, error) {
-    var resp StoryAreaTypeVenue
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryArea(data json.RawMessage) (*StoryArea, error) {
-    var resp StoryArea
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalInputStoryAreaTypeLocation(data json.RawMessage) (*InputStoryAreaTypeLocation, error) {
-    var resp InputStoryAreaTypeLocation
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalInputStoryAreaTypeFoundVenue(data json.RawMessage) (*InputStoryAreaTypeFoundVenue, error) {
-    var resp InputStoryAreaTypeFoundVenue
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalInputStoryAreaTypePreviousVenue(data json.RawMessage) (*InputStoryAreaTypePreviousVenue, error) {
-    var resp InputStoryAreaTypePreviousVenue
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalInputStoryArea(data json.RawMessage) (*InputStoryArea, error) {
-    var resp InputStoryArea
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalInputStoryAreas(data json.RawMessage) (*InputStoryAreas, error) {
-    var resp InputStoryAreas
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryVideo(data json.RawMessage) (*StoryVideo, error) {
-    var resp StoryVideo
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryContentPhoto(data json.RawMessage) (*StoryContentPhoto, error) {
-    var resp StoryContentPhoto
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryContentVideo(data json.RawMessage) (*StoryContentVideo, error) {
-    var resp StoryContentVideo
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryContentUnsupported(data json.RawMessage) (*StoryContentUnsupported, error) {
-    var resp StoryContentUnsupported
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalInputStoryContentPhoto(data json.RawMessage) (*InputStoryContentPhoto, error) {
-    var resp InputStoryContentPhoto
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalInputStoryContentVideo(data json.RawMessage) (*InputStoryContentVideo, error) {
-    var resp InputStoryContentVideo
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryListMain(data json.RawMessage) (*StoryListMain, error) {
-    var resp StoryListMain
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryListArchive(data json.RawMessage) (*StoryListArchive, error) {
-    var resp StoryListArchive
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryInteractionInfo(data json.RawMessage) (*StoryInteractionInfo, error) {
-    var resp StoryInteractionInfo
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStory(data json.RawMessage) (*Story, error) {
-    var resp Story
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStories(data json.RawMessage) (*Stories, error) {
-    var resp Stories
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalStoryInfo(data json.RawMessage) (*StoryInfo, error) {
-    var resp StoryInfo
-
-    err := json.Unmarshal(data, &resp)
-
-    return &resp, err
-}
-
-func UnmarshalChatActiveStories(data json.RawMessage) (*ChatActiveStories, error) {
-    var resp ChatActiveStories
 
     err := json.Unmarshal(data, &resp)
 
@@ -18182,6 +18182,78 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeEmojiCategoryTypeChatPhoto:
         return UnmarshalEmojiCategoryTypeChatPhoto(data)
 
+    case TypeStoryViewer:
+        return UnmarshalStoryViewer(data)
+
+    case TypeStoryViewers:
+        return UnmarshalStoryViewers(data)
+
+    case TypeStoryAreaPosition:
+        return UnmarshalStoryAreaPosition(data)
+
+    case TypeStoryAreaTypeLocation:
+        return UnmarshalStoryAreaTypeLocation(data)
+
+    case TypeStoryAreaTypeVenue:
+        return UnmarshalStoryAreaTypeVenue(data)
+
+    case TypeStoryArea:
+        return UnmarshalStoryArea(data)
+
+    case TypeInputStoryAreaTypeLocation:
+        return UnmarshalInputStoryAreaTypeLocation(data)
+
+    case TypeInputStoryAreaTypeFoundVenue:
+        return UnmarshalInputStoryAreaTypeFoundVenue(data)
+
+    case TypeInputStoryAreaTypePreviousVenue:
+        return UnmarshalInputStoryAreaTypePreviousVenue(data)
+
+    case TypeInputStoryArea:
+        return UnmarshalInputStoryArea(data)
+
+    case TypeInputStoryAreas:
+        return UnmarshalInputStoryAreas(data)
+
+    case TypeStoryVideo:
+        return UnmarshalStoryVideo(data)
+
+    case TypeStoryContentPhoto:
+        return UnmarshalStoryContentPhoto(data)
+
+    case TypeStoryContentVideo:
+        return UnmarshalStoryContentVideo(data)
+
+    case TypeStoryContentUnsupported:
+        return UnmarshalStoryContentUnsupported(data)
+
+    case TypeInputStoryContentPhoto:
+        return UnmarshalInputStoryContentPhoto(data)
+
+    case TypeInputStoryContentVideo:
+        return UnmarshalInputStoryContentVideo(data)
+
+    case TypeStoryListMain:
+        return UnmarshalStoryListMain(data)
+
+    case TypeStoryListArchive:
+        return UnmarshalStoryListArchive(data)
+
+    case TypeStoryInteractionInfo:
+        return UnmarshalStoryInteractionInfo(data)
+
+    case TypeStory:
+        return UnmarshalStory(data)
+
+    case TypeStories:
+        return UnmarshalStories(data)
+
+    case TypeStoryInfo:
+        return UnmarshalStoryInfo(data)
+
+    case TypeChatActiveStories:
+        return UnmarshalChatActiveStories(data)
+
     case TypeCallDiscardReasonEmpty:
         return UnmarshalCallDiscardReasonEmpty(data)
 
@@ -19381,78 +19453,6 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeMessageLinkInfo:
         return UnmarshalMessageLinkInfo(data)
-
-    case TypeStoryViewer:
-        return UnmarshalStoryViewer(data)
-
-    case TypeStoryViewers:
-        return UnmarshalStoryViewers(data)
-
-    case TypeStoryAreaPosition:
-        return UnmarshalStoryAreaPosition(data)
-
-    case TypeStoryAreaTypeLocation:
-        return UnmarshalStoryAreaTypeLocation(data)
-
-    case TypeStoryAreaTypeVenue:
-        return UnmarshalStoryAreaTypeVenue(data)
-
-    case TypeStoryArea:
-        return UnmarshalStoryArea(data)
-
-    case TypeInputStoryAreaTypeLocation:
-        return UnmarshalInputStoryAreaTypeLocation(data)
-
-    case TypeInputStoryAreaTypeFoundVenue:
-        return UnmarshalInputStoryAreaTypeFoundVenue(data)
-
-    case TypeInputStoryAreaTypePreviousVenue:
-        return UnmarshalInputStoryAreaTypePreviousVenue(data)
-
-    case TypeInputStoryArea:
-        return UnmarshalInputStoryArea(data)
-
-    case TypeInputStoryAreas:
-        return UnmarshalInputStoryAreas(data)
-
-    case TypeStoryVideo:
-        return UnmarshalStoryVideo(data)
-
-    case TypeStoryContentPhoto:
-        return UnmarshalStoryContentPhoto(data)
-
-    case TypeStoryContentVideo:
-        return UnmarshalStoryContentVideo(data)
-
-    case TypeStoryContentUnsupported:
-        return UnmarshalStoryContentUnsupported(data)
-
-    case TypeInputStoryContentPhoto:
-        return UnmarshalInputStoryContentPhoto(data)
-
-    case TypeInputStoryContentVideo:
-        return UnmarshalInputStoryContentVideo(data)
-
-    case TypeStoryListMain:
-        return UnmarshalStoryListMain(data)
-
-    case TypeStoryListArchive:
-        return UnmarshalStoryListArchive(data)
-
-    case TypeStoryInteractionInfo:
-        return UnmarshalStoryInteractionInfo(data)
-
-    case TypeStory:
-        return UnmarshalStory(data)
-
-    case TypeStories:
-        return UnmarshalStories(data)
-
-    case TypeStoryInfo:
-        return UnmarshalStoryInfo(data)
-
-    case TypeChatActiveStories:
-        return UnmarshalChatActiveStories(data)
 
     case TypeBlockListMain:
         return UnmarshalBlockListMain(data)

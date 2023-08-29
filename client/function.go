@@ -1736,7 +1736,7 @@ type GetTopChatsRequest struct {
     Limit int32 `json:"limit"`
 }
 
-// Returns a list of frequently used chats. Supported only if the chat info database is enabled
+// Returns a list of frequently used chats
 func (client *Client) GetTopChats(req *GetTopChatsRequest) (*Chats, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -3325,6 +3325,32 @@ func (client *Client) ResendMessages(req *ResendMessagesRequest) (*Messages, err
     }
 
     return UnmarshalMessages(result.Data)
+}
+
+type SendChatScreenshotTakenNotificationRequest struct { 
+    // Chat identifier
+    ChatId int64 `json:"chat_id"`
+}
+
+// Sends a notification about a screenshot taken in a chat. Supported only in private and secret chats
+func (client *Client) SendChatScreenshotTakenNotification(req *SendChatScreenshotTakenNotificationRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "sendChatScreenshotTakenNotification",
+        },
+        Data: map[string]interface{}{
+            "chat_id": req.ChatId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
 }
 
 type AddLocalMessageRequest struct { 
