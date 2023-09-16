@@ -1513,7 +1513,7 @@ type GetRemoteFileRequest struct {
     FileType FileType `json:"file_type"`
 }
 
-// Returns information about a file by its remote ID; this is an offline request. Can be used to register a URL as a file for further uploading, or sending as a message. Even the request succeeds, the file can be used only if it is still accessible to the user. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application
+// Returns information about a file by its remote identifier; this is an offline request. Can be used to register a URL as a file for further uploading, or sending as a message. Even the request succeeds, the file can be used only if it is still accessible to the user. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application
 func (client *Client) GetRemoteFile(req *GetRemoteFileRequest) (*File, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -1914,7 +1914,7 @@ func (client *Client) GetRecentlyOpenedChats(req *GetRecentlyOpenedChatsRequest)
 }
 
 type CheckChatUsernameRequest struct { 
-    // Chat identifier; must be identifier of a supergroup chat, or a channel chat, or a private chat with self, or zero if the chat is being created
+    // Chat identifier; must be identifier of a supergroup chat, or a channel chat, or a private chat with self, or 0 if the chat is being created
     ChatId int64 `json:"chat_id"`
     // Username to be checked
     Username string `json:"username"`
@@ -5282,7 +5282,7 @@ func (client *Client) GetWebAppLinkUrl(req *GetWebAppLinkUrlRequest) (*HttpUrl, 
 type GetWebAppUrlRequest struct { 
     // Identifier of the target bot
     BotUserId int64 `json:"bot_user_id"`
-    // The URL from the keyboardButtonTypeWebApp or inlineQueryResultsButtonTypeWebApp button
+    // The URL from a keyboardButtonTypeWebApp button, inlineQueryResultsButtonTypeWebApp button, an internalLinkTypeSideMenuBot link, or an empty when the bot is opened from the side menu
     Url string `json:"url"`
     // Preferred Web App theme; pass null to use the default theme
     Theme *ThemeParameters `json:"theme"`
@@ -5290,7 +5290,7 @@ type GetWebAppUrlRequest struct {
     ApplicationName string `json:"application_name"`
 }
 
-// Returns an HTTPS URL of a Web App to open after keyboardButtonTypeWebApp or inlineQueryResultsButtonTypeWebApp button is pressed
+// Returns an HTTPS URL of a Web App to open from the side menu, a keyboardButtonTypeWebApp button, an inlineQueryResultsButtonTypeWebApp button, or an internalLinkTypeSideMenuBot link
 func (client *Client) GetWebAppUrl(req *GetWebAppUrlRequest) (*HttpUrl, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -5351,7 +5351,7 @@ type OpenWebAppRequest struct {
     ChatId int64 `json:"chat_id"`
     // Identifier of the bot, providing the Web App
     BotUserId int64 `json:"bot_user_id"`
-    // The URL from an inlineKeyboardButtonTypeWebApp button, a botMenuButton button, or an internalLinkTypeAttachmentMenuBot link, or an empty string otherwise
+    // The URL from an inlineKeyboardButtonTypeWebApp button, a botMenuButton button, an internalLinkTypeAttachmentMenuBot link, or an empty string otherwise
     Url string `json:"url"`
     // Preferred Web App theme; pass null to use the default theme
     Theme *ThemeParameters `json:"theme"`
@@ -5363,7 +5363,7 @@ type OpenWebAppRequest struct {
     ReplyTo MessageReplyTo `json:"reply_to"`
 }
 
-// Informs TDLib that a Web App is being opened from attachment menu, a botMenuButton button, an internalLinkTypeAttachmentMenuBot link, or an inlineKeyboardButtonTypeWebApp button. For each bot, a confirmation alert about data sent to the bot must be shown once
+// Informs TDLib that a Web App is being opened from the attachment menu, a botMenuButton button, an internalLinkTypeAttachmentMenuBot link, or an inlineKeyboardButtonTypeWebApp button. For each bot, a confirmation alert about data sent to the bot must be shown once
 func (client *Client) OpenWebApp(req *OpenWebAppRequest) (*WebAppInfo, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -6061,6 +6061,9 @@ func (client *Client) GetInternalLinkType(req *GetInternalLinkTypeRequest) (Inte
 
     case TypeInternalLinkTypeSettings:
         return UnmarshalInternalLinkTypeSettings(result.Data)
+
+    case TypeInternalLinkTypeSideMenuBot:
+        return UnmarshalInternalLinkTypeSideMenuBot(result.Data)
 
     case TypeInternalLinkTypeStickerSet:
         return UnmarshalInternalLinkTypeStickerSet(result.Data)
@@ -9022,7 +9025,7 @@ type GetAttachmentMenuBotRequest struct {
     BotUserId int64 `json:"bot_user_id"`
 }
 
-// Returns information about a bot that can be added to attachment menu
+// Returns information about a bot that can be added to attachment or side menu
 func (client *Client) GetAttachmentMenuBot(req *GetAttachmentMenuBotRequest) (*AttachmentMenuBot, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -9052,7 +9055,7 @@ type ToggleBotIsAddedToAttachmentMenuRequest struct {
     AllowWriteAccess bool `json:"allow_write_access"`
 }
 
-// Adds or removes a bot to attachment menu. Bot can be added to attachment menu, only if userTypeBot.can_be_added_to_attachment_menu == true
+// Adds or removes a bot to attachment and side menu. Bot can be added to the menu, only if userTypeBot.can_be_added_to_attachment_menu == true
 func (client *Client) ToggleBotIsAddedToAttachmentMenu(req *ToggleBotIsAddedToAttachmentMenuRequest) (*Ok, error) {
     result, err := client.Send(Request{
         meta: meta{
@@ -11867,6 +11870,41 @@ func (client *Client) GetStickers(req *GetStickersRequest) (*Stickers, error) {
     return UnmarshalStickers(result.Data)
 }
 
+type GetAllStickerEmojisRequest struct { 
+    // Type of the stickers to search for
+    StickerType StickerType `json:"sticker_type"`
+    // Search query
+    Query string `json:"query"`
+    // Chat identifier for which to find stickers
+    ChatId int64 `json:"chat_id"`
+    // Pass true if only main emoji for each found sticker must be included in the result
+    ReturnOnlyMainEmoji bool `json:"return_only_main_emoji"`
+}
+
+// Returns unique emoji that correspond to stickers to be found by the getStickers(sticker_type, query, 1000000, chat_id)
+func (client *Client) GetAllStickerEmojis(req *GetAllStickerEmojisRequest) (*Emojis, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "getAllStickerEmojis",
+        },
+        Data: map[string]interface{}{
+            "sticker_type": req.StickerType,
+            "query": req.Query,
+            "chat_id": req.ChatId,
+            "return_only_main_emoji": req.ReturnOnlyMainEmoji,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalEmojis(result.Data)
+}
+
 type SearchStickersRequest struct { 
     // Type of the stickers to return
     StickerType StickerType `json:"sticker_type"`
@@ -13378,6 +13416,90 @@ func (client *Client) SetDefaultChannelAdministratorRights(req *SetDefaultChanne
     return UnmarshalOk(result.Data)
 }
 
+type CanBotSendMessagesRequest struct { 
+    // Identifier of the target bot
+    BotUserId int64 `json:"bot_user_id"`
+}
+
+// Checks whether the specified bot can send messages to the user. Returns a 404 error if can't and the access can be granted by call to allowBotToSendMessages
+func (client *Client) CanBotSendMessages(req *CanBotSendMessagesRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "canBotSendMessages",
+        },
+        Data: map[string]interface{}{
+            "bot_user_id": req.BotUserId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type AllowBotToSendMessagesRequest struct { 
+    // Identifier of the target bot
+    BotUserId int64 `json:"bot_user_id"`
+}
+
+// Allows the specified bot to send messages to the user
+func (client *Client) AllowBotToSendMessages(req *AllowBotToSendMessagesRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "allowBotToSendMessages",
+        },
+        Data: map[string]interface{}{
+            "bot_user_id": req.BotUserId,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type SendWebAppCustomRequestRequest struct { 
+    // Identifier of the bot
+    BotUserId int64 `json:"bot_user_id"`
+    // The method name
+    Method string `json:"method"`
+    // JSON-serialized method parameters
+    Parameters string `json:"parameters"`
+}
+
+// Sends a custom request from a Web App
+func (client *Client) SendWebAppCustomRequest(req *SendWebAppCustomRequestRequest) (*CustomRequestResult, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "sendWebAppCustomRequest",
+        },
+        Data: map[string]interface{}{
+            "bot_user_id": req.BotUserId,
+            "method": req.Method,
+            "parameters": req.Parameters,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalCustomRequestResult(result.Data)
+}
+
 type SetBotNameRequest struct { 
     // Identifier of the target bot
     BotUserId int64 `json:"bot_user_id"`
@@ -13703,6 +13825,32 @@ func (client *Client) TerminateAllOtherSessions() (*Ok, error) {
             Type: "terminateAllOtherSessions",
         },
         Data: map[string]interface{}{},
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalOk(result.Data)
+}
+
+type ConfirmSessionRequest struct { 
+    // Session identifier
+    SessionId JsonInt64 `json:"session_id"`
+}
+
+// Confirms an unconfirmed session of the current user from another device
+func (client *Client) ConfirmSession(req *ConfirmSessionRequest) (*Ok, error) {
+    result, err := client.Send(Request{
+        meta: meta{
+            Type: "confirmSession",
+        },
+        Data: map[string]interface{}{
+            "session_id": req.SessionId,
+        },
     })
     if err != nil {
         return nil, err
@@ -14922,7 +15070,7 @@ func (client *Client) AddCustomServerLanguagePack(req *AddCustomServerLanguagePa
 }
 
 type SetCustomLanguagePackRequest struct { 
-    // Information about the language pack. Language pack ID must start with 'X', consist only of English letters, digits and hyphens, and must not exceed 64 characters. Can be called before authorization
+    // Information about the language pack. Language pack identifier must start with 'X', consist only of English letters, digits and hyphens, and must not exceed 64 characters. Can be called before authorization
     Info *LanguagePackInfo `json:"info"`
     // Strings of the new language pack
     Strings []*LanguagePackString `json:"strings"`
@@ -17304,6 +17452,46 @@ func (client *Client) AcceptTermsOfService(req *AcceptTermsOfServiceRequest) (*O
     return UnmarshalOk(result.Data)
 }
 
+type SearchStringsByPrefixRequest struct { 
+    // The strings to search in for the query
+    Strings []string `json:"strings"`
+    // Query to search for
+    Query string `json:"query"`
+    // The maximum number of objects to return
+    Limit int32 `json:"limit"`
+    // Pass true to receive no results for an empty query
+    ReturnNoneForEmptyQuery bool `json:"return_none_for_empty_query"`
+}
+
+// Searches specified query by word prefixes in the provided strings. Returns 0-based positions of strings that matched. Can be called synchronously
+func SearchStringsByPrefix(req *SearchStringsByPrefixRequest) (*FoundPositions, error) {
+    result, err := Execute(Request{
+        meta: meta{
+            Type: "searchStringsByPrefix",
+        },
+        Data: map[string]interface{}{
+            "strings": req.Strings,
+            "query": req.Query,
+            "limit": req.Limit,
+            "return_none_for_empty_query": req.ReturnNoneForEmptyQuery,
+        },
+    })
+    if err != nil {
+        return nil, err
+    }
+
+    if result.Type == "error" {
+        return nil, buildResponseError(result.Data)
+    }
+
+    return UnmarshalFoundPositions(result.Data)
+}
+
+// deprecated
+// Searches specified query by word prefixes in the provided strings. Returns 0-based positions of strings that matched. Can be called synchronously
+func (client *Client) SearchStringsByPrefix(req *SearchStringsByPrefixRequest) (*FoundPositions, error) {
+    return SearchStringsByPrefix(req)}
+
 type SendCustomRequestRequest struct { 
     // The method name
     Method string `json:"method"`
@@ -17630,7 +17818,7 @@ func (client *Client) GetApplicationDownloadLink() (*HttpUrl, error) {
 }
 
 type AddProxyRequest struct { 
-    // Proxy server IP address
+    // Proxy server domain or IP address
     Server string `json:"server"`
     // Proxy server port
     Port int32 `json:"port"`
@@ -17667,7 +17855,7 @@ func (client *Client) AddProxy(req *AddProxyRequest) (*Proxy, error) {
 type EditProxyRequest struct { 
     // Proxy identifier
     ProxyId int32 `json:"proxy_id"`
-    // Proxy server IP address
+    // Proxy server domain or IP address
     Server string `json:"server"`
     // Proxy server port
     Port int32 `json:"port"`
@@ -18384,7 +18572,7 @@ func (client *Client) TestNetwork() (*Ok, error) {
 }
 
 type TestProxyRequest struct { 
-    // Proxy server IP address
+    // Proxy server domain or IP address
     Server string `json:"server"`
     // Proxy server port
     Port int32 `json:"port"`
@@ -18738,6 +18926,9 @@ func (client *Client) TestUseUpdate() (Update, error) {
 
     case TypeUpdateUsersNearby:
         return UnmarshalUpdateUsersNearby(result.Data)
+
+    case TypeUpdateUnconfirmedSession:
+        return UnmarshalUpdateUnconfirmedSession(result.Data)
 
     case TypeUpdateAttachmentMenuBots:
         return UnmarshalUpdateAttachmentMenuBots(result.Data)

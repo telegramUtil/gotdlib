@@ -24,6 +24,7 @@ const (
     ClassChatMemberStatus = "ChatMemberStatus"
     ClassChatMembersFilter = "ChatMembersFilter"
     ClassSupergroupMembersFilter = "SupergroupMembersFilter"
+    ClassInviteLinkChatType = "InviteLinkChatType"
     ClassSecretChatState = "SecretChatState"
     ClassMessageSender = "MessageSender"
     ClassMessageForwardOrigin = "MessageForwardOrigin"
@@ -59,6 +60,7 @@ const (
     ClassMessageContent = "MessageContent"
     ClassTextEntityType = "TextEntityType"
     ClassMessageSchedulingState = "MessageSchedulingState"
+    ClassMessageSelfDestructType = "MessageSelfDestructType"
     ClassInputMessageContent = "InputMessageContent"
     ClassSearchMessagesFilter = "SearchMessagesFilter"
     ClassChatAction = "ChatAction"
@@ -376,6 +378,7 @@ const (
     ClassMessageAutoDeleteTime = "MessageAutoDeleteTime"
     ClassSession = "Session"
     ClassSessions = "Sessions"
+    ClassUnconfirmedSession = "UnconfirmedSession"
     ClassConnectedWebsite = "ConnectedWebsite"
     ClassConnectedWebsites = "ConnectedWebsites"
     ClassMessageLink = "MessageLink"
@@ -392,6 +395,7 @@ const (
     ClassScopeAutosaveSettings = "ScopeAutosaveSettings"
     ClassAutosaveSettingsException = "AutosaveSettingsException"
     ClassAutosaveSettings = "AutosaveSettings"
+    ClassFoundPositions = "FoundPositions"
     ClassTMeUrl = "TMeUrl"
     ClassTMeUrls = "TMeUrls"
     ClassCount = "Count"
@@ -575,6 +579,9 @@ const (
     TypeChatInviteLinkCounts = "chatInviteLinkCounts"
     TypeChatInviteLinkMember = "chatInviteLinkMember"
     TypeChatInviteLinkMembers = "chatInviteLinkMembers"
+    TypeInviteLinkChatTypeBasicGroup = "inviteLinkChatTypeBasicGroup"
+    TypeInviteLinkChatTypeSupergroup = "inviteLinkChatTypeSupergroup"
+    TypeInviteLinkChatTypeChannel = "inviteLinkChatTypeChannel"
     TypeChatInviteLinkInfo = "chatInviteLinkInfo"
     TypeChatJoinRequest = "chatJoinRequest"
     TypeChatJoinRequests = "chatJoinRequests"
@@ -957,6 +964,8 @@ const (
     TypeInputThumbnail = "inputThumbnail"
     TypeMessageSchedulingStateSendAtDate = "messageSchedulingStateSendAtDate"
     TypeMessageSchedulingStateSendWhenOnline = "messageSchedulingStateSendWhenOnline"
+    TypeMessageSelfDestructTypeTimer = "messageSelfDestructTypeTimer"
+    TypeMessageSelfDestructTypeImmediately = "messageSelfDestructTypeImmediately"
     TypeMessageSendOptions = "messageSendOptions"
     TypeMessageCopyOptions = "messageCopyOptions"
     TypeInputMessageText = "inputMessageText"
@@ -1353,7 +1362,7 @@ const (
     TypeStoryPrivacySettingsEveryone = "storyPrivacySettingsEveryone"
     TypeStoryPrivacySettingsContacts = "storyPrivacySettingsContacts"
     TypeStoryPrivacySettingsCloseFriends = "storyPrivacySettingsCloseFriends"
-    TypeStoryPrivacySettingsSelectedContacts = "storyPrivacySettingsSelectedContacts"
+    TypeStoryPrivacySettingsSelectedUsers = "storyPrivacySettingsSelectedUsers"
     TypeUserPrivacySettingRuleAllowAll = "userPrivacySettingRuleAllowAll"
     TypeUserPrivacySettingRuleAllowContacts = "userPrivacySettingRuleAllowContacts"
     TypeUserPrivacySettingRuleAllowUsers = "userPrivacySettingRuleAllowUsers"
@@ -1394,6 +1403,7 @@ const (
     TypeSessionTypeXbox = "sessionTypeXbox"
     TypeSession = "session"
     TypeSessions = "sessions"
+    TypeUnconfirmedSession = "unconfirmedSession"
     TypeConnectedWebsite = "connectedWebsite"
     TypeConnectedWebsites = "connectedWebsites"
     TypeReportReasonSpam = "reportReasonSpam"
@@ -1438,6 +1448,7 @@ const (
     TypeInternalLinkTypeQrCodeAuthentication = "internalLinkTypeQrCodeAuthentication"
     TypeInternalLinkTypeRestorePurchases = "internalLinkTypeRestorePurchases"
     TypeInternalLinkTypeSettings = "internalLinkTypeSettings"
+    TypeInternalLinkTypeSideMenuBot = "internalLinkTypeSideMenuBot"
     TypeInternalLinkTypeStickerSet = "internalLinkTypeStickerSet"
     TypeInternalLinkTypeStory = "internalLinkTypeStory"
     TypeInternalLinkTypeTheme = "internalLinkTypeTheme"
@@ -1506,6 +1517,7 @@ const (
     TypeTopChatCategoryInlineBots = "topChatCategoryInlineBots"
     TypeTopChatCategoryCalls = "topChatCategoryCalls"
     TypeTopChatCategoryForwardChats = "topChatCategoryForwardChats"
+    TypeFoundPositions = "foundPositions"
     TypeTMeUrlTypeUser = "tMeUrlTypeUser"
     TypeTMeUrlTypeSupergroup = "tMeUrlTypeSupergroup"
     TypeTMeUrlTypeChatInvite = "tMeUrlTypeChatInvite"
@@ -1650,6 +1662,7 @@ const (
     TypeUpdateConnectionState = "updateConnectionState"
     TypeUpdateTermsOfService = "updateTermsOfService"
     TypeUpdateUsersNearby = "updateUsersNearby"
+    TypeUpdateUnconfirmedSession = "updateUnconfirmedSession"
     TypeUpdateAttachmentMenuBots = "updateAttachmentMenuBots"
     TypeUpdateWebAppMessageSent = "updateWebAppMessageSent"
     TypeUpdateActiveEmojiReactions = "updateActiveEmojiReactions"
@@ -1771,6 +1784,11 @@ type ChatMembersFilter interface {
 // Specifies the kind of chat members to return in getSupergroupMembers
 type SupergroupMembersFilter interface {
     SupergroupMembersFilterType() string
+}
+
+// Describes the type of a chat to which points an invite link
+type InviteLinkChatType interface {
+    InviteLinkChatTypeType() string
 }
 
 // Describes the current secret chat state
@@ -1946,6 +1964,11 @@ type TextEntityType interface {
 // Contains information about the time when a scheduled message will be sent
 type MessageSchedulingState interface {
     MessageSchedulingStateType() string
+}
+
+// Describes when a message will be self-destructed
+type MessageSelfDestructType interface {
+    MessageSelfDestructTypeType() string
 }
 
 // The content of a message to send
@@ -3369,7 +3392,7 @@ func (*LocalFile) GetType() string {
 // Represents a remote file
 type RemoteFile struct {
     meta
-    // Remote file identifier; may be empty. Can be used by the current user across application restarts or even from other devices. Uniquely identifies a file, but a file can have a lot of different valid identifiers. If the ID starts with "http://" or "https://", it represents the HTTP URL of the file. TDLib is currently unable to download files if only their URL is known. If downloadFile/addFileToDownloads is called on such a file or if it is sent to a secret chat, TDLib starts a file generation process by sending updateFileGenerationStart to the application with the HTTP URL in the original_path and "#url#" as the conversion string. Application must generate the file by downloading it to the specified location
+    // Remote file identifier; may be empty. Can be used by the current user across application restarts or even from other devices. Uniquely identifies a file, but a file can have a lot of different valid identifiers. If the identifier starts with "http://" or "https://", it represents the HTTP URL of the file. TDLib is currently unable to download files if only their URL is known. If downloadFile/addFileToDownloads is called on such a file or if it is sent to a secret chat, TDLib starts a file generation process by sending updateFileGenerationStart to the application with the HTTP URL in the original_path and "#url#" as the conversion string. Application must generate the file by downloading it to the specified location
     Id string `json:"id"`
     // Unique file identifier; may be empty if unknown. The unique file identifier which is the same for the same file even for different users and is persistent over time
     UniqueId string `json:"unique_id"`
@@ -3430,7 +3453,7 @@ func (*File) GetType() string {
     return TypeFile
 }
 
-// A file defined by its unique ID
+// A file defined by its unique identifier
 type InputFileId struct {
     meta
     // Unique file identifier
@@ -3457,7 +3480,7 @@ func (*InputFileId) InputFileType() string {
     return TypeInputFileId
 }
 
-// A file defined by its remote ID. The remote ID is guaranteed to be usable only if the corresponding file is still accessible to the user and known to TDLib. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application
+// A file defined by its remote identifier. The remote identifier is guaranteed to be usable only if the corresponding file is still accessible to the user and known to TDLib. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application
 type InputFileRemote struct {
     meta
     // Remote file identifier
@@ -5216,7 +5239,7 @@ type UserTypeBot struct {
     InlineQueryPlaceholder string `json:"inline_query_placeholder"`
     // True, if the location of the user is expected to be sent with every inline query to this bot
     NeedLocation bool `json:"need_location"`
-    // True, if the bot can be added to attachment menu
+    // True, if the bot can be added to attachment or side menu
     CanBeAddedToAttachmentMenu bool `json:"can_be_added_to_attachment_menu"`
 }
 
@@ -7169,6 +7192,81 @@ func (*ChatInviteLinkMembers) GetType() string {
     return TypeChatInviteLinkMembers
 }
 
+// The link is an invite link for a basic group
+type InviteLinkChatTypeBasicGroup struct{
+    meta
+}
+
+func (entity *InviteLinkChatTypeBasicGroup) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InviteLinkChatTypeBasicGroup
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InviteLinkChatTypeBasicGroup) GetClass() string {
+    return ClassInviteLinkChatType
+}
+
+func (*InviteLinkChatTypeBasicGroup) GetType() string {
+    return TypeInviteLinkChatTypeBasicGroup
+}
+
+func (*InviteLinkChatTypeBasicGroup) InviteLinkChatTypeType() string {
+    return TypeInviteLinkChatTypeBasicGroup
+}
+
+// The link is an invite link for a supergroup
+type InviteLinkChatTypeSupergroup struct{
+    meta
+}
+
+func (entity *InviteLinkChatTypeSupergroup) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InviteLinkChatTypeSupergroup
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InviteLinkChatTypeSupergroup) GetClass() string {
+    return ClassInviteLinkChatType
+}
+
+func (*InviteLinkChatTypeSupergroup) GetType() string {
+    return TypeInviteLinkChatTypeSupergroup
+}
+
+func (*InviteLinkChatTypeSupergroup) InviteLinkChatTypeType() string {
+    return TypeInviteLinkChatTypeSupergroup
+}
+
+// The link is an invite link for a channel
+type InviteLinkChatTypeChannel struct{
+    meta
+}
+
+func (entity *InviteLinkChatTypeChannel) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InviteLinkChatTypeChannel
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InviteLinkChatTypeChannel) GetClass() string {
+    return ClassInviteLinkChatType
+}
+
+func (*InviteLinkChatTypeChannel) GetType() string {
+    return TypeInviteLinkChatTypeChannel
+}
+
+func (*InviteLinkChatTypeChannel) InviteLinkChatTypeType() string {
+    return TypeInviteLinkChatTypeChannel
+}
+
 // Contains information about a chat invite link
 type ChatInviteLinkInfo struct {
     meta
@@ -7177,7 +7275,7 @@ type ChatInviteLinkInfo struct {
     // If non-zero, the amount of time for which read access to the chat will remain available, in seconds
     AccessibleFor int32 `json:"accessible_for"`
     // Type of the chat
-    Type ChatType `json:"type"`
+    Type InviteLinkChatType `json:"type"`
     // Title of the chat
     Title string `json:"title"`
     // Chat photo; may be null
@@ -7192,6 +7290,12 @@ type ChatInviteLinkInfo struct {
     CreatesJoinRequest bool `json:"creates_join_request"`
     // True, if the chat is a public supergroup or channel, i.e. it has a username or it is a location-based supergroup
     IsPublic bool `json:"is_public"`
+    // True, if the chat is verified
+    IsVerified bool `json:"is_verified"`
+    // True, if many users reported this chat as a scam
+    IsScam bool `json:"is_scam"`
+    // True, if many users reported this chat as a fake account
+    IsFake bool `json:"is_fake"`
 }
 
 func (entity *ChatInviteLinkInfo) MarshalJSON() ([]byte, error) {
@@ -7222,6 +7326,9 @@ func (chatInviteLinkInfo *ChatInviteLinkInfo) UnmarshalJSON(data []byte) error {
         MemberUserIds []int64 `json:"member_user_ids"`
         CreatesJoinRequest bool `json:"creates_join_request"`
         IsPublic bool `json:"is_public"`
+        IsVerified bool `json:"is_verified"`
+        IsScam bool `json:"is_scam"`
+        IsFake bool `json:"is_fake"`
     }
 
     err := json.Unmarshal(data, &tmp)
@@ -7238,8 +7345,11 @@ func (chatInviteLinkInfo *ChatInviteLinkInfo) UnmarshalJSON(data []byte) error {
     chatInviteLinkInfo.MemberUserIds = tmp.MemberUserIds
     chatInviteLinkInfo.CreatesJoinRequest = tmp.CreatesJoinRequest
     chatInviteLinkInfo.IsPublic = tmp.IsPublic
+    chatInviteLinkInfo.IsVerified = tmp.IsVerified
+    chatInviteLinkInfo.IsScam = tmp.IsScam
+    chatInviteLinkInfo.IsFake = tmp.IsFake
 
-    fieldType, _ := UnmarshalChatType(tmp.Type)
+    fieldType, _ := UnmarshalInviteLinkChatType(tmp.Type)
     chatInviteLinkInfo.Type = fieldType
 
     return nil
@@ -8569,11 +8679,11 @@ type Message struct {
     ReplyTo MessageReplyTo `json:"reply_to"`
     // If non-zero, the identifier of the message thread the message belongs to; unique within the chat to which the message belongs
     MessageThreadId int64 `json:"message_thread_id"`
-    // The message's self-destruct time, in seconds; 0 if none. TDLib will send updateDeleteMessages or updateMessageContent once the time expires
-    SelfDestructTime int32 `json:"self_destruct_time"`
-    // Time left before the message self-destruct timer expires, in seconds. If the self-destruct timer isn't started yet, equals to the value of the self_destruct_time field
+    // The message's self-destruct type; may be null if none
+    SelfDestructType MessageSelfDestructType `json:"self_destruct_type"`
+    // Time left before the message self-destruct timer expires, in seconds; 0 if self-desctruction isn't scheduled yet
     SelfDestructIn float64 `json:"self_destruct_in"`
-    // Time left before the message will be automatically deleted by message_auto_delete_time setting of the chat, in seconds; 0 if never. TDLib will send updateDeleteMessages or updateMessageContent once the time expires
+    // Time left before the message will be automatically deleted by message_auto_delete_time setting of the chat, in seconds; 0 if never
     AutoDeleteIn float64 `json:"auto_delete_in"`
     // If non-zero, the user identifier of the bot through which this message was sent
     ViaBotUserId int64 `json:"via_bot_user_id"`
@@ -8636,7 +8746,7 @@ func (message *Message) UnmarshalJSON(data []byte) error {
         UnreadReactions []*UnreadReaction `json:"unread_reactions"`
         ReplyTo json.RawMessage `json:"reply_to"`
         MessageThreadId int64 `json:"message_thread_id"`
-        SelfDestructTime int32 `json:"self_destruct_time"`
+        SelfDestructType json.RawMessage `json:"self_destruct_type"`
         SelfDestructIn float64 `json:"self_destruct_in"`
         AutoDeleteIn float64 `json:"auto_delete_in"`
         ViaBotUserId int64 `json:"via_bot_user_id"`
@@ -8677,7 +8787,6 @@ func (message *Message) UnmarshalJSON(data []byte) error {
     message.InteractionInfo = tmp.InteractionInfo
     message.UnreadReactions = tmp.UnreadReactions
     message.MessageThreadId = tmp.MessageThreadId
-    message.SelfDestructTime = tmp.SelfDestructTime
     message.SelfDestructIn = tmp.SelfDestructIn
     message.AutoDeleteIn = tmp.AutoDeleteIn
     message.ViaBotUserId = tmp.ViaBotUserId
@@ -8696,6 +8805,9 @@ func (message *Message) UnmarshalJSON(data []byte) error {
 
     fieldReplyTo, _ := UnmarshalMessageReplyTo(tmp.ReplyTo)
     message.ReplyTo = fieldReplyTo
+
+    fieldSelfDestructType, _ := UnmarshalMessageSelfDestructType(tmp.SelfDestructType)
+    message.SelfDestructType = fieldSelfDestructType
 
     fieldContent, _ := UnmarshalMessageContent(tmp.Content)
     message.Content = fieldContent
@@ -11665,6 +11777,8 @@ type FoundWebApp struct {
     meta
     // The Web App
     WebApp *WebApp `json:"web_app"`
+    // True, if the app supports "settings_button_pressed" event
+    SupportsSettings bool `json:"supports_settings"`
     // True, if the user must be asked for the permission to the bot to send them messages
     RequestWriteAccess bool `json:"request_write_access"`
     // True, if there is no need to show an ordinary open URL confirmation before opening the Web App. The field must be ignored and confirmation must be shown anyway if the Web App link was hidden
@@ -19083,6 +19197,8 @@ type MessageBotWriteAccessAllowed struct {
     meta
     // Information about the Web App, which requested the access; may be null if none or the Web App was opened from the attachment menu
     WebApp *WebApp `json:"web_app"`
+    // True, if user allowed the bot to send messages by an explicit call to allowBotToSendMessages
+    ByRequest bool `json:"by_request"`
 }
 
 func (entity *MessageBotWriteAccessAllowed) MarshalJSON() ([]byte, error) {
@@ -19922,6 +20038,58 @@ func (*MessageSchedulingStateSendWhenOnline) MessageSchedulingStateType() string
     return TypeMessageSchedulingStateSendWhenOnline
 }
 
+// The message will be self-destructed in the specified time after its content was opened
+type MessageSelfDestructTypeTimer struct {
+    meta
+    // The message's self-destruct time, in seconds; must be between 0 and 60 in private chats
+    SelfDestructTime int32 `json:"self_destruct_time"`
+}
+
+func (entity *MessageSelfDestructTypeTimer) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub MessageSelfDestructTypeTimer
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*MessageSelfDestructTypeTimer) GetClass() string {
+    return ClassMessageSelfDestructType
+}
+
+func (*MessageSelfDestructTypeTimer) GetType() string {
+    return TypeMessageSelfDestructTypeTimer
+}
+
+func (*MessageSelfDestructTypeTimer) MessageSelfDestructTypeType() string {
+    return TypeMessageSelfDestructTypeTimer
+}
+
+// The message can be opened only once and will be self-destructed once closed
+type MessageSelfDestructTypeImmediately struct{
+    meta
+}
+
+func (entity *MessageSelfDestructTypeImmediately) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub MessageSelfDestructTypeImmediately
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*MessageSelfDestructTypeImmediately) GetClass() string {
+    return ClassMessageSelfDestructType
+}
+
+func (*MessageSelfDestructTypeImmediately) GetType() string {
+    return TypeMessageSelfDestructTypeImmediately
+}
+
+func (*MessageSelfDestructTypeImmediately) MessageSelfDestructTypeType() string {
+    return TypeMessageSelfDestructTypeImmediately
+}
+
 // Options to be used when a message is sent
 type MessageSendOptions struct {
     meta
@@ -20247,8 +20415,8 @@ type InputMessagePhoto struct {
     Height int32 `json:"height"`
     // Photo caption; pass null to use an empty caption; 0-getOption("message_caption_length_max") characters
     Caption *FormattedText `json:"caption"`
-    // Photo self-destruct time, in seconds (0-60). A non-zero self-destruct time can be specified only in private chats
-    SelfDestructTime int32 `json:"self_destruct_time"`
+    // Photo self-destruct type; pass null if none; private chats only
+    SelfDestructType MessageSelfDestructType `json:"self_destruct_type"`
     // True, if the photo preview must be covered by a spoiler animation; not supported in secret chats
     HasSpoiler bool `json:"has_spoiler"`
 }
@@ -20281,7 +20449,7 @@ func (inputMessagePhoto *InputMessagePhoto) UnmarshalJSON(data []byte) error {
         Width int32 `json:"width"`
         Height int32 `json:"height"`
         Caption *FormattedText `json:"caption"`
-        SelfDestructTime int32 `json:"self_destruct_time"`
+        SelfDestructType json.RawMessage `json:"self_destruct_type"`
         HasSpoiler bool `json:"has_spoiler"`
     }
 
@@ -20295,11 +20463,13 @@ func (inputMessagePhoto *InputMessagePhoto) UnmarshalJSON(data []byte) error {
     inputMessagePhoto.Width = tmp.Width
     inputMessagePhoto.Height = tmp.Height
     inputMessagePhoto.Caption = tmp.Caption
-    inputMessagePhoto.SelfDestructTime = tmp.SelfDestructTime
     inputMessagePhoto.HasSpoiler = tmp.HasSpoiler
 
     fieldPhoto, _ := UnmarshalInputFile(tmp.Photo)
     inputMessagePhoto.Photo = fieldPhoto
+
+    fieldSelfDestructType, _ := UnmarshalMessageSelfDestructType(tmp.SelfDestructType)
+    inputMessagePhoto.SelfDestructType = fieldSelfDestructType
 
     return nil
 }
@@ -20383,8 +20553,8 @@ type InputMessageVideo struct {
     SupportsStreaming bool `json:"supports_streaming"`
     // Video caption; pass null to use an empty caption; 0-getOption("message_caption_length_max") characters
     Caption *FormattedText `json:"caption"`
-    // Video self-destruct time, in seconds (0-60). A non-zero self-destruct time can be specified only in private chats
-    SelfDestructTime int32 `json:"self_destruct_time"`
+    // Video self-destruct type; pass null if none; private chats only
+    SelfDestructType MessageSelfDestructType `json:"self_destruct_type"`
     // True, if the video preview must be covered by a spoiler animation; not supported in secret chats
     HasSpoiler bool `json:"has_spoiler"`
 }
@@ -20419,7 +20589,7 @@ func (inputMessageVideo *InputMessageVideo) UnmarshalJSON(data []byte) error {
         Height int32 `json:"height"`
         SupportsStreaming bool `json:"supports_streaming"`
         Caption *FormattedText `json:"caption"`
-        SelfDestructTime int32 `json:"self_destruct_time"`
+        SelfDestructType json.RawMessage `json:"self_destruct_type"`
         HasSpoiler bool `json:"has_spoiler"`
     }
 
@@ -20435,11 +20605,13 @@ func (inputMessageVideo *InputMessageVideo) UnmarshalJSON(data []byte) error {
     inputMessageVideo.Height = tmp.Height
     inputMessageVideo.SupportsStreaming = tmp.SupportsStreaming
     inputMessageVideo.Caption = tmp.Caption
-    inputMessageVideo.SelfDestructTime = tmp.SelfDestructTime
     inputMessageVideo.HasSpoiler = tmp.HasSpoiler
 
     fieldVideo, _ := UnmarshalInputFile(tmp.Video)
     inputMessageVideo.Video = fieldVideo
+
+    fieldSelfDestructType, _ := UnmarshalMessageSelfDestructType(tmp.SelfDestructType)
+    inputMessageVideo.SelfDestructType = fieldSelfDestructType
 
     return nil
 }
@@ -22347,6 +22519,8 @@ type StoryViewers struct {
     meta
     // Approximate total number of story viewers found
     TotalCount int32 `json:"total_count"`
+    // Approximate total number of reactions set by found story viewers
+    TotalReactionCount int32 `json:"total_reaction_count"`
     // List of story viewers
     Viewers []*StoryViewer `json:"viewers"`
     // The offset for the next request. If empty, there are no more results
@@ -24909,10 +25083,10 @@ func (*AttachmentMenuBotColor) GetType() string {
     return TypeAttachmentMenuBotColor
 }
 
-// Represents a bot, which can be added to attachment menu
+// Represents a bot, which can be added to attachment or side menu
 type AttachmentMenuBot struct {
     meta
-    // User identifier of the bot added to attachment menu
+    // User identifier of the bot
     BotUserId int64 `json:"bot_user_id"`
     // True, if the bot supports opening from attachment menu in the chat with the bot
     SupportsSelfChat bool `json:"supports_self_chat"`
@@ -24926,22 +25100,36 @@ type AttachmentMenuBot struct {
     SupportsChannelChats bool `json:"supports_channel_chats"`
     // True, if the bot supports "settings_button_pressed" event
     SupportsSettings bool `json:"supports_settings"`
-    // True, if the user must be asked for the permission to the bot to send them messages
+    // True, if the user must be asked for the permission to send messages to the bot
     RequestWriteAccess bool `json:"request_write_access"`
+    // True, if the bot was explicitly added by the user. If the bot isn't added, then on the first bot launch toggleBotIsAddedToAttachmentMenu must be called and the bot must be added or removed
+    IsAdded bool `json:"is_added"`
+    // True, if the bot must be shown in the attachment menu
+    ShowInAttachmentMenu bool `json:"show_in_attachment_menu"`
+    // True, if the bot must be shown in the side menu
+    ShowInSideMenu bool `json:"show_in_side_menu"`
+    // True, if a disclaimer, why the bot is shown in the side menu, is needed
+    ShowDisclaimerInSideMenu bool `json:"show_disclaimer_in_side_menu"`
     // Name for the bot in attachment menu
     Name string `json:"name"`
     // Color to highlight selected name of the bot if appropriate; may be null
     NameColor *AttachmentMenuBotColor `json:"name_color"`
-    // Default attachment menu icon for the bot in SVG format; may be null
+    // Default icon for the bot in SVG format; may be null
     DefaultIcon *File `json:"default_icon"`
-    // Attachment menu icon for the bot in SVG format for the official iOS app; may be null
+    // Icon for the bot in SVG format for the official iOS app; may be null
     IosStaticIcon *File `json:"ios_static_icon"`
-    // Attachment menu icon for the bot in TGS format for the official iOS app; may be null
+    // Icon for the bot in TGS format for the official iOS app; may be null
     IosAnimatedIcon *File `json:"ios_animated_icon"`
-    // Attachment menu icon for the bot in TGS format for the official Android app; may be null
+    // Icon for the bot in PNG format for the official iOS app side menu; may be null
+    IosSideMenuIcon *File `json:"ios_side_menu_icon"`
+    // Icon for the bot in TGS format for the official Android app; may be null
     AndroidIcon *File `json:"android_icon"`
-    // Attachment menu icon for the bot in TGS format for the official native macOS app; may be null
+    // Icon for the bot in SVG format for the official Android app side menu; may be null
+    AndroidSideMenuIcon *File `json:"android_side_menu_icon"`
+    // Icon for the bot in TGS format for the official native macOS app; may be null
     MacosIcon *File `json:"macos_icon"`
+    // Icon for the bot in PNG format for the official macOS app side menu; may be null
+    MacosSideMenuIcon *File `json:"macos_side_menu_icon"`
     // Color to highlight selected icon of the bot if appropriate; may be null
     IconColor *AttachmentMenuBotColor `json:"icon_color"`
     // Default placeholder for opened Web Apps in SVG format; may be null
@@ -32097,7 +32285,7 @@ func (*NotificationTypeNewCall) NotificationTypeType() string {
 // New message was received through a push notification
 type NotificationTypeNewPushMessage struct {
     meta
-    // The message identifier. The message will not be available in the chat history, but the ID can be used in viewMessages, or as a message to reply
+    // The message identifier. The message will not be available in the chat history, but the identifier can be used in viewMessages, or as a message to reply
     MessageId int64 `json:"message_id"`
     // Identifier of the sender of the message. Corresponding user or chat may be inaccessible
     SenderId MessageSender `json:"sender_id"`
@@ -32826,30 +33014,30 @@ func (*StoryPrivacySettingsCloseFriends) StoryPrivacySettingsType() string {
 }
 
 // The story can be viewed by certain specified users
-type StoryPrivacySettingsSelectedContacts struct {
+type StoryPrivacySettingsSelectedUsers struct {
     meta
     // Identifiers of the users; always unknown and empty for non-owned stories
     UserIds []int64 `json:"user_ids"`
 }
 
-func (entity *StoryPrivacySettingsSelectedContacts) MarshalJSON() ([]byte, error) {
+func (entity *StoryPrivacySettingsSelectedUsers) MarshalJSON() ([]byte, error) {
     entity.meta.Type = entity.GetType()
 
-    type stub StoryPrivacySettingsSelectedContacts
+    type stub StoryPrivacySettingsSelectedUsers
 
     return json.Marshal((*stub)(entity))
 }
 
-func (*StoryPrivacySettingsSelectedContacts) GetClass() string {
+func (*StoryPrivacySettingsSelectedUsers) GetClass() string {
     return ClassStoryPrivacySettings
 }
 
-func (*StoryPrivacySettingsSelectedContacts) GetType() string {
-    return TypeStoryPrivacySettingsSelectedContacts
+func (*StoryPrivacySettingsSelectedUsers) GetType() string {
+    return TypeStoryPrivacySettingsSelectedUsers
 }
 
-func (*StoryPrivacySettingsSelectedContacts) StoryPrivacySettingsType() string {
-    return TypeStoryPrivacySettingsSelectedContacts
+func (*StoryPrivacySettingsSelectedUsers) StoryPrivacySettingsType() string {
+    return TypeStoryPrivacySettingsSelectedUsers
 }
 
 // A rule to allow all users to do something
@@ -33829,6 +34017,8 @@ type Session struct {
     IsCurrent bool `json:"is_current"`
     // True, if a 2-step verification password is needed to complete authorization of the session
     IsPasswordPending bool `json:"is_password_pending"`
+    // True, if the session wasn't confirmed from another session
+    IsUnconfirmed bool `json:"is_unconfirmed"`
     // True, if incoming secret chats can be accepted by the session
     CanAcceptSecretChats bool `json:"can_accept_secret_chats"`
     // True, if incoming calls can be accepted by the session
@@ -33854,11 +34044,9 @@ type Session struct {
     // Point in time (Unix timestamp) when the session was last used
     LastActiveDate int32 `json:"last_active_date"`
     // IP address from which the session was created, in human-readable format
-    Ip string `json:"ip"`
-    // A two-letter country code for the country from which the session was created, based on the IP address
-    Country string `json:"country"`
-    // Region code from which the session was created, based on the IP address
-    Region string `json:"region"`
+    IpAddress string `json:"ip_address"`
+    // A human-readable description of the location from which the session was created, based on the IP address
+    Location string `json:"location"`
 }
 
 func (entity *Session) MarshalJSON() ([]byte, error) {
@@ -33882,6 +34070,7 @@ func (session *Session) UnmarshalJSON(data []byte) error {
         Id JsonInt64 `json:"id"`
         IsCurrent bool `json:"is_current"`
         IsPasswordPending bool `json:"is_password_pending"`
+        IsUnconfirmed bool `json:"is_unconfirmed"`
         CanAcceptSecretChats bool `json:"can_accept_secret_chats"`
         CanAcceptCalls bool `json:"can_accept_calls"`
         Type json.RawMessage `json:"type"`
@@ -33894,9 +34083,8 @@ func (session *Session) UnmarshalJSON(data []byte) error {
         SystemVersion string `json:"system_version"`
         LogInDate int32 `json:"log_in_date"`
         LastActiveDate int32 `json:"last_active_date"`
-        Ip string `json:"ip"`
-        Country string `json:"country"`
-        Region string `json:"region"`
+        IpAddress string `json:"ip_address"`
+        Location string `json:"location"`
     }
 
     err := json.Unmarshal(data, &tmp)
@@ -33907,6 +34095,7 @@ func (session *Session) UnmarshalJSON(data []byte) error {
     session.Id = tmp.Id
     session.IsCurrent = tmp.IsCurrent
     session.IsPasswordPending = tmp.IsPasswordPending
+    session.IsUnconfirmed = tmp.IsUnconfirmed
     session.CanAcceptSecretChats = tmp.CanAcceptSecretChats
     session.CanAcceptCalls = tmp.CanAcceptCalls
     session.ApiId = tmp.ApiId
@@ -33918,9 +34107,8 @@ func (session *Session) UnmarshalJSON(data []byte) error {
     session.SystemVersion = tmp.SystemVersion
     session.LogInDate = tmp.LogInDate
     session.LastActiveDate = tmp.LastActiveDate
-    session.Ip = tmp.Ip
-    session.Country = tmp.Country
-    session.Region = tmp.Region
+    session.IpAddress = tmp.IpAddress
+    session.Location = tmp.Location
 
     fieldType, _ := UnmarshalSessionType(tmp.Type)
     session.Type = fieldType
@@ -33953,6 +34141,35 @@ func (*Sessions) GetType() string {
     return TypeSessions
 }
 
+// Contains information about an unconfirmed session
+type UnconfirmedSession struct {
+    meta
+    // Session identifier
+    Id JsonInt64 `json:"id"`
+    // Point in time (Unix timestamp) when the user has logged in
+    LogInDate int32 `json:"log_in_date"`
+    // Model of the device that was used for the session creation, as provided by the application
+    DeviceModel string `json:"device_model"`
+    // A human-readable description of the location from which the session was created, based on the IP address
+    Location string `json:"location"`
+}
+
+func (entity *UnconfirmedSession) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub UnconfirmedSession
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*UnconfirmedSession) GetClass() string {
+    return ClassUnconfirmedSession
+}
+
+func (*UnconfirmedSession) GetType() string {
+    return TypeUnconfirmedSession
+}
+
 // Contains information about one website the current user is logged in with Telegram
 type ConnectedWebsite struct {
     meta
@@ -33971,7 +34188,7 @@ type ConnectedWebsite struct {
     // Point in time (Unix timestamp) when obtained authorization was last used
     LastActiveDate int32 `json:"last_active_date"`
     // IP address from which the user was logged in, in human-readable format
-    Ip string `json:"ip"`
+    IpAddress string `json:"ip_address"`
     // Human-readable description of a country and a region from which the user was logged in, based on the IP address
     Location string `json:"location"`
 }
@@ -34391,7 +34608,7 @@ func (*InternalLinkTypeActiveSessions) InternalLinkTypeType() string {
     return TypeInternalLinkTypeActiveSessions
 }
 
-// The link is a link to an attachment menu bot to be opened in the specified or a chosen chat. Process given target_chat to open the chat. Then, call searchPublicChat with the given bot username, check that the user is a bot and can be added to attachment menu. Then, use getAttachmentMenuBot to receive information about the bot. If the bot isn't added to attachment menu, then user needs to confirm adding the bot to attachment menu. If user confirms adding, then use toggleBotIsAddedToAttachmentMenu to add it. If the attachment menu bot can't be used in the opened chat, show an error to the user. If the bot is added to attachment menu and can be used in the chat, then use openWebApp with the given URL
+// The link is a link to an attachment menu bot to be opened in the specified or a chosen chat. Process given target_chat to open the chat. Then, call searchPublicChat with the given bot username, check that the user is a bot and can be added to attachment menu. Then, use getAttachmentMenuBot to receive information about the bot. If the bot isn't added to attachment menu, then show a disclaimer about Mini Apps being a third-party apps, ask the user to accept their Terms of service and confirm adding the bot to side and attachment menu. If the user accept the terms and confirms adding, then use toggleBotIsAddedToAttachmentMenu to add the bot. If the attachment menu bot can't be used in the opened chat, show an error to the user. If the bot is added to attachment menu and can be used in the chat, then use openWebApp with the given URL
 type InternalLinkTypeAttachmentMenuBot struct {
     meta
     // Target chat to be opened
@@ -35054,7 +35271,7 @@ func (*InternalLinkTypePrivacyAndSecuritySettings) InternalLinkTypeType() string
 // The link is a link to a proxy. Call addProxy with the given parameters to process the link and add the proxy
 type InternalLinkTypeProxy struct {
     meta
-    // Proxy server IP address
+    // Proxy server domain or IP address
     Server string `json:"server"`
     // Proxy server port
     Port int32 `json:"port"`
@@ -35203,6 +35420,35 @@ func (*InternalLinkTypeSettings) GetType() string {
 
 func (*InternalLinkTypeSettings) InternalLinkTypeType() string {
     return TypeInternalLinkTypeSettings
+}
+
+// The link is a link to a bot, which can be installed to the side menu. Call searchPublicChat with the given bot username, check that the user is a bot and can be added to attachment menu. Then, use getAttachmentMenuBot to receive information about the bot. If the bot isn't added to side menu, then show a disclaimer about Mini Apps being a third-party apps, ask the user to accept their Terms of service and confirm adding the bot to side and attachment menu. If the user accept the terms and confirms adding, then use toggleBotIsAddedToAttachmentMenu to add the bot. If the bot is added to side menu, then use getWebAppUrl with the given URL
+type InternalLinkTypeSideMenuBot struct {
+    meta
+    // Username of the bot
+    BotUsername string `json:"bot_username"`
+    // URL to be passed to getWebAppUrl
+    Url string `json:"url"`
+}
+
+func (entity *InternalLinkTypeSideMenuBot) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub InternalLinkTypeSideMenuBot
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*InternalLinkTypeSideMenuBot) GetClass() string {
+    return ClassInternalLinkType
+}
+
+func (*InternalLinkTypeSideMenuBot) GetType() string {
+    return TypeInternalLinkTypeSideMenuBot
+}
+
+func (*InternalLinkTypeSideMenuBot) InternalLinkTypeType() string {
+    return TypeInternalLinkTypeSideMenuBot
 }
 
 // The link is a link to a sticker set. Call searchStickerSet with the given sticker set name to process the link and show the sticker set
@@ -35452,7 +35698,7 @@ func (*InternalLinkTypeVideoChat) InternalLinkTypeType() string {
     return TypeInternalLinkTypeVideoChat
 }
 
-// The link is a link to a Web App. Call searchPublicChat with the given bot username, check that the user is a bot, then call searchWebApp with the received bot and the given web_app_short_name. Process received foundWebApp by showing a confirmation dialog if needed, then calling getWebAppLinkUrl and opening the returned URL
+// The link is a link to a Web App. Call searchPublicChat with the given bot username, check that the user is a bot, then call searchWebApp with the received bot and the given web_app_short_name. Process received foundWebApp by showing a confirmation dialog if needed. If the bot can be added to attachment or side menu, but isn't added yet, then show a disclaimer about Mini Apps being a third-party apps instead of the dialog and ask the user to accept their Terms of service. If the user accept the terms and confirms adding, then use toggleBotIsAddedToAttachmentMenu to add the bot. Then call getWebAppLinkUrl and open the returned URL as a Web App
 type InternalLinkTypeWebApp struct {
     meta
     // Username of the bot that owns the Web App
@@ -37079,6 +37325,31 @@ func (*TopChatCategoryForwardChats) TopChatCategoryType() string {
     return TypeTopChatCategoryForwardChats
 }
 
+// Contains 0-based positions of matched objects
+type FoundPositions struct {
+    meta
+    // Total number of matched objects
+    TotalCount int32 `json:"total_count"`
+    // The positions of the matched objects
+    Positions []int32 `json:"positions"`
+}
+
+func (entity *FoundPositions) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub FoundPositions
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*FoundPositions) GetClass() string {
+    return ClassFoundPositions
+}
+
+func (*FoundPositions) GetType() string {
+    return TypeFoundPositions
+}
+
 // A URL linking to a user
 type TMeUrlTypeUser struct {
     meta
@@ -37744,7 +38015,7 @@ type Proxy struct {
     meta
     // Unique identifier of the proxy
     Id int32 `json:"id"`
-    // Proxy server IP address
+    // Proxy server domain or IP address
     Server string `json:"server"`
     // Proxy server port
     Port int32 `json:"port"`
@@ -40151,9 +40422,9 @@ type UpdateNotificationGroup struct {
     NotificationSoundId JsonInt64 `json:"notification_sound_id"`
     // Total number of unread notifications in the group, can be bigger than number of active notifications
     TotalCount int32 `json:"total_count"`
-    // List of added group notifications, sorted by notification ID
+    // List of added group notifications, sorted by notification identifier
     AddedNotifications []*Notification `json:"added_notifications"`
-    // Identifiers of removed group notifications, sorted by notification ID
+    // Identifiers of removed group notifications, sorted by notification identifier
     RemovedNotificationIds []int32 `json:"removed_notification_ids"`
 }
 
@@ -41843,10 +42114,37 @@ func (*UpdateUsersNearby) UpdateType() string {
     return TypeUpdateUsersNearby
 }
 
-// The list of bots added to attachment menu has changed
+// The first unconfirmed session has changed
+type UpdateUnconfirmedSession struct {
+    meta
+    // The unconfirmed session; may be null if none
+    Session *UnconfirmedSession `json:"session"`
+}
+
+func (entity *UpdateUnconfirmedSession) MarshalJSON() ([]byte, error) {
+    entity.meta.Type = entity.GetType()
+
+    type stub UpdateUnconfirmedSession
+
+    return json.Marshal((*stub)(entity))
+}
+
+func (*UpdateUnconfirmedSession) GetClass() string {
+    return ClassUpdate
+}
+
+func (*UpdateUnconfirmedSession) GetType() string {
+    return TypeUpdateUnconfirmedSession
+}
+
+func (*UpdateUnconfirmedSession) UpdateType() string {
+    return TypeUpdateUnconfirmedSession
+}
+
+// The list of bots added to attachment or side menu has changed
 type UpdateAttachmentMenuBots struct {
     meta
-    // The new list of bots added to attachment menu. The bots must not be shown on scheduled messages screen
+    // The new list of bots. The bots must not be shown on scheduled messages screen
     Bots []*AttachmentMenuBot `json:"bots"`
 }
 

@@ -729,6 +729,43 @@ func UnmarshalListOfSupergroupMembersFilter(dataList []json.RawMessage) ([]Super
     return list, nil
 }
 
+func UnmarshalInviteLinkChatType(data json.RawMessage) (InviteLinkChatType, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeInviteLinkChatTypeBasicGroup:
+        return UnmarshalInviteLinkChatTypeBasicGroup(data)
+
+    case TypeInviteLinkChatTypeSupergroup:
+        return UnmarshalInviteLinkChatTypeSupergroup(data)
+
+    case TypeInviteLinkChatTypeChannel:
+        return UnmarshalInviteLinkChatTypeChannel(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfInviteLinkChatType(dataList []json.RawMessage) ([]InviteLinkChatType, error) {
+    list := []InviteLinkChatType{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalInviteLinkChatType(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
 func UnmarshalSecretChatState(data json.RawMessage) (SecretChatState, error) {
     var meta meta
 
@@ -2543,6 +2580,40 @@ func UnmarshalListOfMessageSchedulingState(dataList []json.RawMessage) ([]Messag
 
     for _, data := range dataList {
         entity, err := UnmarshalMessageSchedulingState(data)
+        if err != nil {
+            return nil, err
+        }
+        list = append(list, entity)
+    }
+
+    return list, nil
+}
+
+func UnmarshalMessageSelfDestructType(data json.RawMessage) (MessageSelfDestructType, error) {
+    var meta meta
+
+    err := json.Unmarshal(data, &meta)
+    if err != nil {
+        return nil, err
+    }
+
+    switch meta.Type {
+    case TypeMessageSelfDestructTypeTimer:
+        return UnmarshalMessageSelfDestructTypeTimer(data)
+
+    case TypeMessageSelfDestructTypeImmediately:
+        return UnmarshalMessageSelfDestructTypeImmediately(data)
+
+    default:
+        return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
+    }
+}
+
+func UnmarshalListOfMessageSelfDestructType(dataList []json.RawMessage) ([]MessageSelfDestructType, error) {
+    list := []MessageSelfDestructType{}
+
+    for _, data := range dataList {
+        entity, err := UnmarshalMessageSelfDestructType(data)
         if err != nil {
             return nil, err
         }
@@ -4759,8 +4830,8 @@ func UnmarshalStoryPrivacySettings(data json.RawMessage) (StoryPrivacySettings, 
     case TypeStoryPrivacySettingsCloseFriends:
         return UnmarshalStoryPrivacySettingsCloseFriends(data)
 
-    case TypeStoryPrivacySettingsSelectedContacts:
-        return UnmarshalStoryPrivacySettingsSelectedContacts(data)
+    case TypeStoryPrivacySettingsSelectedUsers:
+        return UnmarshalStoryPrivacySettingsSelectedUsers(data)
 
     default:
         return nil, fmt.Errorf("Error unmarshaling. Unknown type: " +  meta.Type)
@@ -5160,6 +5231,9 @@ func UnmarshalInternalLinkType(data json.RawMessage) (InternalLinkType, error) {
 
     case TypeInternalLinkTypeSettings:
         return UnmarshalInternalLinkTypeSettings(data)
+
+    case TypeInternalLinkTypeSideMenuBot:
+        return UnmarshalInternalLinkTypeSideMenuBot(data)
 
     case TypeInternalLinkTypeStickerSet:
         return UnmarshalInternalLinkTypeStickerSet(data)
@@ -6148,6 +6222,9 @@ func UnmarshalUpdate(data json.RawMessage) (Update, error) {
 
     case TypeUpdateUsersNearby:
         return UnmarshalUpdateUsersNearby(data)
+
+    case TypeUpdateUnconfirmedSession:
+        return UnmarshalUpdateUnconfirmedSession(data)
 
     case TypeUpdateAttachmentMenuBots:
         return UnmarshalUpdateAttachmentMenuBots(data)
@@ -7473,6 +7550,30 @@ func UnmarshalChatInviteLinkMember(data json.RawMessage) (*ChatInviteLinkMember,
 
 func UnmarshalChatInviteLinkMembers(data json.RawMessage) (*ChatInviteLinkMembers, error) {
     var resp ChatInviteLinkMembers
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInviteLinkChatTypeBasicGroup(data json.RawMessage) (*InviteLinkChatTypeBasicGroup, error) {
+    var resp InviteLinkChatTypeBasicGroup
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInviteLinkChatTypeSupergroup(data json.RawMessage) (*InviteLinkChatTypeSupergroup, error) {
+    var resp InviteLinkChatTypeSupergroup
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInviteLinkChatTypeChannel(data json.RawMessage) (*InviteLinkChatTypeChannel, error) {
+    var resp InviteLinkChatTypeChannel
 
     err := json.Unmarshal(data, &resp)
 
@@ -10529,6 +10630,22 @@ func UnmarshalMessageSchedulingStateSendAtDate(data json.RawMessage) (*MessageSc
 
 func UnmarshalMessageSchedulingStateSendWhenOnline(data json.RawMessage) (*MessageSchedulingStateSendWhenOnline, error) {
     var resp MessageSchedulingStateSendWhenOnline
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalMessageSelfDestructTypeTimer(data json.RawMessage) (*MessageSelfDestructTypeTimer, error) {
+    var resp MessageSelfDestructTypeTimer
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalMessageSelfDestructTypeImmediately(data json.RawMessage) (*MessageSelfDestructTypeImmediately, error) {
+    var resp MessageSelfDestructTypeImmediately
 
     err := json.Unmarshal(data, &resp)
 
@@ -13703,8 +13820,8 @@ func UnmarshalStoryPrivacySettingsCloseFriends(data json.RawMessage) (*StoryPriv
     return &resp, err
 }
 
-func UnmarshalStoryPrivacySettingsSelectedContacts(data json.RawMessage) (*StoryPrivacySettingsSelectedContacts, error) {
-    var resp StoryPrivacySettingsSelectedContacts
+func UnmarshalStoryPrivacySettingsSelectedUsers(data json.RawMessage) (*StoryPrivacySettingsSelectedUsers, error) {
+    var resp StoryPrivacySettingsSelectedUsers
 
     err := json.Unmarshal(data, &resp)
 
@@ -14025,6 +14142,14 @@ func UnmarshalSession(data json.RawMessage) (*Session, error) {
 
 func UnmarshalSessions(data json.RawMessage) (*Sessions, error) {
     var resp Sessions
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalUnconfirmedSession(data json.RawMessage) (*UnconfirmedSession, error) {
+    var resp UnconfirmedSession
 
     err := json.Unmarshal(data, &resp)
 
@@ -14377,6 +14502,14 @@ func UnmarshalInternalLinkTypeRestorePurchases(data json.RawMessage) (*InternalL
 
 func UnmarshalInternalLinkTypeSettings(data json.RawMessage) (*InternalLinkTypeSettings, error) {
     var resp InternalLinkTypeSettings
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalInternalLinkTypeSideMenuBot(data json.RawMessage) (*InternalLinkTypeSideMenuBot, error) {
+    var resp InternalLinkTypeSideMenuBot
 
     err := json.Unmarshal(data, &resp)
 
@@ -14921,6 +15054,14 @@ func UnmarshalTopChatCategoryCalls(data json.RawMessage) (*TopChatCategoryCalls,
 
 func UnmarshalTopChatCategoryForwardChats(data json.RawMessage) (*TopChatCategoryForwardChats, error) {
     var resp TopChatCategoryForwardChats
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
+func UnmarshalFoundPositions(data json.RawMessage) (*FoundPositions, error) {
+    var resp FoundPositions
 
     err := json.Unmarshal(data, &resp)
 
@@ -16079,6 +16220,14 @@ func UnmarshalUpdateUsersNearby(data json.RawMessage) (*UpdateUsersNearby, error
     return &resp, err
 }
 
+func UnmarshalUpdateUnconfirmedSession(data json.RawMessage) (*UpdateUnconfirmedSession, error) {
+    var resp UpdateUnconfirmedSession
+
+    err := json.Unmarshal(data, &resp)
+
+    return &resp, err
+}
+
 func UnmarshalUpdateAttachmentMenuBots(data json.RawMessage) (*UpdateAttachmentMenuBots, error) {
     var resp UpdateAttachmentMenuBots
 
@@ -16828,6 +16977,15 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeChatInviteLinkMembers:
         return UnmarshalChatInviteLinkMembers(data)
+
+    case TypeInviteLinkChatTypeBasicGroup:
+        return UnmarshalInviteLinkChatTypeBasicGroup(data)
+
+    case TypeInviteLinkChatTypeSupergroup:
+        return UnmarshalInviteLinkChatTypeSupergroup(data)
+
+    case TypeInviteLinkChatTypeChannel:
+        return UnmarshalInviteLinkChatTypeChannel(data)
 
     case TypeChatInviteLinkInfo:
         return UnmarshalChatInviteLinkInfo(data)
@@ -17974,6 +18132,12 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeMessageSchedulingStateSendWhenOnline:
         return UnmarshalMessageSchedulingStateSendWhenOnline(data)
+
+    case TypeMessageSelfDestructTypeTimer:
+        return UnmarshalMessageSelfDestructTypeTimer(data)
+
+    case TypeMessageSelfDestructTypeImmediately:
+        return UnmarshalMessageSelfDestructTypeImmediately(data)
 
     case TypeMessageSendOptions:
         return UnmarshalMessageSendOptions(data)
@@ -19163,8 +19327,8 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
     case TypeStoryPrivacySettingsCloseFriends:
         return UnmarshalStoryPrivacySettingsCloseFriends(data)
 
-    case TypeStoryPrivacySettingsSelectedContacts:
-        return UnmarshalStoryPrivacySettingsSelectedContacts(data)
+    case TypeStoryPrivacySettingsSelectedUsers:
+        return UnmarshalStoryPrivacySettingsSelectedUsers(data)
 
     case TypeUserPrivacySettingRuleAllowAll:
         return UnmarshalUserPrivacySettingRuleAllowAll(data)
@@ -19285,6 +19449,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeSessions:
         return UnmarshalSessions(data)
+
+    case TypeUnconfirmedSession:
+        return UnmarshalUnconfirmedSession(data)
 
     case TypeConnectedWebsite:
         return UnmarshalConnectedWebsite(data)
@@ -19417,6 +19584,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeInternalLinkTypeSettings:
         return UnmarshalInternalLinkTypeSettings(data)
+
+    case TypeInternalLinkTypeSideMenuBot:
+        return UnmarshalInternalLinkTypeSideMenuBot(data)
 
     case TypeInternalLinkTypeStickerSet:
         return UnmarshalInternalLinkTypeStickerSet(data)
@@ -19621,6 +19791,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeTopChatCategoryForwardChats:
         return UnmarshalTopChatCategoryForwardChats(data)
+
+    case TypeFoundPositions:
+        return UnmarshalFoundPositions(data)
 
     case TypeTMeUrlTypeUser:
         return UnmarshalTMeUrlTypeUser(data)
@@ -20053,6 +20226,9 @@ func UnmarshalType(data json.RawMessage) (Type, error) {
 
     case TypeUpdateUsersNearby:
         return UnmarshalUpdateUsersNearby(data)
+
+    case TypeUpdateUnconfirmedSession:
+        return UnmarshalUpdateUnconfirmedSession(data)
 
     case TypeUpdateAttachmentMenuBots:
         return UnmarshalUpdateAttachmentMenuBots(data)
