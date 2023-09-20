@@ -28,7 +28,7 @@ func CheckCommand(text string, entities []*TextEntity) string {
 		// Check text entities and make bot happy!
 		if len(entities) >= 1 {
 			// Get first command
-			if entities[0].Type.TextEntityTypeType() == "textEntityTypeBotCommand" {
+			if entities[0].Type.TextEntityTypeType() == TypeTextEntityTypeBotCommand {
 				// e.g.: { "text": "/hello@world_bot", "textEntity": { offset: 0, length: 16 } }
 				// Result: "/hello"
 				if i := strings.Index(text[:entities[0].Length], "@"); i != -1 {
